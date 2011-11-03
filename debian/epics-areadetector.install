@@ -1,0 +1,5 @@
+db usr/lib/epics
+ADApp/Db/*.req usr/lib/epics/as/req
+usr/lib/epics/bin
+usr/lib/epics/dbd
+iocBoot usr/share/epics-areadetector/

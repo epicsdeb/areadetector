@@ -1,0 +1,24 @@
+areadetector (1.7-3~) UNRELEASED; urgency=low
+
+  * Include aravisGigE and firewireDCAM plugins from Diamond LS
+
+ -- Michael Davidsaver <mdavidsaver@bnl.gov>  Wed, 02 Nov 2011 16:41:05 -0400
+
+areadetector (1.7-2) UNRELEASED; urgency=low
+
+  * Include IOC status
+  * Link EPICS libraries statically
+
+ -- Michael Davidsaver <mdavidsaver@bnl.gov>  Mon, 31 Oct 2011 16:22:01 -0400
+
+areadetector (1.7-1) UNRELEASED; urgency=low
+
+  * Update for release
+
+ -- Michael Davidsaver <mdavidsaver@bnl.gov>  Thu, 11 Aug 2011 15:05:47 -0400
+
+areadetector (1.7b1-1) UNRELEASED; urgency=low
+
+  * Initial release.
+
+ -- Michael Davidsaver <mdavidsaver@bnl.gov>  Sun, 05 Jun 2011 14:49:19 -0400

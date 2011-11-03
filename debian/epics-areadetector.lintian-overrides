@@ -1,0 +1,2 @@
+epics-areadetector: unstripped-binary-or-object
+# executables for -debug targets are not stripped

@@ -1,0 +1,22 @@
+Only in areaDetectorR1-7/ADApp/PSLSrc: PSLSoftwareManual.pdf
+Only in areaDetectorR1-7/ADApp/brukerSrc: BIS.HLP
+Only in areaDetectorR1-7/ADApp: cbfSrc
+Only in areaDetectorR1-7/ADApp: hdf5Support
+Only in areaDetectorR1-7/ADApp: magickSupport
+Only in areaDetectorR1-7/ADApp/marCCDSrc: The Baseline Stabilization Option for marccd.pdf
+Only in areaDetectorR1-7/ADApp: netCDFSrc
+Only in areaDetectorR1-7/ADApp/perkinElmerSrc: xisl.dll
+Only in areaDetectorR1-7/ADApp/prosilicaSupport/os: darwin-x86
+Only in areaDetectorR1-7/ADApp/prosilicaSupport/os/win32-x86: PvAPI.dll
+Only in areaDetectorR1-7/ADApp/prosilicaSupport/os/windows-x64: PvAPI.dll
+Only in areaDetectorR1-7/ADApp/pvcamSupport: Pvcam32.dll
+Only in areaDetectorR1-7/ADApp/pvcamSupport: pv_icl32.dll
+Only in areaDetectorR1-7/ADApp/roperSrc: WinX32 Automation 3.X for Visual Basic.pdf
+Only in areaDetectorR1-7/ADApp: tiffSupport
+Only in areaDetectorR1-7/Viewers: IDL
+Only in areaDetectorR1-7/Viewers/ImageJ/EPICS_areaDetector: NetCDF_.jar
+Only in areaDetectorR1-7/Viewers/ImageJ/EPICS_areaDetector: caj-1.1.5.jar
+Only in areaDetectorR1-7/Viewers/ImageJ/EPICS_areaDetector: jca-2.3.2.jar
+Only in areaDetectorR1-7/iocBoot/iocURLDriver/images: Pilatus.tif
+Only in areaDetectorR1-7/iocBoot/iocURLDriver/images: marCCD.tif
+Only in areaDetectorR1-7/iocBoot/iocURLDriver/images: sun.jpg

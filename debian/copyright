@@ -1,0 +1,21 @@
+This package was debianized by Michael Davidsaver <mdavidsaver@bnl.gov> on
+Wed, 5 Jun 2011 12:01:29 -0400.
+
+It was downloaded from http://cars9.uchicago.edu/software/epics/areaDetector.html
+
+Upstream Authors:
+
+    Mark Rivers <rivers@cars.uchicago.edu>
+    et al.
+
+Copyright:
+
+    ignota et invisa
+
+
+License:
+
+    ignota et invisa
+
+The Debian packaging (debian/ directory) is (C) 2011, Michael Davidsaver <mdavidsaver@bnl.gov> and
+is licensed under the GPL, see `/usr/share/common-licenses/GPL'.

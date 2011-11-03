@@ -1,0 +1,41 @@
+#!/usr/bin/make -f
+
+export DH_VERBOSE=1
+
+binary binary-arch binary-indep build install clean:
+	dh $@ --with epics -Sepicsmake
+install: build
+binary-arch binary-indep: install
+binary: binary-arch binary-indep
+
+override_dh_auto_clean:
+	dh_auto_clean
+	rm -rf edl
+
+override_dh_auto_build: convert-adl
+	dh_auto_build
+
+convert-adl:
+	rm -rf edl
+	install -d edl
+	cp ADApp/op/adl/*.adl edl/
+	(cd edl && \
+	for ff in *.adl;do \
+		adl2edl -rgb $$ff > $${ff%.adl}.edl || rm -f $${ff%.adl}.edl;\
+	done)
+	sed -i -e 's|"[^c]*composite file |"|g' edl/*.edl
+
+	cp aravis/aravisGigEApp/opi/edl/*.edl edl/
+	sed -i -e 's|arial|helvetica|g' edl/*.edl
+	sed -i -e 's|charter|helvetica|g' edl/*.edl
+	sed -i -e 's|helvetica-bold-r-16\.0|helvetica-bold-r-12.0|g' edl/*.edl
+
+override_dh_install:
+	dh_install
+	chmod -x debian/epics-areadetector/usr/lib/epics/db/*
+	chmod -x debian/epics-areadetector/usr/lib/epics/as/req/*
+	find debian/epics-areadetector/usr/share/epics-areadetector \
+	  -type f -exec chmod -x {} \;
+
+override_dh_shlibdeps:
+	dh_shlibdeps -l$(CURDIR)/debian/tmp/usr/lib

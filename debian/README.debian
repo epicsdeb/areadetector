@@ -1,0 +1,44 @@
+
+Changes made for Debian packageing
+
+Where possible, built libraries and executables with system
+packaged libraries instead of embedded source or binary blobs.
+
+This requires a small patch as the embedded version of libcbf
+is newer and has some additional logging facilities not present
+in the packaged version.  These are omitted.
+
+All libraries and executables are linked with --as-needed
+to reduce over-linking.  As there is no (I think) runtime
+loading, this shouldn't have any ill-effects.
+
+The example IOC scripts are installed in:
+/usr/share/epics-areadetector/iocBoot
+
+iocAdsc
+iocBruker
+iocFirewire
+iocMAR345
+iocMARCCD
+iocPerkinElmer
+iocPilatus
+iocProsilica
+iocPSL
+iocPVCam
+iocRoper
+iocSimDetector
+iocURLDriver
+
+The IOC executables are installed in:
+/usr/lib/epics/bin/$(EPICS_HOST_ARCH)/
+
+adscApp
+BISDetectorApp
+mar345App
+marCCDApp
+pilatusDetectorApp
+prosilicaApp
+PSLApp
+simDetectorApp
+URLDriverApp
+URLTest

@@ -1,3 +1,2 @@
 edl/*.edl usr/lib/epics/op/edl
-aravis/aravisGigEApp/opi/edl/*.edl usr/lib/epics/op/edl
 dcam/firewireDCAMApp/opi/edl/*.edl usr/lib/epics/op/edl

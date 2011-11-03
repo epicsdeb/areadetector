@@ -30,7 +30,8 @@ Package: epics-areadetector
 Architecture: any
 Section: video
 Depends: ${shlibs:Depends}, ${misc:Depends},
-Recommends: edm-areadetector (= ${source:Version})
+Recommends: edm-areadetector (= ${source:Version}),
+            libareadetector1.7 (= ${binary:Version}),
 Conflicts: epics-synapps (<< 5.6~)
 Description: Video Camera driver for EPICS
  .
@@ -41,8 +42,7 @@ Package: epics-areadetector-dev
 Architecture: any
 Section: libdevel
 Depends: ${shlibs:Depends}, ${misc:Depends},
-         libareadetector1.7 (= ${binary:Version}),
-         epics-areadetector (= ${binary:Version})
+         epics-areadetector (= ${binary:Version}),
 Recommends: edm-areadetector (= ${source:Version})
 Conflicts: epics-synapps-dev (<< 5.6~)
 Description: Video Camera driver for EPICS

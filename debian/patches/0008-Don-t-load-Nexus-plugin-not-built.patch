@@ -3,9 +3,27 @@ Date: Mon, 19 Sep 2011 09:39:22 -0400
 Subject: [PATCH] Don't load Nexus plugin (not built)
 
 ---
- iocBoot/commonPlugins.cmd |    8 ++++----
- 1 files changed, 4 insertions(+), 4 deletions(-)
+ ADApp/Db/commonPlugin_settings.req |    6 +++---
+ iocBoot/commonPlugins.cmd          |    8 ++++----
+ 2 files changed, 7 insertions(+), 7 deletions(-)
 
+diff --git a/ADApp/Db/commonPlugin_settings.req b/ADApp/Db/commonPlugin_settings.req
+index cc6c758..76a0158 100644
+--- a/ADApp/Db/commonPlugin_settings.req
++++ b/ADApp/Db/commonPlugin_settings.req
+@@ -5,9 +5,9 @@ file "NDFile_settings.req",         P=$(P),  R=TIFF1:
+ file "NDPluginBase_settings.req",   P=$(P),  R=JPEG1:
+ file "NDFile_settings.req",         P=$(P),  R=JPEG1:
+ file "NDFileJPEG_settings.req",     P=$(P),  R=JPEG1:
+-file "NDPluginBase_settings.req",   P=$(P),  R=Nexus1:
+-file "NDFile_settings.req",         P=$(P),  R=Nexus1:
+-file "NDFileNexus_settings.req",    P=$(P),  R=Nexus1:
++#file "NDPluginBase_settings.req",   P=$(P),  R=Nexus1:
++#file "NDFile_settings.req",         P=$(P),  R=Nexus1:
++#file "NDFileNexus_settings.req",    P=$(P),  R=Nexus1:
+ file "NDPluginBase_settings.req",   P=$(P),  R=Magick1:
+ file "NDFile_settings.req",         P=$(P),  R=Magick1:
+ file "NDFileMagick_settings.req",   P=$(P),  R=Magick1:
 diff --git a/iocBoot/commonPlugins.cmd b/iocBoot/commonPlugins.cmd
 index 51043bf..c39322d 100644
 --- a/iocBoot/commonPlugins.cmd

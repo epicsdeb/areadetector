@@ -1,0 +1,21 @@
+From: Michael Davidsaver <mdavidsaver@bnl.gov>
+Date: Fri, 28 Oct 2011 12:16:28 -0400
+Subject: [PATCH] Still build shared libraries
+
+---
+ configure/CONFIG_SITE |    1 -
+ 1 files changed, 0 insertions(+), 1 deletions(-)
+
+diff --git a/configure/CONFIG_SITE b/configure/CONFIG_SITE
+index 3f8bd72..5370926 100644
+--- a/configure/CONFIG_SITE
++++ b/configure/CONFIG_SITE
+@@ -36,7 +36,6 @@ CHECK_RELEASE = YES
+ # We build statically on Linux because want to install on detector systems without many .so files
+ ifeq (Linux, $(OS_CLASS))
+   STATIC_BUILD=YES
+-  SHARED_LIBRARIES=NO
+ endif
+ # Building statically on Darwin is not possible (well, it's possible but difficult and discouraged
+ # by Apple), but we can build depending only on system libraries that are part of Mac OS X
+-- 

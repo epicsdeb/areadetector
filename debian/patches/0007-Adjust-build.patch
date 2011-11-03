@@ -1,0 +1,190 @@
+From: Michael Davidsaver <mdavidsaver@bnl.gov>
+Date: Sun, 5 Jun 2011 15:25:06 -0400
+Subject: [PATCH] Adjust build
+
+skip embedded version of netcdf, cbf, tiff, magick, and nexus
+
+Skip Nexus, currently not packaged
+Use packaged versions of same as well as hdf4, hdf5, mxml, jpeg, z
+
+skip all *Support
+
+Don't need to link with X11!
+---
+ ADApp/Makefile                      |   18 ++----------------
+ ADApp/commonDriverMakefile          |   28 ++++++++++++++++------------
+ ADApp/pilatusSrc/Makefile           |    2 +-
+ ADApp/pluginSrc/Makefile            |    9 +++++----
+ ADApp/pluginSrc/NDPluginSupport.dbd |    2 +-
+ 5 files changed, 25 insertions(+), 34 deletions(-)
+
+diff --git a/ADApp/Makefile b/ADApp/Makefile
+index 87726fb..9ed6dc1 100644
+--- a/ADApp/Makefile
++++ b/ADApp/Makefile
+@@ -2,26 +2,14 @@ TOP = ..
+ include $(TOP)/configure/CONFIG
+ 
+ DIRS += ADSrc
+-DIRS += netCDFSrc
+-DIRS += cbfSrc
+-# prosilicaSupport must be built before pluginSrc or prosilicaSrc because it installs
+-# header and library files needed by both
+-DIRS += prosilicaSupport
+-DIRS += tiffSupport
+-DIRS += hdf5Support
+-DIRS += nexusSrc
+-DIRS += pvcamSupport
+-DIRS += magickSupport
+ DIRS += pluginSrc
+-pluginSrc_DEPEND_DIRS = ADSrc netCDFSrc prosilicaSupport tiffSupport hdf5Support nexusSrc magickSupport
++pluginSrc_DEPEND_DIRS = ADSrc
+ DIRS += simDetectorSrc
+ simDetectorSrc_DEPEND_DIRS = pluginSrc
+ DIRS += URLSrc
+ URLSrc_DEPEND_DIRS = pluginSrc
+-DIRS += prosilicaSrc
+-prosilicaSrc_DEPEND_DIRS = pluginSrc
+ DIRS += pilatusSrc
+-pilatusSrc_DEPEND_DIRS   = pluginSrc cbfSrc
++pilatusSrc_DEPEND_DIRS   = pluginSrc
+ DIRS += marCCDSrc
+ marCCDSrc_DEPEND_DIRS = pluginSrc
+ DIRS += mar345Src
+@@ -34,8 +22,6 @@ DIRS += firewireWinSrc
+ firewireWinSrc_DEPEND_DIRS = pluginSrc
+ DIRS += perkinElmerSrc
+ perkinElmerSrc_DEPEND_DIRS = pluginSrc
+-DIRS += pvcamSrc
+-pvcamSrc_DEPEND_DIRS = pluginSrc pvcamSupport
+ DIRS += brukerSrc
+ brukerSrc_DEPEND_DIRS = pluginSrc
+ DIRS += PSLSrc
+diff --git a/ADApp/commonDriverMakefile b/ADApp/commonDriverMakefile
+index 61ef87a..e9bfbc4 100644
+--- a/ADApp/commonDriverMakefile
++++ b/ADApp/commonDriverMakefile
+@@ -1,7 +1,10 @@
+ # This file contains the commands to build driver applications using the common set of plugins
+ 
+-LIB_LIBS                += ADBase netCDF
+-PROD_LIBS               += NDPlugin ADBase netCDF
++USR_INCLUDES_Linux += -I/usr/include/GraphicsMagick
++USR_INCLUDES_Linux += -I/usr/include/cbf
++
++LIB_LIBS                += ADBase
++PROD_LIBS               += NDPlugin ADBase
+ PROD_LIBS               += calc busy sscan autosave mca
+ LIB_LIBS                += calc busy sscan autosave
+ LIB_LIBS                += asyn
+@@ -9,6 +12,9 @@ PROD_LIBS               += asyn
+ LIB_LIBS                += $(EPICS_BASE_IOC_LIBS)
+ PROD_LIBS               += $(EPICS_BASE_IOC_LIBS)
+ 
++LIB_SYS_LIBS            += netcdf
++PROD_SYS_LIBS           += netcdf
++
+ LIB_LIBS_WIN32          += PvAPI
+ PROD_LIBS_WIN32         += PvAPI
+ LIB_LIBS_WIN32          += CORE_RL_Magick++_ CORE_RL_wand_ CORE_RL_magick_ 
+@@ -39,29 +45,27 @@ PROD_SYS_LIBS_cygwin32  += $(CYGWIN_RPC_LIB)
+ LIB_SYS_LIBS_cygwin32   += Gdi32
+ PROD_SYS_LIBS_cygwin32  += Gdi32
+ 
+-LIB_LIBS_Linux          += PvAPI
+-PROD_LIBS_Linux         += PvAPI
+ # To use versions of these libraries supplied with areaDetector use this line
+-LIB_LIBS_Linux          += GraphicsMagick++ GraphicsMagickWand GraphicsMagick
+-PROD_LIBS_Linux         += GraphicsMagick++ GraphicsMagickWand GraphicsMagick
++LIB_SYS_LIBS_Linux      += GraphicsMagick++ GraphicsMagickWand GraphicsMagick
++PROD_SYS_LIBS_Linux     += GraphicsMagick++ GraphicsMagickWand GraphicsMagick
+ # To use system versions of these libraries use this line
+ #LIB_SYS_LIBS_Linux     += GraphicsMagick++ GraphicsMagickWand GraphicsMagick
+ #PROD_SYS_LIBS_Linux    += GraphicsMagick++ GraphicsMagickWand GraphicsMagick
+ # To use versions of these libraries supplied with areaDetector use this line
+-LIB_LIBS_Linux          += NeXus hdf5 sz
+-PROD_LIBS_Linux         += NeXus hdf5 sz
++LIB_SYS_LIBS_Linux          += hdf5
++PROD_SYS_LIBS_Linux         += hdf5
+ # To use system versions of these libraries use this line
+ #LIB_SYS_LIBS_Linux     += NeXus hdf5 sz
+ #PROD_SYS_LIBS_Linux    += NeXus hdf5 sz
+ # To use versions of these libraries supplied with areaDetector use this line
+-LIB_LIBS_Linux          += tiff jpeg z
+-PROD_LIBS_Linux         += tiff jpeg z
++LIB_SYS_LIBS_Linux      += tiff jpeg z
++PROD_SYS_LIBS_Linux     += tiff jpeg z
+ # To use system versions of these libraries use this line
+ #LIB_SYS_LIBS_Linux     += tiff jpeg z
+ #PROD_SYS_LIBS_Linux    += tiff jpeg z
+ 
+-LIB_SYS_LIBS_Linux      += gomp X11 xml2 png12 bz2 Xext freetype 
+-PROD_SYS_LIBS_Linux     += gomp X11 xml2 png12 bz2 Xext freetype 
++LIB_SYS_LIBS_Linux      += gomp xml2 png12 bz2 
++PROD_SYS_LIBS_Linux     += gomp xml2 png12 bz2
+ 
+ LIB_LIBS_solaris         += NeXus hdf5 jpeg z
+ PROD_LIBS_solaris        += NeXus hdf5 jpeg z
+diff --git a/ADApp/pilatusSrc/Makefile b/ADApp/pilatusSrc/Makefile
+index 55aad28..a65d920 100755
+--- a/ADApp/pilatusSrc/Makefile
++++ b/ADApp/pilatusSrc/Makefile
+@@ -21,7 +21,7 @@ PROD_SRCS += pilatusDetectorApp_registerRecordDeviceDriver.cpp pilatusDetectorAp
+ 
+ # Add locally compiled object code
+ PROD_LIBS += pilatusDetector
+-PROD_LIBS += cbf
++PROD_SYS_LIBS += cbf
+ 
+ include $(TOP)/ADApp/commonDriverMakefile
+ 
+diff --git a/ADApp/pluginSrc/Makefile b/ADApp/pluginSrc/Makefile
+index 8017028..beb1571 100644
+--- a/ADApp/pluginSrc/Makefile
++++ b/ADApp/pluginSrc/Makefile
+@@ -12,10 +12,10 @@ CODE_CXXFLAGS=
+ endif
+ 
+ # These flags are needed by PvApi.h, the Prosilca library used for Bayer to RGB color conversion
+-USR_CXXFLAGS_Linux += -D_LINUX -D_x86 -O0
++#USR_CXXFLAGS_Linux += -D_LINUX -D_x86 -O0
+ 
+ # These flags are used for Linux and WIN32 to build the Bayer conversion in NDPluginColorConvert
+-USR_CXXFLAGS_Linux += -DHAVE_PVAPI
++#USR_CXXFLAGS_Linux += -DHAVE_PVAPI
+ USR_CXXFLAGS_Darwin += -DHAVE_PVAPI
+ USR_CXXFLAGS_WIN32 += -DHAVE_PVAPI
+ 
+@@ -26,7 +26,7 @@ DBD += NDPluginSupport.dbd
+ DBD += NDFileJPEG.dbd
+ DBD += NDFileMagick.dbd
+ DBD += NDFileNetCDF.dbd
+-DBD += NDFileNexus.dbd
++#DBD += NDFileNexus.dbd
+ DBD += NDFileHDF5.dbd
+ DBD += NDFileTIFF.dbd
+ DBD += NDPluginColorConvert.dbd
+@@ -51,7 +51,8 @@ LIB_SRCS += NDPluginROI.cpp
+ LIB_SRCS += NDPluginTransform.cpp
+ LIB_SRCS += NDPluginOverlay.cpp
+ LIB_SRCS += NDPluginColorConvert.cpp
+-LIB_SRCS_DEFAULT += NDFileTIFF.cpp NDFileJPEG.cpp NDFileNexus.cpp NDFileHDF5.cpp NDFileMagick.cpp
++LIB_SRCS_DEFAULT += NDFileTIFF.cpp NDFileJPEG.cpp NDFileHDF5.cpp NDFileMagick.cpp
++#LIB_SRCS_DEFAULT += NDFileNexus.cpp
+ LIB_SRCS_vxWorks += NDFileDummy.cpp
+ 
+ include $(TOP)/ADApp/commonDriverMakefile
+diff --git a/ADApp/pluginSrc/NDPluginSupport.dbd b/ADApp/pluginSrc/NDPluginSupport.dbd
+index dec1fe8..da73cc5 100644
+--- a/ADApp/pluginSrc/NDPluginSupport.dbd
++++ b/ADApp/pluginSrc/NDPluginSupport.dbd
+@@ -2,7 +2,7 @@ include "NDPluginStdArrays.dbd"
+ include "NDFileNetCDF.dbd"
+ include "NDFileTIFF.dbd"
+ include "NDFileJPEG.dbd"
+-include "NDFileNexus.dbd"
++##include "NDFileNexus.dbd"
+ include "NDFileMagick.dbd"
+ include "NDFileHDF5.dbd"
+ include "NDPluginROI.dbd"
+-- 

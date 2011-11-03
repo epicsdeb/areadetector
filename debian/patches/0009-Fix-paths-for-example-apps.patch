@@ -1,0 +1,699 @@
+From: Michael Davidsaver <mdavidsaver@bnl.gov>
+Date: Sun, 5 Jun 2011 16:52:32 -0400
+Subject: [PATCH] Fix paths for example apps
+
+load packaged db files from /usr/lib/epics/
+---
+ iocBoot/commonPlugins.cmd     |  126 ++++++++++++++++++++--------------------
+ iocBoot/iocAdsc/st.cmd        |   10 ++--
+ iocBoot/iocBruker/st.cmd      |   12 ++--
+ iocBoot/iocFirewire/st.cmd    |   18 +++---
+ iocBoot/iocMAR345/st.cmd      |   12 ++--
+ iocBoot/iocMARCCD/st.cmd      |   12 ++--
+ iocBoot/iocPSL/st.cmd         |   12 ++--
+ iocBoot/iocPVCam/st.cmd       |   10 ++--
+ iocBoot/iocPerkinElmer/st.cmd |   10 ++--
+ iocBoot/iocPilatus/st.cmd     |   12 ++--
+ iocBoot/iocProsilica/st.cmd   |   18 +++---
+ iocBoot/iocRoper/st.cmd       |   12 ++--
+ iocBoot/iocSimDetector/st.cmd |   20 +++---
+ iocBoot/iocURLDriver/st.cmd   |   12 ++--
+ 14 files changed, 148 insertions(+), 148 deletions(-)
+
+diff --git a/iocBoot/commonPlugins.cmd b/iocBoot/commonPlugins.cmd
+index c39322d..24267e4 100644
+--- a/iocBoot/commonPlugins.cmd
++++ b/iocBoot/commonPlugins.cmd
+@@ -1,26 +1,26 @@
+ # Create a netCDF file saving plugin.
+ NDFileNetCDFConfigure("FileNetCDF1", $(QSIZE), 0, "$(PORT)", 0)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=netCDF1:,PORT=FileNetCDF1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFile.template",      "P=$(PREFIX),R=netCDF1:,PORT=FileNetCDF1,ADDR=0,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFileNetCDF.template","P=$(PREFIX),R=netCDF1:,PORT=FileNetCDF1,ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=netCDF1:,PORT=FileNetCDF1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDFile.template",      "P=$(PREFIX),R=netCDF1:,PORT=FileNetCDF1,ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDFileNetCDF.template","P=$(PREFIX),R=netCDF1:,PORT=FileNetCDF1,ADDR=0,TIMEOUT=1")
+ 
+ # Create a TIFF file saving plugin
+ NDFileTIFFConfigure("FileTIFF1", $(QSIZE), 0, "$(PORT)", 0)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=TIFF1:,PORT=FileTIFF1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFile.template",      "P=$(PREFIX),R=TIFF1:,PORT=FileTIFF1,ADDR=0,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFileTIFF.template",  "P=$(PREFIX),R=TIFF1:,PORT=FileTIFF1,ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=TIFF1:,PORT=FileTIFF1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDFile.template",      "P=$(PREFIX),R=TIFF1:,PORT=FileTIFF1,ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDFileTIFF.template",  "P=$(PREFIX),R=TIFF1:,PORT=FileTIFF1,ADDR=0,TIMEOUT=1")
+ 
+ # Create a JPEG file saving plugin
+ NDFileJPEGConfigure("FileJPEG1", $(QSIZE), 0, "$(PORT)", 0)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=JPEG1:,PORT=FileJPEG1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFile.template",      "P=$(PREFIX),R=JPEG1:,PORT=FileJPEG1,ADDR=0,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFileJPEG.template",  "P=$(PREFIX),R=JPEG1:,PORT=FileJPEG1,ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=JPEG1:,PORT=FileJPEG1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDFile.template",      "P=$(PREFIX),R=JPEG1:,PORT=FileJPEG1,ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDFileJPEG.template",  "P=$(PREFIX),R=JPEG1:,PORT=FileJPEG1,ADDR=0,TIMEOUT=1")
+ 
+ # Create a NeXus file saving plugin
+ #NDFileNexusConfigure("FileNexus1", $(QSIZE), 0, "$(PORT)", 0)
+-#dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=Nexus1:,PORT=FileNexus1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
+-#dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFile.template",      "P=$(PREFIX),R=Nexus1:,PORT=FileNexus1,ADDR=0,TIMEOUT=1")
+-#dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFileNexus.template", "P=$(PREFIX),R=Nexus1:,PORT=FileNexus1,ADDR=0,TIMEOUT=1")
++#dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=Nexus1:,PORT=FileNexus1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
++#dbLoadRecords("$(EPICS_BASE)/db/NDFile.template",      "P=$(PREFIX),R=Nexus1:,PORT=FileNexus1,ADDR=0,TIMEOUT=1")
++#dbLoadRecords("$(EPICS_BASE)/db/NDFileNexus.template", "P=$(PREFIX),R=Nexus1:,PORT=FileNexus1,ADDR=0,TIMEOUT=1")
+ 
+ # Create an HDF5 file saving plugin
+ NDFileHDF5Configure("FileHDF1", $(QSIZE), 0, "$(PORT)", 0)
+@@ -30,45 +30,45 @@ dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFileHDF5.template",  "P=$(PREFIX),R=H
+ 
+ # Create a Magick file saving plugin
+ NDFileMagickConfigure("FileMagick1", $(QSIZE), 0, "$(PORT)", 0)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=Magick1:,PORT=FileMagick1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFile.template",      "P=$(PREFIX),R=Magick1:,PORT=FileMagick1,ADDR=0,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFileMagick.template","P=$(PREFIX),R=Magick1:,PORT=FileMagick1,ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=Magick1:,PORT=FileMagick1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDFile.template",      "P=$(PREFIX),R=Magick1:,PORT=FileMagick1,ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDFileMagick.template","P=$(PREFIX),R=Magick1:,PORT=FileMagick1,ADDR=0,TIMEOUT=1")
+ 
+ # Create 4 ROI plugins
+ NDROIConfigure("ROI1", $(QSIZE), 0, "$(PORT)", 0, -1, -1)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=ROI1:,  PORT=ROI1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDROI.template",       "P=$(PREFIX),R=ROI1:,  PORT=ROI1,ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=ROI1:,  PORT=ROI1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDROI.template",       "P=$(PREFIX),R=ROI1:,  PORT=ROI1,ADDR=0,TIMEOUT=1")
+ NDROIConfigure("ROI2", $(QSIZE), 0, "$(PORT)", 0, -1, -1)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=ROI2:,  PORT=ROI2,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDROI.template",       "P=$(PREFIX),R=ROI2:,  PORT=ROI2,ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=ROI2:,  PORT=ROI2,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDROI.template",       "P=$(PREFIX),R=ROI2:,  PORT=ROI2,ADDR=0,TIMEOUT=1")
+ NDROIConfigure("ROI3", $(QSIZE), 0, "$(PORT)", 0, -1, -1)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=ROI3:,  PORT=ROI3,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDROI.template",       "P=$(PREFIX),R=ROI3:,  PORT=ROI3,ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=ROI3:,  PORT=ROI3,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDROI.template",       "P=$(PREFIX),R=ROI3:,  PORT=ROI3,ADDR=0,TIMEOUT=1")
+ NDROIConfigure("ROI4", $(QSIZE), 0, "$(PORT)", 0, -1, -1)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=ROI4:,  PORT=ROI4,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDROI.template",       "P=$(PREFIX),R=ROI4:,  PORT=ROI4,ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=ROI4:,  PORT=ROI4,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDROI.template",       "P=$(PREFIX),R=ROI4:,  PORT=ROI4,ADDR=0,TIMEOUT=1")
+ 
+ # Create a processing plugin
+ NDProcessConfigure("PROC1", $(QSIZE), 0, "$(PORT)", 0, -1, -1)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=Proc1:,  PORT=PROC1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDProcess.template",   "P=$(PREFIX),R=Proc1:,  PORT=PROC1,ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=Proc1:,  PORT=PROC1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDProcess.template",   "P=$(PREFIX),R=Proc1:,  PORT=PROC1,ADDR=0,TIMEOUT=1")
+ 
+ # Create 5 statistics plugins
+ NDStatsConfigure("STATS1", $(QSIZE), 0, "$(PORT)", 0, -1, -1)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=Stats1:,  PORT=STATS1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=ROI1,NDARRAY_ADDR=0")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStats.template",     "P=$(PREFIX),R=Stats1:,  PORT=STATS1,ADDR=0,TIMEOUT=1,HIST_SIZE=256,XSIZE=$(XSIZE),YSIZE=$(YSIZE)")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=Stats1:,  PORT=STATS1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=ROI1,NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDStats.template",     "P=$(PREFIX),R=Stats1:,  PORT=STATS1,ADDR=0,TIMEOUT=1,HIST_SIZE=256,XSIZE=$(XSIZE),YSIZE=$(YSIZE)")
+ NDStatsConfigure("STATS2", $(QSIZE), 0, "ROI1", 0, -1, -1)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=Stats2:,  PORT=STATS2,ADDR=0,TIMEOUT=1,NDARRAY_PORT=ROI2,NDARRAY_ADDR=0")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStats.template",     "P=$(PREFIX),R=Stats2:,  PORT=STATS2,ADDR=0,TIMEOUT=1,HIST_SIZE=256,XSIZE=$(XSIZE),YSIZE=$(YSIZE)")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=Stats2:,  PORT=STATS2,ADDR=0,TIMEOUT=1,NDARRAY_PORT=ROI2,NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDStats.template",     "P=$(PREFIX),R=Stats2:,  PORT=STATS2,ADDR=0,TIMEOUT=1,HIST_SIZE=256,XSIZE=$(XSIZE),YSIZE=$(YSIZE)")
+ NDStatsConfigure("STATS3", $(QSIZE), 0, "ROI2", 0, -1, -1)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=Stats3:,  PORT=STATS3,ADDR=0,TIMEOUT=1,NDARRAY_PORT=ROI3,NDARRAY_ADDR=0")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStats.template",     "P=$(PREFIX),R=Stats3:,  PORT=STATS3,ADDR=0,TIMEOUT=1,HIST_SIZE=256,XSIZE=$(XSIZE),YSIZE=$(YSIZE)")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=Stats3:,  PORT=STATS3,ADDR=0,TIMEOUT=1,NDARRAY_PORT=ROI3,NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDStats.template",     "P=$(PREFIX),R=Stats3:,  PORT=STATS3,ADDR=0,TIMEOUT=1,HIST_SIZE=256,XSIZE=$(XSIZE),YSIZE=$(YSIZE)")
+ NDStatsConfigure("STATS4", $(QSIZE), 0, "ROI3", 0, -1, -1)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=Stats4:,  PORT=STATS4,ADDR=0,TIMEOUT=1,NDARRAY_PORT=ROI4,NDARRAY_ADDR=0")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStats.template",     "P=$(PREFIX),R=Stats4:,  PORT=STATS4,ADDR=0,TIMEOUT=1,HIST_SIZE=256,XSIZE=$(XSIZE),YSIZE=$(YSIZE)")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=Stats4:,  PORT=STATS4,ADDR=0,TIMEOUT=1,NDARRAY_PORT=ROI4,NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDStats.template",     "P=$(PREFIX),R=Stats4:,  PORT=STATS4,ADDR=0,TIMEOUT=1,HIST_SIZE=256,XSIZE=$(XSIZE),YSIZE=$(YSIZE)")
+ NDStatsConfigure("STATS5", $(QSIZE), 0, "ROI4", 0, -1, -1)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=Stats5:,  PORT=STATS5,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStats.template",     "P=$(PREFIX),R=Stats5:,  PORT=STATS5,ADDR=0,TIMEOUT=1,HIST_SIZE=256,XSIZE=$(XSIZE),YSIZE=$(YSIZE)")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=Stats5:,  PORT=STATS5,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDStats.template",     "P=$(PREFIX),R=Stats5:,  PORT=STATS5,ADDR=0,TIMEOUT=1,HIST_SIZE=256,XSIZE=$(XSIZE),YSIZE=$(YSIZE)")
+ 
+ # Create "fastSweep" drivers for the MCA record to do on-the-fly scanning of Stats data
+ initFastSweep("SweepTotal1", "STATS1", 1, $(NCHANS), "TOTAL_ARRAY", "CALLBACK_PERIOD")
+@@ -83,46 +83,46 @@ initFastSweep("SweepTotal5", "STATS5", 1, $(NCHANS), "TOTAL_ARRAY", "CALLBACK_PE
+ initFastSweep("SweepNet5",   "STATS5", 1, $(NCHANS), "NET_ARRAY",   "CALLBACK_PERIOD")
+ 
+ # Load MCA records for the fast sweep drivers
+-dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=$(PREFIX),M=Stats1:TotalArray,DTYP=asynMCA,NCHAN=$(NCHANS),INP=@asyn(SweepTotal1 0)")
+-dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=$(PREFIX),M=Stats2:TotalArray,DTYP=asynMCA,NCHAN=$(NCHANS),INP=@asyn(SweepTotal2 0)")
+-dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=$(PREFIX),M=Stats3:TotalArray,DTYP=asynMCA,NCHAN=$(NCHANS),INP=@asyn(SweepTotal3 0)")
+-dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=$(PREFIX),M=Stats4:TotalArray,DTYP=asynMCA,NCHAN=$(NCHANS),INP=@asyn(SweepTotal4 0)")
+-dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=$(PREFIX),M=Stats5:TotalArray,DTYP=asynMCA,NCHAN=$(NCHANS),INP=@asyn(SweepTotal5 0)")
+-
+-dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=$(PREFIX),M=Stats1:NetArray,  DTYP=asynMCA,NCHAN=$(NCHANS),INP=@asyn(SweepNet1 0)")
+-dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=$(PREFIX),M=Stats2:NetArray,  DTYP=asynMCA,NCHAN=$(NCHANS),INP=@asyn(SweepNet2 0)")
+-dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=$(PREFIX),M=Stats3:NetArray,  DTYP=asynMCA,NCHAN=$(NCHANS),INP=@asyn(SweepNet3 0)")
+-dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=$(PREFIX),M=Stats4:NetArray,  DTYP=asynMCA,NCHAN=$(NCHANS),INP=@asyn(SweepNet4 0)")
+-dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=$(PREFIX),M=Stats5:NetArray,  DTYP=asynMCA,NCHAN=$(NCHANS),INP=@asyn(SweepNet5 0)")
++dbLoadRecords("$(EPICS_BASE)/db/mca.db", "P=$(PREFIX),M=Stats1:TotalArray,DTYP=asynMCA,NCHAN=$(NCHANS),INP=@asyn(SweepTotal1 0)")
++dbLoadRecords("$(EPICS_BASE)/db/mca.db", "P=$(PREFIX),M=Stats2:TotalArray,DTYP=asynMCA,NCHAN=$(NCHANS),INP=@asyn(SweepTotal2 0)")
++dbLoadRecords("$(EPICS_BASE)/db/mca.db", "P=$(PREFIX),M=Stats3:TotalArray,DTYP=asynMCA,NCHAN=$(NCHANS),INP=@asyn(SweepTotal3 0)")
++dbLoadRecords("$(EPICS_BASE)/db/mca.db", "P=$(PREFIX),M=Stats4:TotalArray,DTYP=asynMCA,NCHAN=$(NCHANS),INP=@asyn(SweepTotal4 0)")
++dbLoadRecords("$(EPICS_BASE)/db/mca.db", "P=$(PREFIX),M=Stats5:TotalArray,DTYP=asynMCA,NCHAN=$(NCHANS),INP=@asyn(SweepTotal5 0)")
++
++dbLoadRecords("$(EPICS_BASE)/db/mca.db", "P=$(PREFIX),M=Stats1:NetArray,  DTYP=asynMCA,NCHAN=$(NCHANS),INP=@asyn(SweepNet1 0)")
++dbLoadRecords("$(EPICS_BASE)/db/mca.db", "P=$(PREFIX),M=Stats2:NetArray,  DTYP=asynMCA,NCHAN=$(NCHANS),INP=@asyn(SweepNet2 0)")
++dbLoadRecords("$(EPICS_BASE)/db/mca.db", "P=$(PREFIX),M=Stats3:NetArray,  DTYP=asynMCA,NCHAN=$(NCHANS),INP=@asyn(SweepNet3 0)")
++dbLoadRecords("$(EPICS_BASE)/db/mca.db", "P=$(PREFIX),M=Stats4:NetArray,  DTYP=asynMCA,NCHAN=$(NCHANS),INP=@asyn(SweepNet4 0)")
++dbLoadRecords("$(EPICS_BASE)/db/mca.db", "P=$(PREFIX),M=Stats5:NetArray,  DTYP=asynMCA,NCHAN=$(NCHANS),INP=@asyn(SweepNet5 0)")
+ 
+ # Create a transform plugin
+ NDTransformConfigure("TRANS1", $(QSIZE), 0, "$(PORT)", 0, -1, -1)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=Trans1:,  PORT=TRANS1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDTransform.template", "P=$(PREFIX),R=Trans1:,  PORT=TRANS1,ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=Trans1:,  PORT=TRANS1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDTransform.template", "P=$(PREFIX),R=Trans1:,  PORT=TRANS1,ADDR=0,TIMEOUT=1")
+ 
+ # Create an overlay plugin with 8 overlays
+ NDOverlayConfigure("OVER1", $(QSIZE), 0, "$(PORT)", 0, 8, -1, -1)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=Over1:, PORT=OVER1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDOverlay.template",   "P=$(PREFIX),R=Over1:, PORT=OVER1,ADDR=0,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDOverlayN.template","P=$(PREFIX),R=Over1:1:,NAME=ROI1,   SHAPE=1,O=Over1:,XPOS=$(PREFIX)ROI1:MinX_RBV,YPOS=$(PREFIX)ROI1:MinY_RBV,XSIZE=$(PREFIX)ROI1:SizeX_RBV,YSIZE=$(PREFIX)ROI1:SizeY_RBV,PORT=OVER1,ADDR=0,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDOverlayN.template","P=$(PREFIX),R=Over1:2:,NAME=ROI2,   SHAPE=1,O=Over1:,XPOS=$(PREFIX)ROI2:MinX_RBV,YPOS=$(PREFIX)ROI2:MinY_RBV,XSIZE=$(PREFIX)ROI2:SizeX_RBV,YSIZE=$(PREFIX)ROI2:SizeY_RBV,PORT=OVER1,ADDR=1,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDOverlayN.template","P=$(PREFIX),R=Over1:3:,NAME=ROI3,   SHAPE=1,O=Over1:,XPOS=$(PREFIX)ROI3:MinX_RBV,YPOS=$(PREFIX)ROI3:MinY_RBV,XSIZE=$(PREFIX)ROI3:SizeX_RBV,YSIZE=$(PREFIX)ROI3:SizeY_RBV,PORT=OVER1,ADDR=2,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDOverlayN.template","P=$(PREFIX),R=Over1:4:,NAME=ROI4,   SHAPE=1,O=Over1:,XPOS=$(PREFIX)ROI4:MinX_RBV,YPOS=$(PREFIX)ROI4:MinY_RBV,XSIZE=$(PREFIX)ROI4:SizeX_RBV,YSIZE=$(PREFIX)ROI4:SizeY_RBV,PORT=OVER1,ADDR=3,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDOverlayN.template","P=$(PREFIX),R=Over1:5:,NAME=Cursor1,SHAPE=1,O=Over1:,XPOS=junk,                  YPOS=junk,                  XSIZE=junk,                   YSIZE=junk,                   PORT=OVER1,ADDR=4,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDOverlayN.template","P=$(PREFIX),R=Over1:6:,NAME=Cursor2,SHAPE=1,O=Over1:,XPOS=junk,                  YPOS=junk,                  XSIZE=junk,                   YSIZE=junk,                   PORT=OVER1,ADDR=5,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDOverlayN.template","P=$(PREFIX),R=Over1:7:,NAME=Box1,   SHAPE=1,O=Over1:,XPOS=junk,                  YPOS=junk,                  XSIZE=junk,                   YSIZE=junk,                   PORT=OVER1,ADDR=6,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDOverlayN.template","P=$(PREFIX),R=Over1:8:,NAME=Box2,   SHAPE=1,O=Over1:,XPOS=junk,                  YPOS=junk,                  XSIZE=junk,                   YSIZE=junk,                   PORT=OVER1,ADDR=7,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=Over1:, PORT=OVER1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDOverlay.template",   "P=$(PREFIX),R=Over1:, PORT=OVER1,ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDOverlayN.template","P=$(PREFIX),R=Over1:1:,NAME=ROI1,   SHAPE=1,O=Over1:,XPOS=$(PREFIX)ROI1:MinX_RBV,YPOS=$(PREFIX)ROI1:MinY_RBV,XSIZE=$(PREFIX)ROI1:SizeX_RBV,YSIZE=$(PREFIX)ROI1:SizeY_RBV,PORT=OVER1,ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDOverlayN.template","P=$(PREFIX),R=Over1:2:,NAME=ROI2,   SHAPE=1,O=Over1:,XPOS=$(PREFIX)ROI2:MinX_RBV,YPOS=$(PREFIX)ROI2:MinY_RBV,XSIZE=$(PREFIX)ROI2:SizeX_RBV,YSIZE=$(PREFIX)ROI2:SizeY_RBV,PORT=OVER1,ADDR=1,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDOverlayN.template","P=$(PREFIX),R=Over1:3:,NAME=ROI3,   SHAPE=1,O=Over1:,XPOS=$(PREFIX)ROI3:MinX_RBV,YPOS=$(PREFIX)ROI3:MinY_RBV,XSIZE=$(PREFIX)ROI3:SizeX_RBV,YSIZE=$(PREFIX)ROI3:SizeY_RBV,PORT=OVER1,ADDR=2,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDOverlayN.template","P=$(PREFIX),R=Over1:4:,NAME=ROI4,   SHAPE=1,O=Over1:,XPOS=$(PREFIX)ROI4:MinX_RBV,YPOS=$(PREFIX)ROI4:MinY_RBV,XSIZE=$(PREFIX)ROI4:SizeX_RBV,YSIZE=$(PREFIX)ROI4:SizeY_RBV,PORT=OVER1,ADDR=3,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDOverlayN.template","P=$(PREFIX),R=Over1:5:,NAME=Cursor1,SHAPE=1,O=Over1:,XPOS=junk,                  YPOS=junk,                  XSIZE=junk,                   YSIZE=junk,                   PORT=OVER1,ADDR=4,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDOverlayN.template","P=$(PREFIX),R=Over1:6:,NAME=Cursor2,SHAPE=1,O=Over1:,XPOS=junk,                  YPOS=junk,                  XSIZE=junk,                   YSIZE=junk,                   PORT=OVER1,ADDR=5,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDOverlayN.template","P=$(PREFIX),R=Over1:7:,NAME=Box1,   SHAPE=1,O=Over1:,XPOS=junk,                  YPOS=junk,                  XSIZE=junk,                   YSIZE=junk,                   PORT=OVER1,ADDR=6,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDOverlayN.template","P=$(PREFIX),R=Over1:8:,NAME=Box2,   SHAPE=1,O=Over1:,XPOS=junk,                  YPOS=junk,                  XSIZE=junk,                   YSIZE=junk,                   PORT=OVER1,ADDR=7,TIMEOUT=1")
+ 
+ # Create 2 color conversion plugins
+ NDColorConvertConfigure("CC1", $(QSIZE), 0, "$(PORT)", 0, -1, -1)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template",   "P=$(PREFIX),R=CC1:,  PORT=CC1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDColorConvert.template", "P=$(PREFIX),R=CC1:,  PORT=CC1,ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template",   "P=$(PREFIX),R=CC1:,  PORT=CC1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDColorConvert.template", "P=$(PREFIX),R=CC1:,  PORT=CC1,ADDR=0,TIMEOUT=1")
+ NDColorConvertConfigure("CC2", $(QSIZE), 0, "$(PORT)", 0, -1, -1)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template",   "P=$(PREFIX),R=CC2:,  PORT=CC2,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDColorConvert.template", "P=$(PREFIX),R=CC2:,  PORT=CC2,ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template",   "P=$(PREFIX),R=CC2:,  PORT=CC2,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDColorConvert.template", "P=$(PREFIX),R=CC2:,  PORT=CC2,ADDR=0,TIMEOUT=1")
+ 
+ # Load scan records
+-dbLoadRecords("$(SSCAN)/sscanApp/Db/scan.db", "P=$(PREFIX),MAXPTS1=2000,MAXPTS2=200,MAXPTS3=20,MAXPTS4=10,MAXPTSH=10")
++dbLoadRecords("$(EPICS_BASE)/db/scan.db", "P=$(PREFIX),MAXPTS1=2000,MAXPTS2=200,MAXPTS3=20,MAXPTS4=10,MAXPTSH=10")
+ 
+ set_requestfile_path("./")
+ set_requestfile_path("$(AREA_DETECTOR)/ADApp/Db")
+diff --git a/iocBoot/iocAdsc/st.cmd b/iocBoot/iocAdsc/st.cmd
+index 75d5ba8..95f517e 100644
+--- a/iocBoot/iocAdsc/st.cmd
++++ b/iocBoot/iocAdsc/st.cmd
+@@ -1,7 +1,7 @@
+ < envPaths
+ errlogInit(20000)
+ 
+-dbLoadDatabase("$(AREA_DETECTOR)/dbd/adscApp.dbd")
++dbLoadDatabase("$(EPICS_BASE)/dbd/adscApp.dbd")
+ adscApp_registerRecordDeviceDriver(pdbbase) 
+ 
+ epicsEnvSet("PREFIX", "13ADCS1:")
+@@ -18,9 +18,9 @@ epicsEnvSet("NCHANS", "2048")
+ #              "Q210r", "Q270", "Q315", or "Q315r"
+ #
+ adscConfig("$(PORT)","Q210r")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/ADBase.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/adsc.template",  "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFile.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/ADBase.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/adsc.template",  "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDFile.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+ 
+ #asynSetTraceMask("$(PORT)",0,255)
+ 
+@@ -30,7 +30,7 @@ set_requestfile_path("$(AREA_DETECTOR)/ADApp/Db")
+ set_pass0_restoreFile("auto_settings.sav")
+ set_pass1_restoreFile("auto_settings.sav")
+ save_restoreSet_status_prefix("$(PREFIX)")
+-dbLoadRecords("$(AUTOSAVE)/asApp/Db/save_restoreStatus.db","P=$(PREFIX)")
++dbLoadRecords("$(EPICS_BASE)/db/save_restoreStatus.db","P=$(PREFIX)")
+ 
+ iocInit()
+ 
+diff --git a/iocBoot/iocBruker/st.cmd b/iocBoot/iocBruker/st.cmd
+index a245004..af8c3b8 100755
+--- a/iocBoot/iocBruker/st.cmd
++++ b/iocBoot/iocBruker/st.cmd
+@@ -1,7 +1,7 @@
+ < envPaths
+ errlogInit(20000)
+ 
+-dbLoadDatabase("$(AREA_DETECTOR)/dbd/BISDetectorApp.dbd")
++dbLoadDatabase("$(EPICS_BASE)/dbd/BISDetectorApp.dbd")
+ BISDetectorApp_registerRecordDeviceDriver(pdbbase) 
+ 
+ epicsEnvSet("PREFIX", "BIS:")
+@@ -37,18 +37,18 @@ asynOctetSetInputEos($(COMMAND_PORT), 0, "]")
+ asynOctetSetInputEos($(STATUS_PORT), 0, "\n")
+ 
+ BISDetectorConfig($(PORT), $(COMMAND_PORT), $(STATUS_PORT), 50, 200000000)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/ADBase.template", "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFile.template", "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/BIS.template",    "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1,BIS_PORT=$(COMMAND_PORT)")
++dbLoadRecords("$(EPICS_BASE)/db/ADBase.template", "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDFile.template", "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/BIS.template",    "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1,BIS_PORT=$(COMMAND_PORT)")
+ asynSetTraceIOMask($(PORT),0,2)
+ #asynSetTraceMask($(PORT),0,255)
+ 
+ 
+ # Create a standard arrays plugin
+ NDStdArraysConfigure("apxImage", 5, 0, $(PORT), 0, -1)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=image1:,PORT=apxImage,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=image1:,PORT=apxImage,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
+ # This creates a waveform large enough to hold a 4096x4096 image
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=apxImage,ADDR=0,TIMEOUT=1,TYPE=Int32,FTVL=LONG,NELEMENTS=16777216")
++dbLoadRecords("$(EPICS_BASE)/db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=apxImage,ADDR=0,TIMEOUT=1,TYPE=Int32,FTVL=LONG,NELEMENTS=16777216")
+ 
+ < ../commonPlugins.cmd
+ 
+diff --git a/iocBoot/iocFirewire/st.cmd b/iocBoot/iocFirewire/st.cmd
+index 5ea1d91..9234418 100755
+--- a/iocBoot/iocFirewire/st.cmd
++++ b/iocBoot/iocFirewire/st.cmd
+@@ -2,7 +2,7 @@ errlogInit(20000)
+ 
+ < envPaths
+ 
+-dbLoadDatabase("$(AREA_DETECTOR)/dbd/firewireWinDCAMApp.dbd")
++dbLoadDatabase("$(EPICS_BASE)/dbd/firewireWinDCAMApp.dbd")
+ 
+ firewireWinDCAMApp_registerRecordDeviceDriver(pdbbase) 
+ 
+@@ -25,27 +25,27 @@ WinFDC_Config("$(PORT)", "", 50, 200000000)
+ asynSetTraceIOMask("$(PORT)",0,2)
+ #asynSetTraceMask("$(PORT)",0,255)
+ 
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/ADBase.template",       "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFile.template",       "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/firewireDCAM.template", "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/ADBase.template",       "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDFile.template",       "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/firewireDCAM.template", "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+ dbLoadTemplate("firewire.substitutions")
+ 
+ # Create a standard arrays plugin, set it to get 8-bit data from the driver.
+ NDStdArraysConfigure("Image1", 5, 0, "$(PORT)", 0, -1)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
+ 
+ # Use the following line for an 8-bit camera.  This is enough elements for 1376*1024*3, increase if needed.
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int8,FTVL=UCHAR,NELEMENTS=4227072")
++dbLoadRecords("$(EPICS_BASE)/db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int8,FTVL=UCHAR,NELEMENTS=4227072")
+ 
+ # Use the following line for an 12-bit or 16-bit camera.  This is enough elements for 1500x1000x1, increase if needed.
+-#dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int16,FTVL=SHORT,NELEMENTS=1500000")
++#dbLoadRecords("$(EPICS_BASE)/db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int16,FTVL=SHORT,NELEMENTS=1500000")
+ 
+ # Create a second standard arrays plugin, set it to get 16-bit data from the driver.
+ NDStdArraysConfigure("Image2", 5, 0, "$(PORT)", 0, -1)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=image2:,PORT=Image2,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=image2:,PORT=Image2,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
+ 
+ # This is enough elements for 1376*1024*3
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStdArrays.template", "P=$(PREFIX),R=image2:,PORT=Image2,ADDR=0,TIMEOUT=1,TYPE=Int16,FTVL=SHORT,NELEMENTS=4227072")
++dbLoadRecords("$(EPICS_BASE)/db/NDStdArrays.template", "P=$(PREFIX),R=image2:,PORT=Image2,ADDR=0,TIMEOUT=1,TYPE=Int16,FTVL=SHORT,NELEMENTS=4227072")
+ 
+ # Load all other plugins using commonPlugins.cmd
+ < ../commonPlugins.cmd
+diff --git a/iocBoot/iocMAR345/st.cmd b/iocBoot/iocMAR345/st.cmd
+index 6e1891e..bba3ae8 100755
+--- a/iocBoot/iocMAR345/st.cmd
++++ b/iocBoot/iocMAR345/st.cmd
+@@ -1,7 +1,7 @@
+ < envPaths
+ errlogInit(20000)
+ 
+-dbLoadDatabase("$(AREA_DETECTOR)/dbd/mar345App.dbd")
++dbLoadDatabase("$(EPICS_BASE)/dbd/mar345App.dbd")
+ mar345App_registerRecordDeviceDriver(pdbbase) 
+ 
+ epicsEnvSet("PREFIX", "13MAR345_1:")
+@@ -23,14 +23,14 @@ asynSetTraceIOMask("marServer",0,2)
+ mar345Config("$(PORT)", "marServer", 20, 200000000)
+ asynSetTraceIOMask("$(PORT)",0,2)
+ #asynSetTraceMask("$(PORT)",0,255)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/ADBase.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFile.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/mar345.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1,MARSERVER_PORT=marServer")
++dbLoadRecords("$(EPICS_BASE)/db/ADBase.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDFile.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/mar345.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1,MARSERVER_PORT=marServer")
+ 
+ # Create a standard arrays plugin
+ NDStdArraysConfigure("Image1", 5, 0, "$(PORT)", 0, -1)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int16,FTVL=SHORT,NELEMENTS=12000000")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int16,FTVL=SHORT,NELEMENTS=12000000")
+ 
+ # Load all other plugins using commonPlugins.cmd
+ < ../commonPlugins.cmd
+diff --git a/iocBoot/iocMARCCD/st.cmd b/iocBoot/iocMARCCD/st.cmd
+index debbc45..fc41cb8 100755
+--- a/iocBoot/iocMARCCD/st.cmd
++++ b/iocBoot/iocMARCCD/st.cmd
+@@ -1,7 +1,7 @@
+ < envPaths
+ errlogInit(20000)
+ 
+-dbLoadDatabase("$(AREA_DETECTOR)/dbd/marCCDApp.dbd")
++dbLoadDatabase("$(EPICS_BASE)/dbd/marCCDApp.dbd")
+ marCCDApp_registerRecordDeviceDriver(pdbbase) 
+ 
+ epicsEnvSet("PREFIX", "13MARCCD1:")
+@@ -21,15 +21,15 @@ asynOctetSetOutputEos("marServer", 0, "\n")
+ asynSetTraceIOMask("marServer",0,2)
+ 
+ marCCDConfig("$(PORT)", "marServer", 20, 200000000)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/ADBase.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFile.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/marCCD.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1,MARSERVER_PORT=marServer")
++dbLoadRecords("$(EPICS_BASE)/db/ADBase.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDFile.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/marCCD.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1,MARSERVER_PORT=marServer")
+ 
+ # Create a standard arrays plugin
+ NDStdArraysConfigure("Image1", 5, 0, "$(PORT)", 0, -1)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
+ # Make NELEMENTS in the following be a little bigger than 2048*2048
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int16,FTVL=SHORT,NELEMENTS=4200000")
++dbLoadRecords("$(EPICS_BASE)/db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int16,FTVL=SHORT,NELEMENTS=4200000")
+ 
+ # Load all other plugins using commonPlugins.cmd
+ < ../commonPlugins.cmd
+diff --git a/iocBoot/iocPSL/st.cmd b/iocBoot/iocPSL/st.cmd
+index a22431b..2e1d6bf 100755
+--- a/iocBoot/iocPSL/st.cmd
++++ b/iocBoot/iocPSL/st.cmd
+@@ -1,7 +1,7 @@
+ < envPaths
+ errlogInit(20000)
+ 
+-dbLoadDatabase("$(AREA_DETECTOR)/dbd/PSLApp.dbd")
++dbLoadDatabase("$(EPICS_BASE)/dbd/PSLApp.dbd")
+ PSLApp_registerRecordDeviceDriver(pdbbase) 
+ 
+ epicsEnvSet("PREFIX", "13PSL1:")
+@@ -19,15 +19,15 @@ asynSetTraceMask("PSLServer",0,255)
+ asynSetTraceIOMask("PSLServer",0,2)
+ 
+ PSLConfig("$(PORT)", "PSLServer", 20, 200000000)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/ADBase.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFile.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/PSL.template",   "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/ADBase.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDFile.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/PSL.template",   "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+ 
+ # Create a standard arrays plugin
+ NDStdArraysConfigure("Image1", 5, 0, "$(PORT)", 0, -1)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
+ # Make NELEMENTS in the following be a little bigger than 2048*2048
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int16,FTVL=SHORT,NELEMENTS=4200000")
++dbLoadRecords("$(EPICS_BASE)/db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int16,FTVL=SHORT,NELEMENTS=4200000")
+ 
+ # Load all other plugins using commonPlugins.cmd
+ < ../commonPlugins.cmd
+diff --git a/iocBoot/iocPVCam/st.cmd b/iocBoot/iocPVCam/st.cmd
+index f68a3ab..7887e68 100755
+--- a/iocBoot/iocPVCam/st.cmd
++++ b/iocBoot/iocPVCam/st.cmd
+@@ -2,7 +2,7 @@ errlogInit(20000)
+ 
+ < envPaths
+ 
+-dbLoadDatabase("$(AREA_DETECTOR)/dbd/pvCamApp.dbd"
++dbLoadDatabase("$(EPICS_BASE)/dbd/pvCamApp.dbd"
+ pvCamApp_registerRecordDeviceDriver(pdbbase)
+ 
+ epicsEnvSet("PREFIX", "13PVCAM1:")
+@@ -25,13 +25,13 @@ epicsEnvSet("NCHANS", "2048")
+ #    7 = NDFloat64
+ #
+ pvCamConfig("$(PORT)", $(XSIZE), $(YSIZE), 3, 50, 100000000)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/ADBase.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/pvCam.template", "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/ADBase.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/pvCam.template", "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+ 
+ # Create a standard arrays plugin, set it to get data from pvCamera driver.
+ NDStdArraysConfigure("Image1", 1, 0, "$(PORT)", 0, 10000000)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=image:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStdArrays.template", "P=$(PREFIX),R=image:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int16,FTVL=SHORT,NELEMENTS=4194304")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=image:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDStdArrays.template", "P=$(PREFIX),R=image:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int16,FTVL=SHORT,NELEMENTS=4194304")
+ 
+ # Load all other plugins using commonPlugins.cmd
+ < ../commonPlugins.cmd
+diff --git a/iocBoot/iocPerkinElmer/st.cmd b/iocBoot/iocPerkinElmer/st.cmd
+index bc8aca9..8cb5539 100755
+--- a/iocBoot/iocPerkinElmer/st.cmd
++++ b/iocBoot/iocPerkinElmer/st.cmd
+@@ -2,7 +2,7 @@ errlogInit(20000)
+ 
+ < envPaths
+ 
+-dbLoadDatabase("$(AREA_DETECTOR)/dbd/PerkinElmerApp.dbd")
++dbLoadDatabase("$(EPICS_BASE)/dbd/PerkinElmerApp.dbd")
+ PerkinElmerApp_registerRecordDeviceDriver(pdbbase) 
+ 
+ epicsEnvSet("PREFIX", "13PE1:")
+@@ -25,13 +25,13 @@ epicsEnvSet("NCHANS", "2048")
+ #    7 = NDFloat64
+ #
+ PerkinElmerConfig("$(PORT)", $(XSIZE), $(YSIZE), 3, 100, 200000000)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/ADBase.template",     "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/PerkinElmer.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/ADBase.template",     "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/PerkinElmer.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+ 
+ # Create a standard arrays plugin, set it to get data from Driver.
+ NDStdArraysConfigure("Image1", 3, 0, "$(PORT)", 0)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int16,SIZE=16,FTVL=SHORT,NELEMENTS=10000000")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int16,SIZE=16,FTVL=SHORT,NELEMENTS=10000000")
+ 
+ # Load all other plugins using commonPlugins.cmd
+ < ../commonPlugins.cmd
+diff --git a/iocBoot/iocPilatus/st.cmd b/iocBoot/iocPilatus/st.cmd
+index 31a0add..2be53c8 100755
+--- a/iocBoot/iocPilatus/st.cmd
++++ b/iocBoot/iocPilatus/st.cmd
+@@ -1,7 +1,7 @@
+ < envPaths
+ errlogInit(20000)
+ 
+-dbLoadDatabase("$(AREA_DETECTOR)/dbd/pilatusDetectorApp.dbd")
++dbLoadDatabase("$(EPICS_BASE)/dbd/pilatusDetectorApp.dbd")
+ pilatusDetectorApp_registerRecordDeviceDriver(pdbbase) 
+ 
+ epicsEnvSet("PREFIX", "13PIL1:")
+@@ -19,14 +19,14 @@ asynOctetSetInputEos("camserver", 0, "\030")
+ asynOctetSetOutputEos("camserver", 0, "\n")
+ 
+ pilatusDetectorConfig("$(PORT)", "camserver", $(XSIZE), $(YSIZE), 50, 200000000)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/ADBase.template", "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFile.template", "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/pilatus.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1,CAMSERVER_PORT=camserver")
++dbLoadRecords("$(EPICS_BASE)/db/ADBase.template", "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDFile.template", "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/pilatus.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1,CAMSERVER_PORT=camserver")
+ 
+ # Create a standard arrays plugin
+ NDStdArraysConfigure("Image1", 5, 0, "$(PORT)", 0, -1)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int32,FTVL=LONG,NELEMENTS=94965")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int32,FTVL=LONG,NELEMENTS=94965")
+ 
+ # Load all other plugins using commonPlugins.cmd
+ < ../commonPlugins.cmd
+diff --git a/iocBoot/iocProsilica/st.cmd b/iocBoot/iocProsilica/st.cmd
+index 8a09e87..1a529d5 100755
+--- a/iocBoot/iocProsilica/st.cmd
++++ b/iocBoot/iocProsilica/st.cmd
+@@ -1,6 +1,6 @@
+ errlogInit(20000)
+ 
+-dbLoadDatabase("$(AREA_DETECTOR)/dbd/prosilicaApp.dbd")
++dbLoadDatabase("$(EPICS_BASE)/dbd/prosilicaApp.dbd")
+ 
+ prosilicaApp_registerRecordDeviceDriver(pdbbase) 
+ 
+@@ -27,27 +27,27 @@ prosilicaConfig("$(PORT)", 51031, 50, -1)
+ asynSetTraceIOMask("$(PORT)",0,2)
+ #asynSetTraceMask("$(PORT)",0,255)
+ 
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/ADBase.template",   "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFile.template",   "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/ADBase.template",   "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDFile.template",   "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+ # Note that prosilica.template must be loaded after NDFile.template to replace the file format correctly
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/prosilica.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/prosilica.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+ 
+ #prosilicaConfig("PS2", 50022, 10, 50000000)
+-#dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/ADBase.template",   "P=$(PREFIX),R=cam2:,PORT=PS2,ADDR=0,TIMEOUT=1")
+-#dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/prosilica.template","P=$(PREFIX),R=cam2:,PORT=PS2,ADDR=0,TIMEOUT=1")
++#dbLoadRecords("$(EPICS_BASE)/db/ADBase.template",   "P=$(PREFIX),R=cam2:,PORT=PS2,ADDR=0,TIMEOUT=1")
++#dbLoadRecords("$(EPICS_BASE)/db/prosilica.template","P=$(PREFIX),R=cam2:,PORT=PS2,ADDR=0,TIMEOUT=1")
+ 
+ # Create a standard arrays plugin, set it to get data from first Prosilica driver.
+ NDStdArraysConfigure("Image1", 5, 0, "$(PORT)", 0, -1)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
+ 
+ # Use this line if you only want to use the Prosilica in 8-bit mode.  It uses an 8-bit waveform record
+ # NELEMENTS is set large enough for a 1360x1024x3 image size, which is the number of pixels in RGB images from the GC1380CH color camera. 
+ # Must be at least as big as the maximum size of your camera images
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int8,FTVL=UCHAR,NELEMENTS=4177920")
++dbLoadRecords("$(EPICS_BASE)/db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int8,FTVL=UCHAR,NELEMENTS=4177920")
+ 
+ # Use this line if you want to use the Prosilica in 8,12 or 16-bit modes.  
+ # It uses an 16-bit waveform record, so it uses twice the memory and bandwidth required for only 8-bit data.
+-#dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int16,FTVL=SHORT,NELEMENTS=4177920")
++#dbLoadRecords("$(EPICS_BASE)/db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int16,FTVL=SHORT,NELEMENTS=4177920")
+ 
+ # Load all other plugins using commonPlugins.cmd
+ < ../commonPlugins.cmd
+diff --git a/iocBoot/iocRoper/st.cmd b/iocBoot/iocRoper/st.cmd
+index 0b77227..3a30e0f 100755
+--- a/iocBoot/iocRoper/st.cmd
++++ b/iocBoot/iocRoper/st.cmd
+@@ -1,7 +1,7 @@
+ < envPaths
+ errlogInit(20000)
+ 
+-dbLoadDatabase("$(AREA_DETECTOR)/dbd/roperApp.dbd")
++dbLoadDatabase("$(EPICS_BASE)/dbd/roperApp.dbd")
+ 
+ roperApp_registerRecordDeviceDriver(pdbbase) 
+ 
+@@ -15,14 +15,14 @@ epicsEnvSet("NCHANS", "2048")
+ roperConfig("$(PORT)", 50, 200000000)
+ asynSetTraceIOMask("$(PORT)",0,2)
+ #asynSetTraceMask("$(PORT)",0,9)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/ADBase.template",   "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFile.template",   "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/roper.template",    "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/ADBase.template",   "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/NDFile.template",   "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/roper.template",    "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+ 
+ # Create a standard arrays plugin, set it to get data from the Roper driver.
+ NDStdArraysConfigure("Image1", 5, 0, "$(PORT)", 0, -1)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int16,FTVL=SHORT,NELEMENTS=1500000")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int16,FTVL=SHORT,NELEMENTS=1500000")
+ 
+ # Load all other plugins using commonPlugins.cmd
+ < ../commonPlugins.cmd
+diff --git a/iocBoot/iocSimDetector/st.cmd b/iocBoot/iocSimDetector/st.cmd
+index 6332a35..2de68b8 100755
+--- a/iocBoot/iocSimDetector/st.cmd
++++ b/iocBoot/iocSimDetector/st.cmd
+@@ -2,7 +2,7 @@
+ 
+ errlogInit(20000)
+ 
+-dbLoadDatabase("$(AREA_DETECTOR)/dbd/simDetectorApp.dbd")
++dbLoadDatabase("$(EPICS_BASE)/dbd/simDetectorApp.dbd")
+ simDetectorApp_registerRecordDeviceDriver(pdbbase) 
+ 
+ epicsEnvSet("PREFIX", "13SIM1:")
+@@ -14,31 +14,31 @@ epicsEnvSet("NCHANS", "2048")
+ 
+ # Create a simDetector driver
+ simDetectorConfig("$(PORT)", $(XSIZE), $(YSIZE), 1, 500, -1)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/ADBase.template",     "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/simDetector.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/ADBase.template",     "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/simDetector.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+ 
+ # Create a second simDetector driver
+ simDetectorConfig("SIM2", 300, 200, 1, 50, 50000000)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/ADBase.template",     "P=$(PREFIX),R=cam2:,PORT=SIM2,ADDR=0,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/simDetector.template","P=$(PREFIX),R=cam2:,PORT=SIM2,ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/ADBase.template",     "P=$(PREFIX),R=cam2:,PORT=SIM2,ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/simDetector.template","P=$(PREFIX),R=cam2:,PORT=SIM2,ADDR=0,TIMEOUT=1")
+ 
+ # Create a standard arrays plugin, set it to get data from first simDetector driver.
+ NDStdArraysConfigure("Image1", 3, 0, "$(PORT)", 0)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
+ 
+ # This creates a waveform large enough for 640x480x3 (e.g. RGB color) arrays.
+ # This waveform only allows transporting 8-bit images
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int8,FTVL=UCHAR,NELEMENTS=921600")
++dbLoadRecords("$(EPICS_BASE)/db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int8,FTVL=UCHAR,NELEMENTS=921600")
+ # This waveform allows transporting 32-bit images
+-#dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int32,FTVL=LONG,NELEMENTS=921600")
++#dbLoadRecords("$(EPICS_BASE)/db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int32,FTVL=LONG,NELEMENTS=921600")
+ 
+ # Create a standard arrays plugin, set it to get data from second simDetector driver.
+ NDStdArraysConfigure("Image2", 1, 0, "SIM2", 0)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=image2:,PORT=Image2,ADDR=0,TIMEOUT=1,NDARRAY_PORT=SIM2,NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=image2:,PORT=Image2,ADDR=0,TIMEOUT=1,NDARRAY_PORT=SIM2,NDARRAY_ADDR=0")
+ 
+ # This creates a waveform large enough for 640x480x3 (e.g. RGB color) arrays.
+ # This waveform allows transporting 64-bit images, so it can handle any detector data type at the expense of more memory and bandwidth
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStdArrays.template", "P=$(PREFIX),R=image2:,PORT=Image2,ADDR=0,TIMEOUT=1,TYPE=Float64,FTVL=DOUBLE,NELEMENTS=921600")
++dbLoadRecords("$(EPICS_BASE)/db/NDStdArrays.template", "P=$(PREFIX),R=image2:,PORT=Image2,ADDR=0,TIMEOUT=1,TYPE=Float64,FTVL=DOUBLE,NELEMENTS=921600")
+ 
+ # Load all other plugins using commonPlugins.cmd
+ < ../commonPlugins.cmd
+diff --git a/iocBoot/iocURLDriver/st.cmd b/iocBoot/iocURLDriver/st.cmd
+index 6808ff7..048fe27 100755
+--- a/iocBoot/iocURLDriver/st.cmd
++++ b/iocBoot/iocURLDriver/st.cmd
+@@ -2,7 +2,7 @@
+ 
+ errlogInit(20000)
+ 
+-dbLoadDatabase("$(AREA_DETECTOR)/dbd/URLDriverApp.dbd")
++dbLoadDatabase("$(EPICS_BASE)/dbd/URLDriverApp.dbd")
+ URLDriverApp_registerRecordDeviceDriver(pdbbase) 
+ 
+ epicsEnvSet("PREFIX", "13URL1:")
+@@ -14,18 +14,18 @@ epicsEnvSet("NCHANS", "2048")
+ 
+ # Create a URL driver
+ URLDriverConfig("$(PORT)", -1, -1)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/ADBase.template",     "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/URLDriver.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/ADBase.template",     "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
++dbLoadRecords("$(EPICS_BASE)/db/URLDriver.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+ 
+ # Create a standard arrays plugin.
+ NDStdArraysConfigure("Image1", 3, 0, "$(PORT)", 0)
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
++dbLoadRecords("$(EPICS_BASE)/db/NDPluginBase.template","P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
+ 
+ # This creates a waveform large enough for 2048x2048x3 (e.g. RGB color) arrays.
+ # This waveform only allows transporting 8-bit images
+-#dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int8,FTVL=UCHAR,NELEMENTS=12582912")
++#dbLoadRecords("$(EPICS_BASE)/db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int8,FTVL=UCHAR,NELEMENTS=12582912")
+ # This waveform allows transporting 16-bit images
+-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int16,FTVL=SHORT,NELEMENTS=12582912")
++dbLoadRecords("$(EPICS_BASE)/db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int16,FTVL=SHORT,NELEMENTS=12582912")
+ 
+ # Load all other plugins using commonPlugins.cmd
+ < ../commonPlugins.cmd
+-- 

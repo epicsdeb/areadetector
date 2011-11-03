@@ -1,0 +1,19 @@
+From: Michael Davidsaver <mdavidsaver@bnl.gov>
+Date: Fri, 28 Oct 2011 12:15:01 -0400
+Subject: [PATCH] Use --as-needed to reduce over-linking
+
+---
+ configure/CONFIG_SITE |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+diff --git a/configure/CONFIG_SITE b/configure/CONFIG_SITE
+index d52d779..3f8bd72 100644
+--- a/configure/CONFIG_SITE
++++ b/configure/CONFIG_SITE
+@@ -48,3 +48,5 @@ endif
+ #  STATIC_BUILD=YES
+ #  SHARED_LIBRARIES=NO
+ #endif
++
++USR_LDFLAGS += -Wl,--as-needed
+-- 

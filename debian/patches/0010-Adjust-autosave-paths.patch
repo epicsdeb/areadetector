@@ -1,0 +1,52 @@
+From: Michael Davidsaver <mdavidsaver@bnl.gov>
+Date: Sun, 5 Jun 2011 16:55:00 -0400
+Subject: [PATCH] Adjust autosave paths
+
+as request files in
+1) .
+2) $(TOP)/as/req
+3) /usr/lib/epics/as/req
+
+as save files in ./autosave
+---
+ iocBoot/commonPlugins.cmd |   10 +++++-----
+ iocBoot/iocAdsc/st.cmd    |    3 ++-
+ 2 files changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/iocBoot/commonPlugins.cmd b/iocBoot/commonPlugins.cmd
+index 24267e4..eb3d4a1 100644
+--- a/iocBoot/commonPlugins.cmd
++++ b/iocBoot/commonPlugins.cmd
+@@ -124,11 +124,11 @@ dbLoadRecords("$(EPICS_BASE)/db/NDColorConvert.template", "P=$(PREFIX),R=CC2:,
+ # Load scan records
+ dbLoadRecords("$(EPICS_BASE)/db/scan.db", "P=$(PREFIX),MAXPTS1=2000,MAXPTS2=200,MAXPTS3=20,MAXPTS4=10,MAXPTSH=10")
+ 
+-set_requestfile_path("./")
+-set_requestfile_path("$(AREA_DETECTOR)/ADApp/Db")
+-set_requestfile_path("$(SSCAN)/sscanApp/Db")
+-set_savefile_path("./autosave")
++set_requestfile_path("${TOP}")
++set_requestfile_path("$(TOP)/as/req")
++set_requestfile_path("$(EPICS_BASE)/as/req")
++set_savefile_path("$(TOP)/as/save")
+ set_pass0_restoreFile("auto_settings.sav")
+ set_pass1_restoreFile("auto_settings.sav")
+ save_restoreSet_status_prefix("$(PREFIX)")
+-dbLoadRecords("$(AUTOSAVE)/asApp/Db/save_restoreStatus.db", "P=$(PREFIX)")
++dbLoadRecords("$(EPICS_BASE)/db/save_restoreStatus.db", "P=$(PREFIX)")
+diff --git a/iocBoot/iocAdsc/st.cmd b/iocBoot/iocAdsc/st.cmd
+index 95f517e..dd22864 100644
+--- a/iocBoot/iocAdsc/st.cmd
++++ b/iocBoot/iocAdsc/st.cmd
+@@ -25,8 +25,9 @@ dbLoadRecords("$(EPICS_BASE)/db/NDFile.template","P=$(PREFIX),R=cam1:,PORT=$(POR
+ #asynSetTraceMask("$(PORT)",0,255)
+ 
+ set_requestfile_path("./")
++set_requestfile_path("$(TOP)/as/req")
+ set_savefile_path("./autosave")
+-set_requestfile_path("$(AREA_DETECTOR)/ADApp/Db")
++set_requestfile_path("$(EPICS_BASE)/as/req")
+ set_pass0_restoreFile("auto_settings.sav")
+ set_pass1_restoreFile("auto_settings.sav")
+ save_restoreSet_status_prefix("$(PREFIX)")
+-- 

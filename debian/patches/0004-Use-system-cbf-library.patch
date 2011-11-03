@@ -1,0 +1,36 @@
+From: Michael Davidsaver <mdavidsaver@bnl.gov>
+Date: Sun, 5 Jun 2011 15:07:46 -0400
+Subject: [PATCH] Use system cbf library
+
+---
+ ADApp/pilatusSrc/Makefile            |    2 +-
+ ADApp/pilatusSrc/pilatusDetector.cpp |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/ADApp/pilatusSrc/Makefile b/ADApp/pilatusSrc/Makefile
+index b50b37a..55aad28 100755
+--- a/ADApp/pilatusSrc/Makefile
++++ b/ADApp/pilatusSrc/Makefile
+@@ -21,7 +21,7 @@ PROD_SRCS += pilatusDetectorApp_registerRecordDeviceDriver.cpp pilatusDetectorAp
+ 
+ # Add locally compiled object code
+ PROD_LIBS += pilatusDetector
+-PROD_LIBS += cbfad
++PROD_LIBS += cbf
+ 
+ include $(TOP)/ADApp/commonDriverMakefile
+ 
+diff --git a/ADApp/pilatusSrc/pilatusDetector.cpp b/ADApp/pilatusSrc/pilatusDetector.cpp
+index 7adbaf1..d6e212c 100644
+--- a/ADApp/pilatusSrc/pilatusDetector.cpp
++++ b/ADApp/pilatusSrc/pilatusDetector.cpp
+@@ -20,7 +20,7 @@
+ #include <fcntl.h>
+ #include <sys/stat.h>
+ #include <unistd.h>
+-#include <cbf_ad.h>
++#include <cbf.h>
+ #include <tiffio.h>
+ 
+ #include <epicsTime.h>
+-- 

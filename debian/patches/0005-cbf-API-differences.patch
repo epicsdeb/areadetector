@@ -1,0 +1,45 @@
+From: Michael Davidsaver <mdavidsaver@bnl.gov>
+Date: Sun, 5 Jun 2011 15:08:52 -0400
+Subject: [PATCH] cbf API differences
+
+Between embedded v0.9.0 and packaged v0.7.8
+
+libcdf doesn't provide a useful version number macro :(
+---
+ ADApp/pilatusSrc/pilatusDetector.cpp |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/ADApp/pilatusSrc/pilatusDetector.cpp b/ADApp/pilatusSrc/pilatusDetector.cpp
+index d6e212c..b9aa431 100644
+--- a/ADApp/pilatusSrc/pilatusDetector.cpp
++++ b/ADApp/pilatusSrc/pilatusDetector.cpp
+@@ -478,8 +478,8 @@ asynStatus pilatusDetector::readCbf(const char *fileName, epicsTimeStamp *pStart
+         return((asynStatus)status);
+     }
+ 
+-    cbf_set_warning_messages_enabled(0);
+-    cbf_set_error_messages_enabled(0);
++    //cbf_set_warning_messages_enabled(0);
++    //cbf_set_error_messages_enabled(0);
+ 
+     while (deltaTime <= timeout) {
+         /* At this point we know the file exists, but it may not be completely
+@@ -492,7 +492,7 @@ asynStatus pilatusDetector::readCbf(const char *fileName, epicsTimeStamp *pStart
+                 driverName, functionName, status);
+             return(asynError);
+         }
+-
++/*
+         status = cbf_set_cbf_logfile(cbf, NULL);
+         if (status != 0) {
+             asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,
+@@ -500,7 +500,7 @@ asynStatus pilatusDetector::readCbf(const char *fileName, epicsTimeStamp *pStart
+                 driverName, functionName, status);
+             return(asynError);
+         }
+-
++*/
+         file = fopen(fileName, "rb");
+         if (file == NULL) {
+             asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,
+-- 

@@ -1,0 +1,36 @@
+From: Michael Davidsaver <mdavidsaver@bnl.gov>
+Date: Sun, 5 Jun 2011 15:15:58 -0400
+Subject: [PATCH] Use $(TOP)
+
+---
+ ADApp/PSLSrc/Makefile    |    2 +-
+ ADApp/pluginSrc/Makefile |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/ADApp/PSLSrc/Makefile b/ADApp/PSLSrc/Makefile
+index e4eaf4e..5f109b7 100755
+--- a/ADApp/PSLSrc/Makefile
++++ b/ADApp/PSLSrc/Makefile
+@@ -25,7 +25,7 @@ PROD_SRCS_vxWorks += PSLApp_registerRecordDeviceDriver.cpp
+ # Add locally compiled object code
+ PROD_LIBS += PSL
+ 
+-include $(AREA_DETECTOR)/ADApp/commonDriverMakefile
++include $(TOP)/ADApp/commonDriverMakefile
+ 
+ #=============================
+ 
+diff --git a/ADApp/pluginSrc/Makefile b/ADApp/pluginSrc/Makefile
+index f83b5a7..8017028 100644
+--- a/ADApp/pluginSrc/Makefile
++++ b/ADApp/pluginSrc/Makefile
+@@ -54,7 +54,7 @@ LIB_SRCS += NDPluginColorConvert.cpp
+ LIB_SRCS_DEFAULT += NDFileTIFF.cpp NDFileJPEG.cpp NDFileNexus.cpp NDFileHDF5.cpp NDFileMagick.cpp
+ LIB_SRCS_vxWorks += NDFileDummy.cpp
+ 
+-include $(AREA_DETECTOR)/ADApp/commonDriverMakefile
++include $(TOP)/ADApp/commonDriverMakefile
+ 
+ include $(TOP)/configure/RULES
+ #----------------------------------------
+-- 

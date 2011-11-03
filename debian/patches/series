@@ -1,0 +1,16 @@
+0001-fix-RELEASE.patch
+0002-Use-as-needed-to-reduce-over-linking.patch
+0003-Still-build-shared-libraries.patch
+0004-Use-system-cbf-library.patch
+0005-cbf-API-differences.patch
+0006-Use-TOP.patch
+0007-Adjust-build.patch
+0008-Don-t-load-Nexus-plugin-not-built.patch
+0009-Fix-paths-for-example-apps.patch
+0010-Adjust-autosave-paths.patch
+0011-Select-HDF5-API-version-for-some-functions.patch
+0012-prosilica-change-config-file.patch
+0013-include-iocstats.patch
+0014-build-aravis-and-dcam.patch
+0015-build-IOCs-for-aravis-and-dcam.patch
+0016-aravis-st.cmd.patch

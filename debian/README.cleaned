@@ -1,0 +1,576 @@
+--- areaDetectorR1-7.tgz.list	2011-11-03 12:29:48.935678562 -0400
++++ areadetector_1.7+dfsg1.orig.tar.gz.list	2011-11-03 12:30:02.247605806 -0400
+@@ -94,7 +94,6 @@
+ ADApp/PSLSrc/PSL.cpp
+ ADApp/PSLSrc/PSLAppInclude.dbd
+ ADApp/PSLSrc/PSLAppMain.cpp
+-ADApp/PSLSrc/PSLSoftwareManual.pdf
+ ADApp/PSLSrc/PSLSupport.dbd
+ ADApp/URLSrc/
+ ADApp/URLSrc/Makefile
+@@ -119,71 +118,11 @@
+ ADApp/adscSrc/simadsc/simadsc.c
+ ADApp/adscSrc/simadsc/simadsc.h
+ ADApp/brukerSrc/
+-ADApp/brukerSrc/BIS.HLP
+ ADApp/brukerSrc/BISDetector.cpp
+ ADApp/brukerSrc/BISDetectorAppInclude.dbd
+ ADApp/brukerSrc/BISDetectorAppMain.cpp
+ ADApp/brukerSrc/BISDetectorSupport.dbd
+ ADApp/brukerSrc/Makefile
+-ADApp/cbfSrc/
+-ADApp/cbfSrc/CBFlib-msgs-onoff.patch
+-ADApp/cbfSrc/LICENSE-GPL.txt
+-ADApp/cbfSrc/LICENSE-LGPL.txt
+-ADApp/cbfSrc/Makefile
+-ADApp/cbfSrc/NOTICES.txt
+-ADApp/cbfSrc/README.txt
+-ADApp/cbfSrc/cbf.c
+-ADApp/cbfSrc/cbf_ad.h
+-ADApp/cbfSrc/cbf_alloc.c
+-ADApp/cbfSrc/cbf_alloc_ad.h
+-ADApp/cbfSrc/cbf_ascii.c
+-ADApp/cbfSrc/cbf_ascii_ad.h
+-ADApp/cbfSrc/cbf_binary.c
+-ADApp/cbfSrc/cbf_binary_ad.h
+-ADApp/cbfSrc/cbf_byte_offset.c
+-ADApp/cbfSrc/cbf_byte_offset_ad.h
+-ADApp/cbfSrc/cbf_canonical.c
+-ADApp/cbfSrc/cbf_canonical_ad.h
+-ADApp/cbfSrc/cbf_codes.c
+-ADApp/cbfSrc/cbf_codes_ad.h
+-ADApp/cbfSrc/cbf_compress.c
+-ADApp/cbfSrc/cbf_compress_ad.h
+-ADApp/cbfSrc/cbf_context.c
+-ADApp/cbfSrc/cbf_context_ad.h
+-ADApp/cbfSrc/cbf_file.c
+-ADApp/cbfSrc/cbf_file_ad.h
+-ADApp/cbfSrc/cbf_getopt.c
+-ADApp/cbfSrc/cbf_getopt_ad.h
+-ADApp/cbfSrc/cbf_lex.c
+-ADApp/cbfSrc/cbf_lex_ad.h
+-ADApp/cbfSrc/cbf_packed.c
+-ADApp/cbfSrc/cbf_packed_ad.h
+-ADApp/cbfSrc/cbf_predictor.c
+-ADApp/cbfSrc/cbf_predictor_ad.h
+-ADApp/cbfSrc/cbf_read_binary.c
+-ADApp/cbfSrc/cbf_read_binary_ad.h
+-ADApp/cbfSrc/cbf_read_mime.c
+-ADApp/cbfSrc/cbf_read_mime_ad.h
+-ADApp/cbfSrc/cbf_simple.c
+-ADApp/cbfSrc/cbf_simple_ad.h
+-ADApp/cbfSrc/cbf_string.c
+-ADApp/cbfSrc/cbf_string_ad.h
+-ADApp/cbfSrc/cbf_stx.c
+-ADApp/cbfSrc/cbf_stx_ad.h
+-ADApp/cbfSrc/cbf_tree.c
+-ADApp/cbfSrc/cbf_tree_ad.h
+-ADApp/cbfSrc/cbf_uncompressed.c
+-ADApp/cbfSrc/cbf_uncompressed_ad.h
+-ADApp/cbfSrc/cbf_write.c
+-ADApp/cbfSrc/cbf_write_ad.h
+-ADApp/cbfSrc/cbf_write_binary.c
+-ADApp/cbfSrc/cbf_write_binary_ad.h
+-ADApp/cbfSrc/cbf_ws.c
+-ADApp/cbfSrc/cbf_ws_ad.h
+-ADApp/cbfSrc/global_ad.h
+-ADApp/cbfSrc/md5_ad.h
+-ADApp/cbfSrc/md5c.c
+-ADApp/cbfSrc/rename-header-files.sh
+ ADApp/commonDriverMakefile
+ ADApp/firewireWinSrc/
+ ADApp/firewireWinSrc/1394Camera.h
+@@ -192,7 +131,6 @@
+ ADApp/firewireWinSrc/1394CameraControlStrobe.h
+ ADApp/firewireWinSrc/1394CameraControlTrigger.h
+ ADApp/firewireWinSrc/1394camapi.h
+-ADApp/firewireWinSrc/1394camera.lib
+ ADApp/firewireWinSrc/1394common.h
+ ADApp/firewireWinSrc/Makefile
+ ADApp/firewireWinSrc/README
+@@ -201,243 +139,6 @@
+ ADApp/firewireWinSrc/firewireWinDCAMAppMain.cpp
+ ADApp/firewireWinSrc/firewireWinDCAMSupport.dbd
+ ADApp/firewireWinSrc/stdafx.h
+-ADApp/hdf5Support/
+-ADApp/hdf5Support/COPYING
+-ADApp/hdf5Support/H5ACpublic.h
+-ADApp/hdf5Support/H5Apublic.h
+-ADApp/hdf5Support/H5Cpublic.h
+-ADApp/hdf5Support/H5DSpublic.h
+-ADApp/hdf5Support/H5Dpublic.h
+-ADApp/hdf5Support/H5Epubgen.h
+-ADApp/hdf5Support/H5Epublic.h
+-ADApp/hdf5Support/H5FDcore.h
+-ADApp/hdf5Support/H5FDdirect.h
+-ADApp/hdf5Support/H5FDfamily.h
+-ADApp/hdf5Support/H5FDlog.h
+-ADApp/hdf5Support/H5FDmpi.h
+-ADApp/hdf5Support/H5FDmpio.h
+-ADApp/hdf5Support/H5FDmpiposix.h
+-ADApp/hdf5Support/H5FDmulti.h
+-ADApp/hdf5Support/H5FDpublic.h
+-ADApp/hdf5Support/H5FDsec2.h
+-ADApp/hdf5Support/H5FDstdio.h
+-ADApp/hdf5Support/H5FDwindows.h
+-ADApp/hdf5Support/H5Fpublic.h
+-ADApp/hdf5Support/H5Gpublic.h
+-ADApp/hdf5Support/H5IMpublic.h
+-ADApp/hdf5Support/H5Ipublic.h
+-ADApp/hdf5Support/H5LTpublic.h
+-ADApp/hdf5Support/H5Lpublic.h
+-ADApp/hdf5Support/H5MMpublic.h
+-ADApp/hdf5Support/H5Opublic.h
+-ADApp/hdf5Support/H5PTpublic.h
+-ADApp/hdf5Support/H5Ppublic.h
+-ADApp/hdf5Support/H5Rpublic.h
+-ADApp/hdf5Support/H5Spublic.h
+-ADApp/hdf5Support/H5TBpublic.h
+-ADApp/hdf5Support/H5Tpublic.h
+-ADApp/hdf5Support/H5Zpublic.h
+-ADApp/hdf5Support/H5api_adpt.h
+-ADApp/hdf5Support/H5overflow.h
+-ADApp/hdf5Support/H5public.h
+-ADApp/hdf5Support/H5version.h
+-ADApp/hdf5Support/Makefile
+-ADApp/hdf5Support/README
+-ADApp/hdf5Support/hdf5.h
+-ADApp/hdf5Support/hdf5_hl.h
+-ADApp/hdf5Support/os/
+-ADApp/hdf5Support/os/Darwin/
+-ADApp/hdf5Support/os/Darwin/H5pubconf.h
+-ADApp/hdf5Support/os/Linux/
+-ADApp/hdf5Support/os/Linux/H5pubconf.h
+-ADApp/hdf5Support/os/Linux/H5pubconf_32.h
+-ADApp/hdf5Support/os/Linux/H5pubconf_64.h
+-ADApp/hdf5Support/os/WIN32/
+-ADApp/hdf5Support/os/WIN32/H5pubconf.h
+-ADApp/hdf5Support/os/WIN32/H5pubconf_32.h
+-ADApp/hdf5Support/os/WIN32/H5pubconf_64.h
+-ADApp/hdf5Support/os/cygwin-x86/
+-ADApp/hdf5Support/os/cygwin-x86/H5pubconf.h
+-ADApp/hdf5Support/os/cygwin-x86/libhdf5.lib
+-ADApp/hdf5Support/os/cygwin-x86/libsz.lib
+-ADApp/hdf5Support/os/cygwin32/
+-ADApp/hdf5Support/os/cygwin32/H5pubconf.h
+-ADApp/hdf5Support/os/darwin-x86/
+-ADApp/hdf5Support/os/darwin-x86/libhdf5.a
+-ADApp/hdf5Support/os/darwin-x86/libsz.a
+-ADApp/hdf5Support/os/linux-x86/
+-ADApp/hdf5Support/os/linux-x86/H5pubconf.h
+-ADApp/hdf5Support/os/linux-x86/libhdf5.a
+-ADApp/hdf5Support/os/linux-x86/libsz.a
+-ADApp/hdf5Support/os/linux-x86_64/
+-ADApp/hdf5Support/os/linux-x86_64/libhdf5.a
+-ADApp/hdf5Support/os/linux-x86_64/libsz.a
+-ADApp/hdf5Support/os/solaris-sparc/
+-ADApp/hdf5Support/os/solaris-sparc/libhdf5.a
+-ADApp/hdf5Support/os/solaris/
+-ADApp/hdf5Support/os/win32-x86/
+-ADApp/hdf5Support/os/win32-x86/H5pubconf.h
+-ADApp/hdf5Support/os/win32-x86/hdf5.lib
+-ADApp/hdf5Support/os/win32-x86/libszip.lib
+-ADApp/hdf5Support/os/win32-x86/zlib.lib
+-ADApp/hdf5Support/os/windows-x64/
+-ADApp/hdf5Support/os/windows-x64/H5pubconf.h
+-ADApp/hdf5Support/os/windows-x64/hdf5.lib
+-ADApp/hdf5Support/os/windows-x64/libszip.lib
+-ADApp/hdf5Support/os/windows-x64/zlib.lib
+-ADApp/magickSupport/
+-ADApp/magickSupport/Magick++.h
+-ADApp/magickSupport/Magick++/
+-ADApp/magickSupport/Magick++/Blob.h
+-ADApp/magickSupport/Magick++/CoderInfo.h
+-ADApp/magickSupport/Magick++/Color.h
+-ADApp/magickSupport/Magick++/Drawable.h
+-ADApp/magickSupport/Magick++/Exception.h
+-ADApp/magickSupport/Magick++/Geometry.h
+-ADApp/magickSupport/Magick++/Image.h
+-ADApp/magickSupport/Magick++/Include.h
+-ADApp/magickSupport/Magick++/Montage.h
+-ADApp/magickSupport/Magick++/Pixels.h
+-ADApp/magickSupport/Magick++/STL.h
+-ADApp/magickSupport/Magick++/TypeMetric.h
+-ADApp/magickSupport/Makefile
+-ADApp/magickSupport/README
+-ADApp/magickSupport/magick/
+-ADApp/magickSupport/magick/analyze.h
+-ADApp/magickSupport/magick/api.h
+-ADApp/magickSupport/magick/attribute.h
+-ADApp/magickSupport/magick/average.h
+-ADApp/magickSupport/magick/blob.h
+-ADApp/magickSupport/magick/cdl.h
+-ADApp/magickSupport/magick/channel.h
+-ADApp/magickSupport/magick/color.h
+-ADApp/magickSupport/magick/color_lookup.h
+-ADApp/magickSupport/magick/colormap.h
+-ADApp/magickSupport/magick/colorspace.h
+-ADApp/magickSupport/magick/command.h
+-ADApp/magickSupport/magick/common.h
+-ADApp/magickSupport/magick/compare.h
+-ADApp/magickSupport/magick/composite.h
+-ADApp/magickSupport/magick/compress.h
+-ADApp/magickSupport/magick/confirm_access.h
+-ADApp/magickSupport/magick/constitute.h
+-ADApp/magickSupport/magick/decorate.h
+-ADApp/magickSupport/magick/delegate.h
+-ADApp/magickSupport/magick/deprecate.h
+-ADApp/magickSupport/magick/describe.h
+-ADApp/magickSupport/magick/draw.h
+-ADApp/magickSupport/magick/effect.h
+-ADApp/magickSupport/magick/enhance.h
+-ADApp/magickSupport/magick/error.h
+-ADApp/magickSupport/magick/forward.h
+-ADApp/magickSupport/magick/fx.h
+-ADApp/magickSupport/magick/gem.h
+-ADApp/magickSupport/magick/gradient.h
+-ADApp/magickSupport/magick/hclut.h
+-ADApp/magickSupport/magick/image.h
+-ADApp/magickSupport/magick/list.h
+-ADApp/magickSupport/magick/log.h
+-ADApp/magickSupport/magick/magic.h
+-ADApp/magickSupport/magick/magick.h
+-ADApp/magickSupport/magick/magick_config.h
+-ADApp/magickSupport/magick/magick_types.h
+-ADApp/magickSupport/magick/memory.h
+-ADApp/magickSupport/magick/module.h
+-ADApp/magickSupport/magick/monitor.h
+-ADApp/magickSupport/magick/montage.h
+-ADApp/magickSupport/magick/operator.h
+-ADApp/magickSupport/magick/paint.h
+-ADApp/magickSupport/magick/pixel_cache.h
+-ADApp/magickSupport/magick/pixel_iterator.h
+-ADApp/magickSupport/magick/plasma.h
+-ADApp/magickSupport/magick/profile.h
+-ADApp/magickSupport/magick/quantize.h
+-ADApp/magickSupport/magick/random.h
+-ADApp/magickSupport/magick/registry.h
+-ADApp/magickSupport/magick/render.h
+-ADApp/magickSupport/magick/resize.h
+-ADApp/magickSupport/magick/resource.h
+-ADApp/magickSupport/magick/shear.h
+-ADApp/magickSupport/magick/signature.h
+-ADApp/magickSupport/magick/statistics.h
+-ADApp/magickSupport/magick/symbols.h
+-ADApp/magickSupport/magick/texture.h
+-ADApp/magickSupport/magick/timer.h
+-ADApp/magickSupport/magick/transform.h
+-ADApp/magickSupport/magick/type.h
+-ADApp/magickSupport/magick/utility.h
+-ADApp/magickSupport/magick/version.h
+-ADApp/magickSupport/os/
+-ADApp/magickSupport/os/Linux/
+-ADApp/magickSupport/os/WIN32/
+-ADApp/magickSupport/os/WIN32/CORE_RL_Magick++_.lib
+-ADApp/magickSupport/os/WIN32/CORE_RL_bzlib_.lib
+-ADApp/magickSupport/os/WIN32/CORE_RL_coders_.lib
+-ADApp/magickSupport/os/WIN32/CORE_RL_filters_.lib
+-ADApp/magickSupport/os/WIN32/CORE_RL_jbig_.lib
+-ADApp/magickSupport/os/WIN32/CORE_RL_jp2_.lib
+-ADApp/magickSupport/os/WIN32/CORE_RL_jpeg_.lib
+-ADApp/magickSupport/os/WIN32/CORE_RL_lcms_.lib
+-ADApp/magickSupport/os/WIN32/CORE_RL_libxml_.lib
+-ADApp/magickSupport/os/WIN32/CORE_RL_magick_.lib
+-ADApp/magickSupport/os/WIN32/CORE_RL_png_.lib
+-ADApp/magickSupport/os/WIN32/CORE_RL_tiff_.lib
+-ADApp/magickSupport/os/WIN32/CORE_RL_ttf_.lib
+-ADApp/magickSupport/os/WIN32/CORE_RL_wand_.lib
+-ADApp/magickSupport/os/WIN32/CORE_RL_wmf_.lib
+-ADApp/magickSupport/os/WIN32/CORE_RL_xlib_.lib
+-ADApp/magickSupport/os/WIN32/CORE_RL_zlib_.lib
+-ADApp/magickSupport/os/WIN32/x64/
+-ADApp/magickSupport/os/WIN32/x64/CORE_RL_Magick++_.lib
+-ADApp/magickSupport/os/WIN32/x64/CORE_RL_bzlib_.lib
+-ADApp/magickSupport/os/WIN32/x64/CORE_RL_coders_.lib
+-ADApp/magickSupport/os/WIN32/x64/CORE_RL_filters_.lib
+-ADApp/magickSupport/os/WIN32/x64/CORE_RL_jbig_.lib
+-ADApp/magickSupport/os/WIN32/x64/CORE_RL_jp2_.lib
+-ADApp/magickSupport/os/WIN32/x64/CORE_RL_jpeg_.lib
+-ADApp/magickSupport/os/WIN32/x64/CORE_RL_lcms_.lib
+-ADApp/magickSupport/os/WIN32/x64/CORE_RL_libxml_.lib
+-ADApp/magickSupport/os/WIN32/x64/CORE_RL_magick_.lib
+-ADApp/magickSupport/os/WIN32/x64/CORE_RL_png_.lib
+-ADApp/magickSupport/os/WIN32/x64/CORE_RL_tiff_.lib
+-ADApp/magickSupport/os/WIN32/x64/CORE_RL_ttf_.lib
+-ADApp/magickSupport/os/WIN32/x64/CORE_RL_wand_.lib
+-ADApp/magickSupport/os/WIN32/x64/CORE_RL_wmf_.lib
+-ADApp/magickSupport/os/WIN32/x64/CORE_RL_xlib_.lib
+-ADApp/magickSupport/os/WIN32/x64/CORE_RL_zlib_.lib
+-ADApp/magickSupport/os/cygwin32/
+-ADApp/magickSupport/os/cygwin32/cygxml2-2.dll
+-ADApp/magickSupport/os/cygwin32/libGraphicsMagick++.lib
+-ADApp/magickSupport/os/cygwin32/libGraphicsMagick.lib
+-ADApp/magickSupport/os/cygwin32/libGraphicsMagickWand.lib
+-ADApp/magickSupport/os/cygwin32/libbz2.lib
+-ADApp/magickSupport/os/cygwin32/libfreetype.lib
+-ADApp/magickSupport/os/cygwin32/libjbig.lib
+-ADApp/magickSupport/os/cygwin32/liblcms.lib
+-ADApp/magickSupport/os/cygwin32/libpng14.lib
+-ADApp/magickSupport/os/cygwin32/libxml2.dll.lib
+-ADApp/magickSupport/os/darwin-x86/
+-ADApp/magickSupport/os/darwin-x86/libGraphicsMagick++.a
+-ADApp/magickSupport/os/darwin-x86/libGraphicsMagick.a
+-ADApp/magickSupport/os/darwin-x86/libGraphicsMagickWand.a
+-ADApp/magickSupport/os/darwin-x86/libjpeg.a
+-ADApp/magickSupport/os/darwin-x86/libpng.a
+-ADApp/magickSupport/os/darwin-x86/libtiff.a
+-ADApp/magickSupport/os/linux-x86/
+-ADApp/magickSupport/os/linux-x86/libGraphicsMagick++.a
+-ADApp/magickSupport/os/linux-x86/libGraphicsMagick.a
+-ADApp/magickSupport/os/linux-x86/libGraphicsMagickWand.a
+-ADApp/magickSupport/os/linux-x86_64/
+-ADApp/magickSupport/os/linux-x86_64/libGraphicsMagick++.a
+-ADApp/magickSupport/os/linux-x86_64/libGraphicsMagick.a
+-ADApp/magickSupport/os/linux-x86_64/libGraphicsMagickWand.a
+-ADApp/magickSupport/os/solaris-sparc/
+-ADApp/magickSupport/os/solaris/
+-ADApp/magickSupport/wand/
+-ADApp/magickSupport/wand/drawing_wand.h
+-ADApp/magickSupport/wand/magick_wand.h
+-ADApp/magickSupport/wand/pixel_wand.h
+-ADApp/magickSupport/wand/wand_api.h
+ ADApp/mar345Src/
+ ADApp/mar345Src/Makefile
+ ADApp/mar345Src/mar345.cpp
+@@ -449,73 +150,10 @@
+ ADApp/mar345Src/types.h
+ ADApp/marCCDSrc/
+ ADApp/marCCDSrc/Makefile
+-ADApp/marCCDSrc/The Baseline Stabilization Option for marccd.pdf
+ ADApp/marCCDSrc/marCCD.cpp
+ ADApp/marCCDSrc/marCCDAppInclude.dbd
+ ADApp/marCCDSrc/marCCDAppMain.cpp
+ ADApp/marCCDSrc/marCCD_ADSupport.dbd
+-ADApp/netCDFSrc/
+-ADApp/netCDFSrc/Makefile
+-ADApp/netCDFSrc/config.h
+-ADApp/netCDFSrc/include/
+-ADApp/netCDFSrc/include/ceconstraints.h
+-ADApp/netCDFSrc/include/err_macros.h
+-ADApp/netCDFSrc/include/fbits.h
+-ADApp/netCDFSrc/include/nc.h
+-ADApp/netCDFSrc/include/nc3dispatch.h
+-ADApp/netCDFSrc/include/nc_logging.h
+-ADApp/netCDFSrc/include/nc_tests.h
+-ADApp/netCDFSrc/include/nc_uri.h
+-ADApp/netCDFSrc/include/ncbytes.h
+-ADApp/netCDFSrc/include/ncdimscale.h
+-ADApp/netCDFSrc/include/ncdispatch.h
+-ADApp/netCDFSrc/include/nchashmap.h
+-ADApp/netCDFSrc/include/ncio.h
+-ADApp/netCDFSrc/include/nclist.h
+-ADApp/netCDFSrc/include/netcdf.h
+-ADApp/netCDFSrc/include/netcdf_f.h
+-ADApp/netCDFSrc/include/netcdf_par.h
+-ADApp/netCDFSrc/include/utf8proc.h
+-ADApp/netCDFSrc/libdispatch/
+-ADApp/netCDFSrc/libdispatch/att.c
+-ADApp/netCDFSrc/libdispatch/copy.c
+-ADApp/netCDFSrc/libdispatch/dim1.c
+-ADApp/netCDFSrc/libdispatch/dispatch.c
+-ADApp/netCDFSrc/libdispatch/error.c
+-ADApp/netCDFSrc/libdispatch/file.c
+-ADApp/netCDFSrc/libdispatch/nc4.c
+-ADApp/netCDFSrc/libdispatch/nc_uri.c
+-ADApp/netCDFSrc/libdispatch/ncbytes.c
+-ADApp/netCDFSrc/libdispatch/nchashmap.c
+-ADApp/netCDFSrc/libdispatch/nclist.c
+-ADApp/netCDFSrc/libdispatch/nclog.c
+-ADApp/netCDFSrc/libdispatch/parallel.c
+-ADApp/netCDFSrc/libdispatch/v2i.c
+-ADApp/netCDFSrc/libdispatch/var1.c
+-ADApp/netCDFSrc/liblib/
+-ADApp/netCDFSrc/liblib/stub.c
+-ADApp/netCDFSrc/libsrc/
+-ADApp/netCDFSrc/libsrc/attr.c
+-ADApp/netCDFSrc/libsrc/dim.c
+-ADApp/netCDFSrc/libsrc/ffio.c
+-ADApp/netCDFSrc/libsrc/lookup3.c
+-ADApp/netCDFSrc/libsrc/nc.c
+-ADApp/netCDFSrc/libsrc/nc3dispatch.c
+-ADApp/netCDFSrc/libsrc/nclistmgr.c
+-ADApp/netCDFSrc/libsrc/ncx.c
+-ADApp/netCDFSrc/libsrc/ncx.h
+-ADApp/netCDFSrc/libsrc/onstack.h
+-ADApp/netCDFSrc/libsrc/posixio.c
+-ADApp/netCDFSrc/libsrc/pstdint.h
+-ADApp/netCDFSrc/libsrc/putget.c
+-ADApp/netCDFSrc/libsrc/rnd.h
+-ADApp/netCDFSrc/libsrc/string.c
+-ADApp/netCDFSrc/libsrc/utf8proc.c
+-ADApp/netCDFSrc/libsrc/utf8proc_data.h
+-ADApp/netCDFSrc/libsrc/v1hpg.c
+-ADApp/netCDFSrc/libsrc/var.c
+-ADApp/netCDFSrc/test_big_classic.c
+-ADApp/netCDFSrc/test_big_classic.pro
+ ADApp/nexusSrc/
+ ADApp/nexusSrc/Makefile
+ ADApp/nexusSrc/README
+@@ -711,10 +349,8 @@
+ ADApp/perkinElmerSrc/PerkinElmerAppInclude.dbd
+ ADApp/perkinElmerSrc/PerkinElmerAppMain.cpp
+ ADApp/perkinElmerSrc/PerkinElmerSupport.dbd
+-ADApp/perkinElmerSrc/XISL.lib
+ ADApp/perkinElmerSrc/drvPerkinElmer.h
+ ADApp/perkinElmerSrc/drvPerkinElmerEpics.c
+-ADApp/perkinElmerSrc/xisl.dll
+ ADApp/pilatusSrc/
+ ADApp/pilatusSrc/Makefile
+ ADApp/pilatusSrc/pilatusDetector.cpp
+@@ -775,23 +411,6 @@
+ ADApp/prosilicaSrc/prosilicaAppMain.cpp
+ ADApp/prosilicaSrc/prosilicaSupport.dbd
+ ADApp/prosilicaSrc/testTiff.c
+-ADApp/prosilicaSupport/
+-ADApp/prosilicaSupport/Makefile
+-ADApp/prosilicaSupport/PvApi.h
+-ADApp/prosilicaSupport/README
+-ADApp/prosilicaSupport/os/
+-ADApp/prosilicaSupport/os/darwin-x86/
+-ADApp/prosilicaSupport/os/darwin-x86/libPvAPI.a
+-ADApp/prosilicaSupport/os/linux-x86/
+-ADApp/prosilicaSupport/os/linux-x86/libPvAPI.a
+-ADApp/prosilicaSupport/os/linux-x86_64/
+-ADApp/prosilicaSupport/os/linux-x86_64/libPvAPI.a
+-ADApp/prosilicaSupport/os/win32-x86/
+-ADApp/prosilicaSupport/os/win32-x86/PvAPI.dll
+-ADApp/prosilicaSupport/os/win32-x86/PvAPI.lib
+-ADApp/prosilicaSupport/os/windows-x64/
+-ADApp/prosilicaSupport/os/windows-x64/PvAPI.dll
+-ADApp/prosilicaSupport/os/windows-x64/PvAPI.lib
+ ADApp/pvcamSrc/
+ ADApp/pvcamSrc/Makefile
+ ADApp/pvcamSrc/drvPVCam.h
+@@ -801,22 +420,12 @@
+ ADApp/pvcamSrc/pvCamAppMain.c
+ ADApp/pvcamSrc/pvCamSrc.h
+ ADApp/pvcamSrc/pvCamSupport.dbd
+-ADApp/pvcamSupport/
+-ADApp/pvcamSupport/Makefile
+-ADApp/pvcamSupport/Pvcam32.dll
+-ADApp/pvcamSupport/Pvcam32.lib
+-ADApp/pvcamSupport/master.h
+-ADApp/pvcamSupport/pv_icl.h
+-ADApp/pvcamSupport/pv_icl32.dll
+-ADApp/pvcamSupport/pv_icl32.lib
+-ADApp/pvcamSupport/pvcam.h
+ ADApp/roperSrc/
+ ADApp/roperSrc/CDocFile40.h
+ ADApp/roperSrc/CExpSetup20.h
+ ADApp/roperSrc/CROIRect0.h
+ ADApp/roperSrc/CWinx32App20.h
+ ADApp/roperSrc/Makefile
+-ADApp/roperSrc/WinX32 Automation 3.X for Visual Basic.pdf
+ ADApp/roperSrc/comTest1.cpp
+ ADApp/roperSrc/comTest2.cpp
+ ADApp/roperSrc/comTest3.cpp
+@@ -831,98 +440,12 @@
+ ADApp/simDetectorSrc/simDetectorAppInclude.dbd
+ ADApp/simDetectorSrc/simDetectorAppMain.cpp
+ ADApp/simDetectorSrc/simDetectorSupport.dbd
+-ADApp/tiffSupport/
+-ADApp/tiffSupport/Makefile
+-ADApp/tiffSupport/os/
+-ADApp/tiffSupport/os/Darwin/
+-ADApp/tiffSupport/os/Darwin/tiff.h
+-ADApp/tiffSupport/os/Darwin/tiffconf.h
+-ADApp/tiffSupport/os/Darwin/tiffio.h
+-ADApp/tiffSupport/os/Darwin/tiffvers.h
+-ADApp/tiffSupport/os/Linux/
+-ADApp/tiffSupport/os/Linux/jconfig.h
+-ADApp/tiffSupport/os/Linux/jerror.h
+-ADApp/tiffSupport/os/Linux/jmorecfg.h
+-ADApp/tiffSupport/os/Linux/jpeglib.h
+-ADApp/tiffSupport/os/Linux/tiff.h
+-ADApp/tiffSupport/os/Linux/tiffconf-32.h
+-ADApp/tiffSupport/os/Linux/tiffconf-64.h
+-ADApp/tiffSupport/os/Linux/tiffconf.h
+-ADApp/tiffSupport/os/Linux/tiffio.h
+-ADApp/tiffSupport/os/Linux/tiffvers.h
+-ADApp/tiffSupport/os/WIN32/
+-ADApp/tiffSupport/os/WIN32/jconfig.h
+-ADApp/tiffSupport/os/WIN32/jerror.h
+-ADApp/tiffSupport/os/WIN32/jmorecfg.h
+-ADApp/tiffSupport/os/WIN32/jpeglib.h
+-ADApp/tiffSupport/os/WIN32/tiff.h
+-ADApp/tiffSupport/os/WIN32/tiffconf.h
+-ADApp/tiffSupport/os/WIN32/tiffio.h
+-ADApp/tiffSupport/os/WIN32/tiffvers.h
+-ADApp/tiffSupport/os/cygwin32/
+-ADApp/tiffSupport/os/cygwin32/README
+-ADApp/tiffSupport/os/cygwin32/jconfig.h
+-ADApp/tiffSupport/os/cygwin32/jerror.h
+-ADApp/tiffSupport/os/cygwin32/jmorecfg.h
+-ADApp/tiffSupport/os/cygwin32/jpeglib.h
+-ADApp/tiffSupport/os/cygwin32/libjpeg.lib
+-ADApp/tiffSupport/os/cygwin32/libtiff.lib
+-ADApp/tiffSupport/os/cygwin32/libz.lib
+-ADApp/tiffSupport/os/cygwin32/tiff.h
+-ADApp/tiffSupport/os/cygwin32/tiffconf.h
+-ADApp/tiffSupport/os/cygwin32/tiffio.h
+-ADApp/tiffSupport/os/cygwin32/tiffvers.h
+-ADApp/tiffSupport/os/darwin-x86/
+-ADApp/tiffSupport/os/darwin-x86/libjpeg.a
+-ADApp/tiffSupport/os/darwin-x86/libtiff.a
+-ADApp/tiffSupport/os/linux-x86/
+-ADApp/tiffSupport/os/linux-x86/libjpeg.a
+-ADApp/tiffSupport/os/linux-x86/libtiff.a
+-ADApp/tiffSupport/os/linux-x86/libz.a
+-ADApp/tiffSupport/os/linux-x86_64/
+-ADApp/tiffSupport/os/linux-x86_64/libjpeg.a
+-ADApp/tiffSupport/os/linux-x86_64/libtiff.a
+-ADApp/tiffSupport/os/linux-x86_64/libz.a
+-ADApp/tiffSupport/os/solaris-sparc/
+-ADApp/tiffSupport/os/solaris-sparc/libjpeg.a
+-ADApp/tiffSupport/os/solaris-sparc/libsz.a
+-ADApp/tiffSupport/os/solaris-sparc/libz.a
+-ADApp/tiffSupport/os/solaris/
+-ADApp/tiffSupport/os/solaris/jconfig.h
+-ADApp/tiffSupport/os/solaris/jerror.h
+-ADApp/tiffSupport/os/solaris/jmorecfg.h
+-ADApp/tiffSupport/os/solaris/jpeglib.h
+-ADApp/tiffSupport/os/solaris/szlib.h
+-ADApp/tiffSupport/os/solaris/zconf.h
+-ADApp/tiffSupport/os/solaris/zlib.h
+ Makefile
+ Viewers/
+-Viewers/IDL/
+-Viewers/IDL/README
+-Viewers/IDL/epics_ad_base__define.pro
+-Viewers/IDL/epics_ad_control__define.pro
+-Viewers/IDL/epics_ad_display.pro
+-Viewers/IDL/epics_ad_display.sav
+-Viewers/IDL/epics_ad_display__define.pro
+-Viewers/IDL/epics_ad_file__define.pro
+-Viewers/IDL/epics_nd_std_arrays__define.pro
+-Viewers/IDL/epics_ndplugin_base__define.pro
+-Viewers/IDL/ezcaIDL.dll
+-Viewers/IDL/ezcaIDL.pro
+-Viewers/IDL/get_font_name.pro
+-Viewers/IDL/image_display.pro
+-Viewers/IDL/image_display__define.pro
+-Viewers/IDL/libezcaIDL.so
+-Viewers/IDL/make_movie.pro
+-Viewers/IDL/read_nd_netcdf.pro
+-Viewers/IDL/update_files
+ Viewers/ImageJ/
+ Viewers/ImageJ/EPICS_areaDetector/
+ Viewers/ImageJ/EPICS_areaDetector/Dynamic_Profiler.java
+ Viewers/ImageJ/EPICS_areaDetector/EPICS_AD_Viewer.java
+-Viewers/ImageJ/EPICS_areaDetector/NetCDF_.jar
+-Viewers/ImageJ/EPICS_areaDetector/caj-1.1.5.jar
+-Viewers/ImageJ/EPICS_areaDetector/jca-2.3.2.jar
+ configure/
+ configure/CONFIG
+ configure/CONFIG_SITE
+@@ -1169,10 +692,6 @@
+ iocBoot/iocURLDriver/auto_settings.req
+ iocBoot/iocURLDriver/autosave/
+ iocBoot/iocURLDriver/autosave/README
+-iocBoot/iocURLDriver/images/
+-iocBoot/iocURLDriver/images/Pilatus.tif
+-iocBoot/iocURLDriver/images/marCCD.tif
+-iocBoot/iocURLDriver/images/sun.jpg
+ iocBoot/iocURLDriver/st.cmd
+ iocBoot/iocURLDriver/st.cmd.linux
+ iocBoot/iocURLDriver/st.cmd.win32

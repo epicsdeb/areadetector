@@ -6,16 +6,61 @@ It was downloaded from http://cars9.uchicago.edu/software/epics/areaDetector.htm
 Upstream Authors:
 
     Mark Rivers <rivers@cars.uchicago.edu>
+    J. Lewis Muir <jlmuir@anl.gov>
+    John Hammonds
+    Marty Kraimer
+    Jeff Gebhardt
+    Brian Tieman
+    Lee Thomason
+    Christopher Baker
+    Iwan Ulrich
+    Claudio Klein
     et al.
 
 Copyright:
 
-    ignota et invisa
+    University of Chicago
+    The University of Chicago, as Operator of Argonne National Laboratory.
+    
+    
+    Specific files
+    
+    ADApp/ADSrc/tinyxml*
+      copyright (c) 2000-2006 Lee Thomason (www.grinninglizard.com)
 
+    ADApp/firewireWinSrc/1394*
+      Copyright 8/2006 Christopher Baker Robotics Institute Carnegie Mellon University
+      Copyright 5/2000 Iwan Ulrich Robotics Institute Carnegie Mellon University
+
+    ADApp/mar345Src/mar3xx_pck.c
+      Copyright by:        Dr. Claudio Klein X-ray Research GmbH, Hamburg
+      
+    ADApp/nexusSrc/n*
+      Copyright (C) 2000-2007 Mark Koennecke, Uwe Filges, Przemek Klosowski, Freddie Akeroyd
+      
+    aravis/*
+      Copyright Tom Cobb Diamond Light Source
+      
+    dcam/*
+      Copyright Ulrik Pedersen Diamond Light Source
 
 License:
 
-    ignota et invisa
+    Unless otherwise mentioned all files are covered by the EPICS Open License
+    
+    http://www.aps.anl.gov/epics/license/open.php
+
+    Specific files
+    
+    ADApp/ADSrc/tinyxml* AS-IS
+    
+    ADApp/firewireWinSrc/1394* LGPL
+    
+    ADApp/nexusSrc/n* GPL2+
+    
+    aravis/* LGPL3
+    
+    dcam/* LGPL3
 
 The Debian packaging (debian/ directory) is (C) 2011, Michael Davidsaver <mdavidsaver@bnl.gov> and
 is licensed under the GPL, see `/usr/share/common-licenses/GPL'.

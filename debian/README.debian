@@ -1,20 +1,16 @@
 
 Changes made for Debian packageing
 
-Where possible, built libraries and executables with system
-packaged libraries instead of embedded source or binary blobs.
+The source for this package has been repacked to remove embedded library
+source and binary blobs.  See README.cleaned for a list of files removed.
 
-This requires a small patch as the embedded version of libcbf
-is newer and has some additional logging facilities not present
-in the packaged version.  These are omitted.
-
-All libraries and executables are linked with --as-needed
-to reduce over-linking.  As there is no (I think) runtime
-loading, this shouldn't have any ill-effects.
+The package also include the aravisGigE and firewireDCAM camera plugins from
+Diamond Light Souce.
 
 The example IOC scripts are installed in:
 /usr/share/epics-areadetector/iocBoot
 
+iocAravisGigE
 iocAdsc
 iocBruker
 iocFirewire
@@ -32,13 +28,13 @@ iocURLDriver
 The IOC executables are installed in:
 /usr/lib/epics/bin/$(EPICS_HOST_ARCH)/
 
+aravisGigEApp
+firewireDCAMApp
 adscApp
 BISDetectorApp
 mar345App
 marCCDApp
 pilatusDetectorApp
-prosilicaApp
 PSLApp
 simDetectorApp
 URLDriverApp
-URLTest

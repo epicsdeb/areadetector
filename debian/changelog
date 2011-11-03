@@ -1,8 +1,9 @@
-areadetector (1.7-3~) UNRELEASED; urgency=low
+areadetector (1.7+dfsg1-1) unstable; urgency=low
 
+  * Switch to stripped source tar
   * Include aravisGigE and firewireDCAM plugins from Diamond LS
 
- -- Michael Davidsaver <mdavidsaver@bnl.gov>  Wed, 02 Nov 2011 16:41:05 -0400
+ -- Michael Davidsaver <mdavidsaver@bnl.gov>  Thu, 03 Nov 2011 14:00:11 -0400
 
 areadetector (1.7-2) UNRELEASED; urgency=low
 

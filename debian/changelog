@@ -1,3 +1,13 @@
+areadetector (1.7+dfsg1-2) unstable; urgency=low
+
+  * update patches
+      Remove nexus plugin from autosave request file (plugin not built)
+      Fix paths in iocBoot/AravisGigE/st.cmd
+      Add iocBoot/AravisGigE/unique.cmd
+  * Don't overwrite fixed edls
+
+ -- Michael Davidsaver <mdavidsaver@bnl.gov>  Thu, 03 Nov 2011 16:28:49 -0400
+
 areadetector (1.7+dfsg1-1) unstable; urgency=low
 
   * Switch to stripped source tar

@@ -1,0 +1,26 @@
+From: Michael Davidsaver <mdavidsaver@bnl.gov>
+Date: Tue, 15 Nov 2011 11:10:14 -0500
+Subject: [PATCH] aravis: calculate max pixel value
+
+---
+ aravis/aravisGigEApp/Db/Prosilica_GC.template |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
+
+diff --git a/aravis/aravisGigEApp/Db/Prosilica_GC.template b/aravis/aravisGigEApp/Db/Prosilica_GC.template
+index b3f1635..93588db 100644
+--- a/aravis/aravisGigEApp/Db/Prosilica_GC.template
++++ b/aravis/aravisGigEApp/Db/Prosilica_GC.template
+@@ -62,6 +62,12 @@ record(longin, "$(P)$(R)SensorBits_RBV") {
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))SensorBits")
+   field(SCAN, "I/O Intr")
++  field(FLNK, "$(P)$(R)MaxPixel_RBV")
++}
++
++record(calc, "$(P)$(R)MaxPixel_RBV") {
++  field(INPA, "$(P)$(R)SensorBits_RBV")
++  field(CALC, "A<0?0:(1<<A)-1")
+ }
+ 
+ record(longout, "$(P)$(R)SensorBits") {
+-- 

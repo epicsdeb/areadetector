@@ -1,0 +1,19 @@
+From: Michael Davidsaver <mdavidsaver@bnl.gov>
+Date: Mon, 9 Apr 2012 15:52:51 -0400
+Subject: [PATCH] include system.dbd in all IOCs
+
+---
+ ADApp/ADSrc/commonDriverSupport.dbd |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/ADApp/ADSrc/commonDriverSupport.dbd b/ADApp/ADSrc/commonDriverSupport.dbd
+index 961fd69..6fde80e 100644
+--- a/ADApp/ADSrc/commonDriverSupport.dbd
++++ b/ADApp/ADSrc/commonDriverSupport.dbd
+@@ -1,4 +1,5 @@
+ include "base.dbd"
++include "system.dbd"
+ include "ADSupport.dbd"
+ include "NDPluginSupport.dbd"
+ include "calcSupport.dbd"
+-- 

@@ -14,3 +14,5 @@
 0014-build-aravis-and-dcam.patch
 0015-build-IOCs-for-aravis-and-dcam.patch
 0016-aravis-st.cmd.patch
+0017-aravis-calculate-max-pixel-value.patch
+0018-include-system.dbd-in-all-IOCs.patch

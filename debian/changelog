@@ -1,3 +1,10 @@
+areadetector (1.7+dfsg1-4) unstable; urgency=low
+
+  * aravis: calculate max pixel value $(P)$(R)MaxPixel_RBV
+  * include system.dbd in all IOCs
+
+ -- Michael Davidsaver <mdavidsaver@bnl.gov>  Mon, 09 Apr 2012 15:53:46 -0400
+
 areadetector (1.7+dfsg1-3) unstable; urgency=low
 
   * strict version dependency for epics-areadetector

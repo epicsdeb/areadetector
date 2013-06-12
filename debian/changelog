@@ -1,3 +1,9 @@
+areadetector (1.7+dfsg1-5) unstable; urgency=low
+
+  * Fix build for debian 7.0
+
+ -- Michael Davidsaver <mdavidsaver@bnl.gov>  Wed, 12 Jun 2013 17:36:17 -0400
+
 areadetector (1.7+dfsg1-4) unstable; urgency=low
 
   * aravis: calculate max pixel value $(P)$(R)MaxPixel_RBV

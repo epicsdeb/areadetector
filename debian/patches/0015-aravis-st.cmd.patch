@@ -1,9 +1,9 @@
 From: Michael Davidsaver <mdavidsaver@bnl.gov>
 Date: Thu, 3 Nov 2011 15:25:12 -0400
-Subject: [PATCH] aravis st.cmd
+Subject: aravis st.cmd
 
 ---
- iocBoot/commonPlugins.cmd               |    6 ++--
+ iocBoot/commonPlugins.cmd               |    6 +--
  iocBoot/iocAravisGigE/Makefile          |    6 +++
  iocBoot/iocAravisGigE/auto_settings.req |    4 ++
  iocBoot/iocAravisGigE/st.cmd            |   61 +++++++++++++++++++++++++++++++
@@ -128,4 +128,3 @@ index 0000000..e861926
 @@ -0,0 +1,2 @@
 +epicsEnvSet("UID", "Allied Vision Technologies-02-2185A-19096")
 +epicsEnvSet("PREFIX", "TST-BI{CAM:1}")
--- 

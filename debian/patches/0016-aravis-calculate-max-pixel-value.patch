@@ -1,10 +1,10 @@
 From: Michael Davidsaver <mdavidsaver@bnl.gov>
 Date: Tue, 15 Nov 2011 11:10:14 -0500
-Subject: [PATCH] aravis: calculate max pixel value
+Subject: aravis: calculate max pixel value
 
 ---
  aravis/aravisGigEApp/Db/Prosilica_GC.template |    6 ++++++
- 1 files changed, 6 insertions(+), 0 deletions(-)
+ 1 file changed, 6 insertions(+)
 
 diff --git a/aravis/aravisGigEApp/Db/Prosilica_GC.template b/aravis/aravisGigEApp/Db/Prosilica_GC.template
 index b3f1635..93588db 100644
@@ -23,4 +23,3 @@ index b3f1635..93588db 100644
  }
  
  record(longout, "$(P)$(R)SensorBits") {
--- 

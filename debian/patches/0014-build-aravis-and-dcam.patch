@@ -1,16 +1,17 @@
 From: Michael Davidsaver <mdavidsaver@bnl.gov>
 Date: Thu, 3 Nov 2011 09:54:27 -0400
-Subject: [PATCH] build aravis and dcam
+Subject: build aravis and dcam
 
+Also add IOCs aravisGigEApp and firewireDCAMApp
 ---
  Makefile                          |   10 ++++++++++
  aravis/aravisGigEApp/Db/Makefile  |    2 +-
  aravis/aravisGigEApp/Makefile     |    4 +---
- aravis/aravisGigEApp/src/Makefile |    6 +++++-
+ aravis/aravisGigEApp/src/Makefile |   32 ++++++++++++++++++++------------
  dcam/firewireDCAMApp/Db/Makefile  |    2 +-
  dcam/firewireDCAMApp/Makefile     |    8 +++-----
- dcam/firewireDCAMApp/src/Makefile |   15 ++++++++++-----
- 7 files changed, 31 insertions(+), 16 deletions(-)
+ dcam/firewireDCAMApp/src/Makefile |   26 +++++++++++++++++++-------
+ 7 files changed, 55 insertions(+), 29 deletions(-)
 
 diff --git a/Makefile b/Makefile
 index 015d84e..58f0999 100644
@@ -59,7 +60,7 @@ index 7b06cab..2cd8b1f 100644
  include $(TOP)/configure/RULES_DIRS
  
 diff --git a/aravis/aravisGigEApp/src/Makefile b/aravis/aravisGigEApp/src/Makefile
-index 1df3d6b..45e5f30 100644
+index 1df3d6b..b91c708 100644
 --- a/aravis/aravisGigEApp/src/Makefile
 +++ b/aravis/aravisGigEApp/src/Makefile
 @@ -1,4 +1,4 @@
@@ -68,21 +69,48 @@ index 1df3d6b..45e5f30 100644
  
  include $(TOP)/configure/CONFIG
  
-@@ -20,6 +20,7 @@ DBD += aravisCameraSupport.dbd
+@@ -6,6 +6,8 @@ include $(TOP)/configure/CONFIG
+ # Build an Diamond Support Module
+ # -------------------------------
  
- # If glib is not in a standard place, tell the build system where to look
- ifneq ($(GLIBPREFIX),)
-+	USR_INCLUDES += -I$(GLIBPREFIX)/include/aravis-0.2
- 	USR_INCLUDES += -I$(GLIBPREFIX)/lib/glib-2.0/include
- 	USR_INCLUDES += -I$(GLIBPREFIX)/include/glib-2.0
- 	glib-2.0_DIR = $(GLIBPREFIX)/lib
-@@ -30,4 +31,7 @@ USR_INCLUDES += -I$(TOP)/include/aravis-0.2
- USR_LIBS += glib-2.0
- USR_LIBS += aravis-0.2
- 
-+glib-2.0_DIR=/usr/lib
-+aravis-0.2_DIR=/usr/lib
++USR_CPPFLAGS += $(shell pkg-config --cflags glib-2.0 aravis-0.2)
 +
+ # Build some little helper functions
+ #PROD_IOC += aravisTest
+ #aravisTest_SRCS_DEFAULT += aravisTest.c
+@@ -18,16 +20,22 @@ aravisCamera_SRCS += aravisCamera.cpp
+ 
+ DBD += aravisCameraSupport.dbd
+ 
+-# If glib is not in a standard place, tell the build system where to look
+-ifneq ($(GLIBPREFIX),)
+-	USR_INCLUDES += -I$(GLIBPREFIX)/lib/glib-2.0/include
+-	USR_INCLUDES += -I$(GLIBPREFIX)/include/glib-2.0
+-	glib-2.0_DIR = $(GLIBPREFIX)/lib
+-endif	
+-
+-# We need to link against aravis
+-USR_INCLUDES += -I$(TOP)/include/aravis-0.2
+-USR_LIBS += glib-2.0
+-USR_LIBS += aravis-0.2
++
++PROD_IOC += aravisGigEApp
++
++DBD += aravisGigEApp.dbd
++
++aravisGigEApp_DBD += commonDriverSupport.dbd
++aravisGigEApp_DBD += aravisCameraSupport.dbd
++
++# <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
++PROD_SRCS += aravisGigEApp_registerRecordDeviceDriver.cpp aravisCameraMain.cpp
++
++PROD_LIBS += aravisCamera
++
++PROD_SYS_LIBS += aravis-0.2 gio-2.0 gobject-2.0 gthread-2.0 glib-2.0 pcre
++LIB_SYS_LIBS += aravis-0.2 gio-2.0 gobject-2.0 gthread-2.0 glib-2.0 pcre
++
++include $(TOP)/ADApp/commonDriverMakefile
+ 
  include $(TOP)/configure/RULES
 diff --git a/dcam/firewireDCAMApp/Db/Makefile b/dcam/firewireDCAMApp/Db/Makefile
 index eb9bfa3..59701e8 100644
@@ -113,7 +141,7 @@ index 7b06cab..9b2a005 100644
  include $(TOP)/configure/RULES_DIRS
  
 diff --git a/dcam/firewireDCAMApp/src/Makefile b/dcam/firewireDCAMApp/src/Makefile
-index 3f5e5e2..f4ab336 100644
+index 3f5e5e2..f836eed 100644
 --- a/dcam/firewireDCAMApp/src/Makefile
 +++ b/dcam/firewireDCAMApp/src/Makefile
 @@ -1,4 +1,4 @@
@@ -122,35 +150,45 @@ index 3f5e5e2..f4ab336 100644
  
  include $(TOP)/configure/CONFIG
  
-@@ -7,10 +7,10 @@ include $(TOP)/configure/CONFIG
+@@ -7,12 +7,12 @@ include $(TOP)/configure/CONFIG
  #--------------------------------------------------------
  PROD_IOC += firewiretool
  firewiretool_SRCS_DEFAULT += firewiretool.cpp
 -firewiretool_LIBS += dc1394
-+firewiretool_LIBS += dc1394 raw1394 usb-1.0
++firewiretool_SYS_LIBS += dc1394 raw1394 usb-1.0
  firewiretool_LIBS += $(EPICS_BASE_IOC_LIBS)
  
 -PROD_IOC += testCams
 +#PROD_IOC += testCams
  testCams_SRCS_DEFAULT += testCams.cpp
- testCams_LIBS += dc1394
+-testCams_LIBS += dc1394
++testCams_SYS_LIBS += dc1394
  testCams_LIBS += $(EPICS_BASE_IOC_LIBS)
-@@ -41,10 +41,15 @@ firewireDCAM_SRCS += firewireDCAM.cpp
+ 
+ 
+@@ -41,10 +41,22 @@ firewireDCAM_SRCS += firewireDCAM.cpp
  
  # linking against various basic support libraries
  firewireDCAM_LIBS += asyn
 -firewireDCAM_LIBS += ADBase netCDF
 -firewireDCAM_LIBS += dc1394 raw1394
-+firewireDCAM_LIBS += ADBase netcdf
-+firewireDCAM_LIBS += dc1394 raw1394 usb-1.0
++firewireDCAM_LIBS += ADBase
++firewireDCAM_SYS_LIBS += dc1394 raw1394 usb-1.0 netcdf
  firewireDCAM_LIBS += $(EPICS_BASE_IOC_LIBS)
  
-+netcdf_DIR=/usr/lib
-+dc1394_DIR=/usr/lib
-+raw1394_DIR=/usr/lib
-+usb-1.0_DIR=/usr/lib
+-#include $(AREA_DETECTOR)/ADApp/commonDriverMakefile
++PROD_IOC += firewireDCAMApp
 +
- #include $(AREA_DETECTOR)/ADApp/commonDriverMakefile
++DBD += firewireDCAMApp.dbd
++
++firewireDCAMApp_DBD += commonDriverSupport.dbd
++firewireDCAMApp_DBD += firewireDCAM.dbd
++
++# <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
++firewireDCAMApp_SRCS += firewireDCAMApp_registerRecordDeviceDriver.cpp firewireDCAMMain.cpp
++
++firewireDCAMApp_SYS_LIBS += firewireDCAM dc1394 raw1394 usb-1.0
++
++include $(TOP)/ADApp/commonDriverMakefile
  
  include $(TOP)/configure/RULES
--- 

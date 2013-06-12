@@ -12,7 +12,6 @@
 0012-prosilica-change-config-file.patch
 0013-include-iocstats.patch
 0014-build-aravis-and-dcam.patch
-0015-build-IOCs-for-aravis-and-dcam.patch
-0016-aravis-st.cmd.patch
-0017-aravis-calculate-max-pixel-value.patch
-0018-include-system.dbd-in-all-IOCs.patch
+0015-aravis-st.cmd.patch
+0016-aravis-calculate-max-pixel-value.patch
+0017-include-system.dbd-in-all-IOCs.patch

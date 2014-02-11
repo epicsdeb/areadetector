@@ -1,7 +1,7 @@
 Source: areadetector
 Section: utils
 Priority: extra
-Maintainer: Michael Davidsaver <mdavidsaver@bnl.gov>
+Maintainer: Ralph Lange <Ralph.Lange@gmx.de>
 Build-Depends: debhelper (>= 7.0.50~), epics-debhelper (>= 6~),
                epics-dev (>= 3.14.11-2),
                epics-synapps-dev, epics-iocstats-dev,
@@ -16,6 +16,8 @@ Build-Depends: debhelper (>= 7.0.50~), epics-debhelper (>= 6~),
                libpcre3-dev,
 Standards-Version: 3.8.0
 Homepage: http://cars9.uchicago.edu/software/epics/areaDetector.html
+Vcs-Browser: https://github.com/epicsdeb/areadetector
+Vcs-Git: https://github.com/epicsdeb/areadetector.git
 
 Package: libareadetector1.7
 Architecture: any

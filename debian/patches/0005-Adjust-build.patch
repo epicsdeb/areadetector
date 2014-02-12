@@ -1,6 +1,6 @@
 From: Michael Davidsaver <mdavidsaver@bnl.gov>
 Date: Sun, 5 Jun 2011 15:25:06 -0400
-Subject: [PATCH] Adjust build
+Subject: Adjust build
 
 skip embedded version of netcdf, cbf, tiff, magick, and nexus
 
@@ -11,11 +11,11 @@ skip all *Support
 
 Don't need to link with X11!
 ---
- ADApp/Makefile                      |   18 ++----------------
- ADApp/commonDriverMakefile          |   28 ++++++++++++++++------------
- ADApp/pilatusSrc/Makefile           |    2 +-
- ADApp/pluginSrc/Makefile            |    9 +++++----
- ADApp/pluginSrc/NDPluginSupport.dbd |    2 +-
+ ADApp/Makefile                      | 18 ++----------------
+ ADApp/commonDriverMakefile          | 28 ++++++++++++++++------------
+ ADApp/pilatusSrc/Makefile           |  2 +-
+ ADApp/pluginSrc/Makefile            |  9 +++++----
+ ADApp/pluginSrc/NDPluginSupport.dbd |  2 +-
  5 files changed, 25 insertions(+), 34 deletions(-)
 
 diff --git a/ADApp/Makefile b/ADApp/Makefile
@@ -187,4 +187,3 @@ index dec1fe8..da73cc5 100644
  include "NDFileMagick.dbd"
  include "NDFileHDF5.dbd"
  include "NDPluginROI.dbd"
--- 

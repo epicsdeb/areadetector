@@ -1,0 +1,78 @@
+From: Ralph Lange <Ralph.Lange@gmx.de>
+Date: Wed, 12 Feb 2014 17:48:56 +0100
+Subject: Remove embedded copy of tinyxml library
+
+===================================================================
+---
+ ADApp/ADSrc/Makefile              | 8 +++++---
+ ADApp/ADSrc/asynNDArrayDriver.cpp | 2 +-
+ ADApp/adscSrc/Makefile            | 1 +
+ ADApp/commonDriverMakefile        | 4 ++--
+ 4 files changed, 9 insertions(+), 6 deletions(-)
+
+diff --git a/ADApp/ADSrc/Makefile b/ADApp/ADSrc/Makefile
+index 1780d5b..def7e83 100644
+--- a/ADApp/ADSrc/Makefile
++++ b/ADApp/ADSrc/Makefile
+@@ -24,8 +24,10 @@ INC += PVAttribute.h
+ INC += paramAttribute.h
+ INC += asynNDArrayDriver.h
+ INC += ADDriver.h
+-INC += tinyxml.h
+-INC += tinystr.h
++#INC += tinyxml.h
++#INC += tinystr.h
++
++USR_CXXFLAGS += -DTIXML_USE_STL
+ 
+ LIBRARY_IOC = ADBase
+ LIB_SRCS += NDArray.cpp
+@@ -33,7 +35,7 @@ LIB_SRCS += asynNDArrayDriver.cpp
+ LIB_SRCS += ADDriver.cpp
+ LIB_SRCS += PVAttribute.cpp
+ LIB_SRCS += paramAttribute.cpp
+-LIB_SRCS += tinyxml.cpp tinystr.cpp tinyxmlparser.cpp tinyxmlerror.cpp
++#LIB_SRCS += tinyxml.cpp tinystr.cpp tinyxmlparser.cpp tinyxmlerror.cpp
+ LIB_SRCS += parseAreaPrefixes.c
+ 
+ LIB_LIBS += asyn
+diff --git a/ADApp/ADSrc/asynNDArrayDriver.cpp b/ADApp/ADSrc/asynNDArrayDriver.cpp
+index 15c9636..8912381 100644
+--- a/ADApp/ADSrc/asynNDArrayDriver.cpp
++++ b/ADApp/ADSrc/asynNDArrayDriver.cpp
+@@ -19,7 +19,7 @@
+ #include <epicsMutex.h>
+ #include <cantProceed.h>
+ 
+-#include "tinyxml.h"
++#include <tinyxml.h>
+ #include "PVAttribute.h"
+ #include "paramAttribute.h"
+ #include <asynDriver.h>
+diff --git a/ADApp/adscSrc/Makefile b/ADApp/adscSrc/Makefile
+index c5a9e6e..9f20b90 100644
+--- a/ADApp/adscSrc/Makefile
++++ b/ADApp/adscSrc/Makefile
+@@ -118,6 +118,7 @@ PROD_SYS_LIBS_cygwin32 += $(CYGWIN_RPC_LIB)
+ #PROD_LIBS_Linux        += tiff jpeg z
+ # To use system versions of these libraries use this line
+ #PROD_SYS_LIBS_Linux    += tiff jpeg z
++PROD_SYS_LIBS_Linux    += tinyxml
+ 
+ #PROD_SYS_LIBS_Darwin  += NeXus mfhdf df hdf5 mxml tiff jpeg z
+ 
+diff --git a/ADApp/commonDriverMakefile b/ADApp/commonDriverMakefile
+index 564f873..acc5361 100644
+--- a/ADApp/commonDriverMakefile
++++ b/ADApp/commonDriverMakefile
+@@ -64,8 +64,8 @@ PROD_SYS_LIBS_Linux     += tiff jpeg z
+ #LIB_SYS_LIBS_Linux     += tiff jpeg z
+ #PROD_SYS_LIBS_Linux    += tiff jpeg z
+ 
+-LIB_SYS_LIBS_Linux      += gomp xml2 png12 bz2 
+-PROD_SYS_LIBS_Linux     += gomp xml2 png12 bz2
++LIB_SYS_LIBS_Linux      += gomp xml2 png12 bz2 tinyxml
++PROD_SYS_LIBS_Linux     += gomp xml2 png12 bz2 tinyxml
+ 
+ LIB_LIBS_solaris         += NeXus hdf5 jpeg z
+ PROD_LIBS_solaris        += NeXus hdf5 jpeg z

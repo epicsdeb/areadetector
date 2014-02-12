@@ -1,0 +1,53 @@
+From: Ralph Lange <Ralph.Lange@gmx.de>
+Date: Wed, 12 Feb 2014 17:54:06 +0100
+Subject: Fix errors when building using FORTIFY_SOURCE
+
+---
+ ADApp/ADSrc/parseAreaPrefixes.c |  2 +-
+ ADApp/pluginSrc/NDFileHDF5.cpp  | 10 +++++-----
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/ADApp/ADSrc/parseAreaPrefixes.c b/ADApp/ADSrc/parseAreaPrefixes.c
+index 946f81f..4f6190f 100644
+--- a/ADApp/ADSrc/parseAreaPrefixes.c
++++ b/ADApp/ADSrc/parseAreaPrefixes.c
+@@ -41,7 +41,7 @@ void parseAreaPrefixes( char *waveformName) {
+ 	while (!status) {
+ 		status=dbFirstRecord(pdbentry);
+ 		while (!status) {
+-			sprintf(inBuffer, dbGetRecordName(pdbentry));
++			sprintf(inBuffer, "%s", dbGetRecordName(pdbentry));
+ 			status = dbFindInfo(pdbentry, "ADType");
+ 			if (!status) {
+ 				if (nFound != 0){
+diff --git a/ADApp/pluginSrc/NDFileHDF5.cpp b/ADApp/pluginSrc/NDFileHDF5.cpp
+index bca3514..a63e9e9 100644
+--- a/ADApp/pluginSrc/NDFileHDF5.cpp
++++ b/ADApp/pluginSrc/NDFileHDF5.cpp
+@@ -413,13 +413,13 @@ asynStatus NDFileHDF5::closeFile()
+   if (storeAttributes == 1)  this->closeAttributeDataset();
+   if (storePerformance == 1) this->writePerformanceDataset();
+ 
+-  asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s::%s closing HDF dataspace %p\n", driverName, functionName, this->dataspace);
++  asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s::%s closing HDF dataspace %p\n", driverName, functionName, (void*) this->dataspace);
+   H5Sclose(this->dataspace);
+-  //asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s::%s closing HDF filespace %p\n", driverName, functionName, this->file);
++  //asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s::%s closing HDF filespace %p\n", driverName, functionName, (void*) this->file);
+   //H5Sclose(this->filespace);
+-  asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s::%s closing HDF cparms %p\n", driverName, functionName, this->cparms);
++  asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s::%s closing HDF cparms %p\n", driverName, functionName, (void*) this->cparms);
+   H5Pclose(this->cparms);
+-  asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s::%s closing HDF datatype %p\n", driverName, functionName, this->datatype);
++  asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s::%s closing HDF datatype %p\n", driverName, functionName, (void*) this->datatype);
+   H5Tclose(this->datatype);
+ 
+   asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s::%s closing groups\n", driverName, functionName);
+@@ -1192,7 +1192,7 @@ asynStatus NDFileHDF5::configureDims(NDArray *pArray)
+       this->virtualdims[i] = numCapture;
+       //asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s::%s extradim=%d ncapture=%d\n",
+       //        driverName, functionName, i, numCapture);
+-      epicsSnprintf(this->ptrDimensionNames[i], DIMNAMESIZE, extradimdefs[MAXEXTRADIMS - extradims +i].dimName);
++      epicsSnprintf(this->ptrDimensionNames[i], DIMNAMESIZE, "%s", extradimdefs[MAXEXTRADIMS - extradims +i].dimName);
+     }
+   }
+ 

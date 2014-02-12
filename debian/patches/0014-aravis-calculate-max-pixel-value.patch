@@ -3,7 +3,7 @@ Date: Tue, 15 Nov 2011 11:10:14 -0500
 Subject: aravis: calculate max pixel value
 
 ---
- aravis/aravisGigEApp/Db/Prosilica_GC.template |    6 ++++++
+ aravis/aravisGigEApp/Db/Prosilica_GC.template | 6 ++++++
  1 file changed, 6 insertions(+)
 
 diff --git a/aravis/aravisGigEApp/Db/Prosilica_GC.template b/aravis/aravisGigEApp/Db/Prosilica_GC.template

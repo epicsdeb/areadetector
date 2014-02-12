@@ -1,10 +1,10 @@
 From: Michael Davidsaver <mdavidsaver@bnl.gov>
 Date: Mon, 19 Sep 2011 09:40:38 -0400
-Subject: [PATCH] prosilica change config file
+Subject: prosilica change config file
 
 ---
- iocBoot/iocProsilica/st.cmd     |   11 +++++++++--
- iocBoot/iocProsilica/unique.cmd |    2 ++
+ iocBoot/iocProsilica/st.cmd     | 11 +++++++++--
+ iocBoot/iocProsilica/unique.cmd |  2 ++
  2 files changed, 11 insertions(+), 2 deletions(-)
  create mode 100644 iocBoot/iocProsilica/unique.cmd
 
@@ -48,4 +48,3 @@ index 0000000..b86e919
 @@ -0,0 +1,2 @@
 +epicsEnvSet("PREFIX", "LN-BI{CAM:1}")
 +epicsEnvSet("UID", "124051")
--- 

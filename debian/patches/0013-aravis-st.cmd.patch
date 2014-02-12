@@ -3,11 +3,11 @@ Date: Thu, 3 Nov 2011 15:25:12 -0400
 Subject: aravis st.cmd
 
 ---
- iocBoot/commonPlugins.cmd               |    6 +--
- iocBoot/iocAravisGigE/Makefile          |    6 +++
- iocBoot/iocAravisGigE/auto_settings.req |    4 ++
- iocBoot/iocAravisGigE/st.cmd            |   61 +++++++++++++++++++++++++++++++
- iocBoot/iocAravisGigE/unique.cmd        |    2 +
+ iocBoot/commonPlugins.cmd               |  6 ++--
+ iocBoot/iocAravisGigE/Makefile          |  6 ++++
+ iocBoot/iocAravisGigE/auto_settings.req |  4 +++
+ iocBoot/iocAravisGigE/st.cmd            | 61 +++++++++++++++++++++++++++++++++
+ iocBoot/iocAravisGigE/unique.cmd        |  2 ++
  5 files changed, 76 insertions(+), 3 deletions(-)
  create mode 100644 iocBoot/iocAravisGigE/Makefile
  create mode 100644 iocBoot/iocAravisGigE/auto_settings.req

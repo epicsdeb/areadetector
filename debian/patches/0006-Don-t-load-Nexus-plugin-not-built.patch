@@ -1,10 +1,10 @@
 From: Michael Davidsaver <mdavidsaver@bnl.gov>
 Date: Mon, 19 Sep 2011 09:39:22 -0400
-Subject: [PATCH] Don't load Nexus plugin (not built)
+Subject: Don't load Nexus plugin (not built)
 
 ---
- ADApp/Db/commonPlugin_settings.req |    6 +++---
- iocBoot/commonPlugins.cmd          |    8 ++++----
+ ADApp/Db/commonPlugin_settings.req | 6 +++---
+ iocBoot/commonPlugins.cmd          | 8 ++++----
  2 files changed, 7 insertions(+), 7 deletions(-)
 
 diff --git a/ADApp/Db/commonPlugin_settings.req b/ADApp/Db/commonPlugin_settings.req
@@ -43,4 +43,3 @@ index 51043bf..c39322d 100644
  
  # Create an HDF5 file saving plugin
  NDFileHDF5Configure("FileHDF1", $(QSIZE), 0, "$(PORT)", 0)
--- 

@@ -1,10 +1,10 @@
 From: Michael Davidsaver <mdavidsaver@bnl.gov>
 Date: Sun, 5 Jun 2011 15:15:58 -0400
-Subject: [PATCH] Use $(TOP)
+Subject: Use $(TOP)
 
 ---
- ADApp/PSLSrc/Makefile    |    2 +-
- ADApp/pluginSrc/Makefile |    2 +-
+ ADApp/PSLSrc/Makefile    | 2 +-
+ ADApp/pluginSrc/Makefile | 2 +-
  2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/ADApp/PSLSrc/Makefile b/ADApp/PSLSrc/Makefile
@@ -33,4 +33,3 @@ index f83b5a7..8017028 100644
  
  include $(TOP)/configure/RULES
  #----------------------------------------
--- 

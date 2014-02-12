@@ -1,13 +1,13 @@
 From: Michael Davidsaver <mdavidsaver@bnl.gov>
 Date: Sun, 5 Jun 2011 15:08:52 -0400
-Subject: [PATCH] cbf API differences
+Subject: cbf API differences
 
 Between embedded v0.9.0 and packaged v0.7.8
 
 libcdf doesn't provide a useful version number macro :(
 ---
- ADApp/pilatusSrc/pilatusDetector.cpp |    8 ++++----
- 1 files changed, 4 insertions(+), 4 deletions(-)
+ ADApp/pilatusSrc/pilatusDetector.cpp | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/ADApp/pilatusSrc/pilatusDetector.cpp b/ADApp/pilatusSrc/pilatusDetector.cpp
 index d6e212c..b9aa431 100644
@@ -42,4 +42,3 @@ index d6e212c..b9aa431 100644
          file = fopen(fileName, "rb");
          if (file == NULL) {
              asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,
--- 

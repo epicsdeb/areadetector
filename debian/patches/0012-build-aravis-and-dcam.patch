@@ -4,13 +4,13 @@ Subject: build aravis and dcam
 
 Also add IOCs aravisGigEApp and firewireDCAMApp
 ---
- Makefile                          |   10 ++++++++++
- aravis/aravisGigEApp/Db/Makefile  |    2 +-
- aravis/aravisGigEApp/Makefile     |    4 +---
- aravis/aravisGigEApp/src/Makefile |   32 ++++++++++++++++++++------------
- dcam/firewireDCAMApp/Db/Makefile  |    2 +-
- dcam/firewireDCAMApp/Makefile     |    8 +++-----
- dcam/firewireDCAMApp/src/Makefile |   26 +++++++++++++++++++-------
+ Makefile                          | 10 ++++++++++
+ aravis/aravisGigEApp/Db/Makefile  |  2 +-
+ aravis/aravisGigEApp/Makefile     |  4 +---
+ aravis/aravisGigEApp/src/Makefile | 32 ++++++++++++++++++++------------
+ dcam/firewireDCAMApp/Db/Makefile  |  2 +-
+ dcam/firewireDCAMApp/Makefile     |  8 +++-----
+ dcam/firewireDCAMApp/src/Makefile | 26 +++++++++++++++++++-------
  7 files changed, 55 insertions(+), 29 deletions(-)
 
 diff --git a/Makefile b/Makefile

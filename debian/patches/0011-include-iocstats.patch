@@ -1,12 +1,12 @@
 From: Michael Davidsaver <mdavidsaver@bnl.gov>
 Date: Fri, 28 Oct 2011 13:27:51 -0400
-Subject: [PATCH] include iocstats
+Subject: include iocstats
 
 ---
- ADApp/ADSrc/commonDriverSupport.dbd |    1 +
- ADApp/commonDriverMakefile          |    2 +-
- iocBoot/commonPlugins.cmd           |    2 ++
- 3 files changed, 4 insertions(+), 1 deletions(-)
+ ADApp/ADSrc/commonDriverSupport.dbd | 1 +
+ ADApp/commonDriverMakefile          | 2 +-
+ iocBoot/commonPlugins.cmd           | 2 ++
+ 3 files changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/ADApp/ADSrc/commonDriverSupport.dbd b/ADApp/ADSrc/commonDriverSupport.dbd
 index a836197..961fd69 100644
@@ -43,4 +43,3 @@ index eb3d4a1..c8e3fbd 100644
  set_requestfile_path("${TOP}")
  set_requestfile_path("$(TOP)/as/req")
  set_requestfile_path("$(EPICS_BASE)/as/req")
--- 

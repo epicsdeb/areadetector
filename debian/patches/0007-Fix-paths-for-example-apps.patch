@@ -1,23 +1,23 @@
 From: Michael Davidsaver <mdavidsaver@bnl.gov>
 Date: Sun, 5 Jun 2011 16:52:32 -0400
-Subject: [PATCH] Fix paths for example apps
+Subject: Fix paths for example apps
 
 load packaged db files from /usr/lib/epics/
 ---
- iocBoot/commonPlugins.cmd     |  126 ++++++++++++++++++++--------------------
- iocBoot/iocAdsc/st.cmd        |   10 ++--
- iocBoot/iocBruker/st.cmd      |   12 ++--
- iocBoot/iocFirewire/st.cmd    |   18 +++---
- iocBoot/iocMAR345/st.cmd      |   12 ++--
- iocBoot/iocMARCCD/st.cmd      |   12 ++--
- iocBoot/iocPSL/st.cmd         |   12 ++--
- iocBoot/iocPVCam/st.cmd       |   10 ++--
- iocBoot/iocPerkinElmer/st.cmd |   10 ++--
- iocBoot/iocPilatus/st.cmd     |   12 ++--
- iocBoot/iocProsilica/st.cmd   |   18 +++---
- iocBoot/iocRoper/st.cmd       |   12 ++--
- iocBoot/iocSimDetector/st.cmd |   20 +++---
- iocBoot/iocURLDriver/st.cmd   |   12 ++--
+ iocBoot/commonPlugins.cmd     | 126 +++++++++++++++++++++---------------------
+ iocBoot/iocAdsc/st.cmd        |  10 ++--
+ iocBoot/iocBruker/st.cmd      |  12 ++--
+ iocBoot/iocFirewire/st.cmd    |  18 +++---
+ iocBoot/iocMAR345/st.cmd      |  12 ++--
+ iocBoot/iocMARCCD/st.cmd      |  12 ++--
+ iocBoot/iocPSL/st.cmd         |  12 ++--
+ iocBoot/iocPVCam/st.cmd       |  10 ++--
+ iocBoot/iocPerkinElmer/st.cmd |  10 ++--
+ iocBoot/iocPilatus/st.cmd     |  12 ++--
+ iocBoot/iocProsilica/st.cmd   |  18 +++---
+ iocBoot/iocRoper/st.cmd       |  12 ++--
+ iocBoot/iocSimDetector/st.cmd |  20 +++----
+ iocBoot/iocURLDriver/st.cmd   |  12 ++--
  14 files changed, 148 insertions(+), 148 deletions(-)
 
 diff --git a/iocBoot/commonPlugins.cmd b/iocBoot/commonPlugins.cmd
@@ -696,4 +696,3 @@ index 6808ff7..048fe27 100755
  
  # Load all other plugins using commonPlugins.cmd
  < ../commonPlugins.cmd
--- 

@@ -1,10 +1,10 @@
 From: Michael Davidsaver <mdavidsaver@bnl.gov>
 Date: Sun, 5 Jun 2011 15:07:46 -0400
-Subject: [PATCH] Use system cbf library
+Subject: Use system cbf library
 
 ---
- ADApp/pilatusSrc/Makefile            |    2 +-
- ADApp/pilatusSrc/pilatusDetector.cpp |    2 +-
+ ADApp/pilatusSrc/Makefile            | 2 +-
+ ADApp/pilatusSrc/pilatusDetector.cpp | 2 +-
  2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/ADApp/pilatusSrc/Makefile b/ADApp/pilatusSrc/Makefile
@@ -33,4 +33,3 @@ index 7adbaf1..d6e212c 100644
  #include <tiffio.h>
  
  #include <epicsTime.h>
--- 

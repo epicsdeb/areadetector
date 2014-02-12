@@ -3,7 +3,7 @@ Date: Sun, 5 Jun 2011 14:12:40 -0400
 Subject: fix RELEASE
 
 ---
- configure/RELEASE |   23 +++++++++--------------
+ configure/RELEASE | 23 +++++++++--------------
  1 file changed, 9 insertions(+), 14 deletions(-)
 
 diff --git a/configure/RELEASE b/configure/RELEASE

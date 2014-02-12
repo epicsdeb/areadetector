@@ -1,3 +1,9 @@
+areadetector (1.7+dfsg1-6) UNRELEASED; urgency=low
+
+  * d/control: add Michael Davidsaver to Uploaders
+
+ -- Ralph Lange <Ralph.Lange@gmx.de>  Sat, 01 Feb 2014 16:53:55 +0100
+
 areadetector (1.7+dfsg1-5) unstable; urgency=low
 
   * Fix build for debian 7.0

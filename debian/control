@@ -2,6 +2,7 @@ Source: areadetector
 Section: utils
 Priority: extra
 Maintainer: Ralph Lange <Ralph.Lange@gmx.de>
+Uploaders: Michael Davidsaver <mdavidsaver@bnl.gov>
 Build-Depends: debhelper (>= 7.0.50~), epics-debhelper (>= 6~),
                epics-dev (>= 3.14.11-2),
                epics-synapps-dev, epics-iocstats-dev,

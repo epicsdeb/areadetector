@@ -1,6 +1,8 @@
 areadetector (1.7+dfsg1-6) UNRELEASED; urgency=low
 
   * d/control: rebuild using fixed adl2edl 1.4-3 for converting panels
+  * d/control: force build-dep on real libhdf5-dev (serial) package
+      to avoid pulling in libopenmpi-dev on wheezy
   * d/control: add Michael Davidsaver to Uploaders
 
  -- Ralph Lange <Ralph.Lange@gmx.de>  Sat, 01 Feb 2014 16:53:55 +0100

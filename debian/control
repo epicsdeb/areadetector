@@ -15,6 +15,7 @@ Build-Depends: debhelper (>= 7.0.50~), epics-debhelper (>= 6~),
                libdc1394-22-dev,
                libaravis0.2-dev, libglib2.0-dev, libxml2-dev, libusb-1.0-0-dev,
                libpcre3-dev,
+               libtinyxml-dev,
 Standards-Version: 3.8.0
 Homepage: http://cars9.uchicago.edu/software/epics/areaDetector.html
 Vcs-Browser: https://github.com/epicsdeb/areadetector

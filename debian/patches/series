@@ -15,3 +15,4 @@
 0015-aravis-st.cmd.patch
 0016-aravis-calculate-max-pixel-value.patch
 0017-include-system.dbd-in-all-IOCs.patch
+0018-remove-embedded-copy-of-tinyxml-library.patch

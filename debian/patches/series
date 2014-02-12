@@ -1,6 +1,4 @@
 0001-fix-RELEASE.patch
-0002-Use-as-needed-to-reduce-over-linking.patch
-0003-Still-build-shared-libraries.patch
 0004-Use-system-cbf-library.patch
 0005-cbf-API-differences.patch
 0006-Use-TOP.patch
@@ -16,3 +14,4 @@
 0016-aravis-calculate-max-pixel-value.patch
 0017-include-system.dbd-in-all-IOCs.patch
 0018-remove-embedded-copy-of-tinyxml-library.patch
+0019-fix-errors-when-building-using-FORTIFY_SOURCE.patch

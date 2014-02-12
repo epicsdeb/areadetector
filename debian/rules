@@ -1,19 +1,60 @@
 #!/usr/bin/make -f
+# -*- makefile -*-
 
+# Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 
-binary binary-arch binary-indep build install clean:
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+
+# Backport magic for squeeze
+ifeq "$(DEB_HOST_MULTIARCH)" ""
+
+slashtriplet :=
+DEB_USR_CXXFLAGS :=
+DEB_USR_CFLAGS := -O3
+DEB_USR_CPPFLAGS :=
+DEB_USR_LDFLAGS := -Wl,--as-needed
+
+else
+
+slashtriplet:="/$(DEB_HOST_MULTIARCH)"
+
+# Link only --as-needed
+# EPICS uses -O3, let's not lower the standards
+export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
+export DEB_CFLAGS_STRIP = -g -O2
+export DEB_CXXFLAGS_STRIP = -g -O2
+
+# Add Debian flags to the EPICS build
+DEB_USR_CXXFLAGS:=$(shell dpkg-buildflags --get CXXFLAGS)
+DEB_USR_CFLAGS:=$(shell dpkg-buildflags --get CFLAGS)
+DEB_USR_CPPFLAGS:=$(shell dpkg-buildflags --get CPPFLAGS)
+DEB_USR_LDFLAGS:=$(shell dpkg-buildflags --get LDFLAGS)
+
+endif
+
+ifeq "$(DEB_BUILD_ARCH)" "i386"
+EPICS_HOST_ARCH:=linux-x86
+else ifeq "$(DEB_BUILD_ARCH)" "amd64"
+EPICS_HOST_ARCH:=linux-x86_64
+else
+EPICS_HOST_ARCH:=$(shell /usr/lib/epics/startup/EpicsHostArch)
+endif
+
+%:
 	dh $@ --with epics -Sepicsmake
-install: build
-binary-arch binary-indep: install
-binary: binary-arch binary-indep
 
 override_dh_auto_clean:
 	dh_auto_clean
-	rm -rf edl
+	rm -fr edm
+#	rm -rf bin include lib
 
 override_dh_auto_build: convert-adl
-	dh_auto_build
+	dh_auto_build -- SHARED_LIBRARIES=YES STATIC_BUILD=YES \
+	USR_CFLAGS_Linux="$(DEB_USR_CFLAGS)" \
+	USR_CXXFLAGS_Linux="$(DEB_USR_CXXFLAGS)" \
+	USR_CPPFLAGS_Linux="$(DEB_USR_CPPFLAGS)" \
+	USR_LDFLAGS_Linux="$(DEB_USR_LDFLAGS)"
 
 convert-adl:
 	rm -rf edl
@@ -29,6 +70,10 @@ convert-adl:
 	sed -i -e 's|arial|helvetica|g' edl/*.edl
 	sed -i -e 's|charter|helvetica|g' edl/*.edl
 	sed -i -e 's|helvetica-bold-r-16\.0|helvetica-bold-r-12.0|g' edl/*.edl
+
+override_dh_auto_install:
+	dh_auto_install -- SHARED_LIBRARIES=YES STATIC_BUILD=YES \
+	USR_LDFLAGS_Linux="$(DEB_USR_LDFLAGS)"
 
 override_dh_install:
 	dh_install

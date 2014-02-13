@@ -62,7 +62,7 @@ convert-adl:
 	cp ADApp/op/adl/*.adl edl/
 	(cd edl && \
 	for ff in *.adl;do \
-		adl2edl -rgb $$ff > $${ff%.adl}.edl || rm -f $${ff%.adl}.edl;\
+		adl2edl -rename -rgb $$ff > $${ff%.adl}.edl || rm -f $${ff%.adl}.edl;\
 	done)
 	sed -i -e 's|"[^c]*composite file |"|g' edl/*.edl
 

@@ -1,8 +1,7 @@
 From: Ralph Lange <Ralph.Lange@gmx.de>
-Date: Wed, 12 Feb 2014 17:48:56 +0100
+Date: Tue, 25 Feb 2014 16:09:03 +0100
 Subject: Remove embedded copy of tinyxml library
 
-===================================================================
 ---
  ADApp/ADSrc/Makefile              | 8 +++++---
  ADApp/ADSrc/asynNDArrayDriver.cpp | 2 +-
@@ -62,7 +61,7 @@ index c5a9e6e..9f20b90 100644
  #PROD_SYS_LIBS_Darwin  += NeXus mfhdf df hdf5 mxml tiff jpeg z
  
 diff --git a/ADApp/commonDriverMakefile b/ADApp/commonDriverMakefile
-index 564f873..acc5361 100644
+index 564f873..217313c 100644
 --- a/ADApp/commonDriverMakefile
 +++ b/ADApp/commonDriverMakefile
 @@ -64,8 +64,8 @@ PROD_SYS_LIBS_Linux     += tiff jpeg z
@@ -71,7 +70,7 @@ index 564f873..acc5361 100644
  
 -LIB_SYS_LIBS_Linux      += gomp xml2 png12 bz2 
 -PROD_SYS_LIBS_Linux     += gomp xml2 png12 bz2
-+LIB_SYS_LIBS_Linux      += gomp xml2 png12 bz2 tinyxml
++LIB_SYS_LIBS_Linux      += gomp xml2 png12 bz2
 +PROD_SYS_LIBS_Linux     += gomp xml2 png12 bz2 tinyxml
  
  LIB_LIBS_solaris         += NeXus hdf5 jpeg z

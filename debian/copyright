@@ -62,5 +62,7 @@ License:
     
     dcam/* LGPL3
 
-The Debian packaging (debian/ directory) is (C) 2011, Michael Davidsaver <mdavidsaver@bnl.gov> and
-is licensed under the GPL, see `/usr/share/common-licenses/GPL'.
+The Debian packaging (debian/ directory) is
+    (C) Copyright 2011-2013, Michael Davidsaver <mdavidsaver@bnl.gov>,
+    (C) Copyright 2013-2014, Ralph Lange <Ralph.Lange@gmx.de>,
+    and is licensed under the GPL, see `/usr/share/common-licenses/GPL'.

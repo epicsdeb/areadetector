@@ -6,6 +6,8 @@ areadetector (1.7+dfsg1-6) UNRELEASED; urgency=low
   * Remove embedded copy of tinyxml library (fix lintian warnings)
   * d/control: add Michael Davidsaver to Uploaders
   * Support hardened builds on wheezy, fix errors when using FORTIFY_SOURCE
+  * d/control: fix package descriptions
+  * d/copyright: fix copyright notices about Debian packaging
 
  -- Ralph Lange <Ralph.Lange@gmx.de>  Sat, 01 Feb 2014 16:53:55 +0100
 

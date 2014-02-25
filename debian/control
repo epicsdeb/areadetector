@@ -16,7 +16,7 @@ Build-Depends: debhelper (>= 7.0.50~), epics-debhelper (>= 6~),
                libaravis0.2-dev, libglib2.0-dev, libxml2-dev, libusb-1.0-0-dev,
                libpcre3-dev,
                libtinyxml-dev,
-Standards-Version: 3.8.0
+Standards-Version: 3.9.5
 Homepage: http://cars9.uchicago.edu/software/epics/areaDetector.html
 Vcs-Browser: https://github.com/epicsdeb/areadetector
 Vcs-Git: https://github.com/epicsdeb/areadetector.git
@@ -37,7 +37,7 @@ Section: video
 Depends: ${shlibs:Depends}, ${misc:Depends},
 Recommends: edm-areadetector (= ${source:Version}),
             libareadetector1.7 (= ${binary:Version}),
-Conflicts: epics-synapps (<< 5.6~)
+Breaks: epics-synapps (<< 5.6~)
 Description: EPICS video camera and detector driver (database files)
  .
  This package provides the database files
@@ -49,7 +49,7 @@ Section: libdevel
 Depends: ${shlibs:Depends}, ${misc:Depends},
          epics-areadetector (= ${binary:Version}),
 Recommends: edm-areadetector (= ${source:Version})
-Conflicts: epics-synapps-dev (<< 5.6~)
+Breaks: epics-synapps-dev (<< 5.6~)
 Description: EPICS video camera and detector driver (development files)
  .
  This package provides files needed to build an
@@ -68,7 +68,7 @@ Package: edm-areadetector
 Section: contrib/devel
 Architecture: all
 Depends: ${misc:Depends},
-Conflicts: edm-synapps (<= 5.5-99),
+Breaks: edm-synapps (<< 5.6~),
 Recommends: edm
 Description: EPICS video camera and detector driver (EDM displays)
  .

@@ -8,6 +8,8 @@ areadetector (1.7+dfsg1-6) UNRELEASED; urgency=low
   * Support hardened builds on wheezy, fix errors when using FORTIFY_SOURCE
   * d/control: fix package descriptions
   * d/copyright: fix copyright notices about Debian packaging
+  * d/control; Bump Standards to 3.9.5:
+    - replace Conflicts: epics-synapps with Breaks: (Policy 7.4)
 
  -- Ralph Lange <Ralph.Lange@gmx.de>  Sat, 01 Feb 2014 16:53:55 +0100
 

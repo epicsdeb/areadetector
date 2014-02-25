@@ -26,9 +26,10 @@ Architecture: any
 Section: libs
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Recommends: epics-areadetector (= ${binary:Version})
-Description: Video Camera driver for EPICS
+Description: EPICS video camera and detector driver (library)
  .
- This package provides shared libraries
+ This package provides shared libraries for the EPICS
+ areaDetector module
 
 Package: epics-areadetector
 Architecture: any
@@ -37,7 +38,7 @@ Depends: ${shlibs:Depends}, ${misc:Depends},
 Recommends: edm-areadetector (= ${source:Version}),
             libareadetector1.7 (= ${binary:Version}),
 Conflicts: epics-synapps (<< 5.6~)
-Description: Video Camera driver for EPICS
+Description: EPICS video camera and detector driver (database files)
  .
  This package provides the database files
  needed by an IOC using the areaDetector support.
@@ -49,18 +50,18 @@ Depends: ${shlibs:Depends}, ${misc:Depends},
          epics-areadetector (= ${binary:Version}),
 Recommends: edm-areadetector (= ${source:Version})
 Conflicts: epics-synapps-dev (<< 5.6~)
-Description: Video Camera driver for EPICS
+Description: EPICS video camera and detector driver (development files)
  .
  This package provides files needed to build an
- IOC with the iocStats support.
+ IOC with the areaDetector support.
 
 Package: boy-areadetector
 Section: contrib/devel
 Architecture: all
 Depends: ${misc:Depends},
-Description: Video Camera driver for EPICS
+Description: EPICS video camera and detector driver (BOY displays)
  .
- This package provides operator displays
+ This package provides areaDetector operator displays
  for the BOY (Best OPI Yet) display client.
 
 Package: edm-areadetector
@@ -69,7 +70,7 @@ Architecture: all
 Depends: ${misc:Depends},
 Conflicts: edm-synapps (<= 5.5-99),
 Recommends: edm
-Description: Video Camera driver for EPICS
+Description: EPICS video camera and detector driver (EDM displays)
  .
- This package provides operator displays
- for EDM (Extendable Display Manager) display client.
+ This package provides areaDetector operator displays
+ for the EDM (Extensible Display Manager) display client.

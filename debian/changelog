@@ -1,4 +1,4 @@
-areadetector (1.7+dfsg1-6) UNRELEASED; urgency=low
+areadetector (1.7+dfsg1-6) unstable; urgency=low
 
   * Rebuild using fixed adl2edl 1.4-4 for converting panels
   * d/control: force build-dep on real libhdf5-dev (serial) package
@@ -15,7 +15,7 @@ areadetector (1.7+dfsg1-6) UNRELEASED; urgency=low
   * Add panels for AVT GT1920
   * Fix lintian overrides for libareadetector1.7
 
- -- Ralph Lange <Ralph.Lange@gmx.de>  Sat, 01 Feb 2014 16:53:55 +0100
+ -- Ralph Lange <Ralph.Lange@gmx.de>  Fri, 07 Mar 2014 23:10:22 +0100
 
 areadetector (1.7+dfsg1-5) unstable; urgency=low
 

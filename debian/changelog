@@ -11,6 +11,7 @@ areadetector (1.7+dfsg1-6) UNRELEASED; urgency=low
   * d/control; Bump Standards to 3.9.5:
     - replace Conflicts: epics-synapps with Breaks: (Policy 7.4)
   * Switch to Multiarch (needs wheezy, dh9)
+  * Add lintian overrides for *-debug libraries and binaries
 
  -- Ralph Lange <Ralph.Lange@gmx.de>  Sat, 01 Feb 2014 16:53:55 +0100
 

@@ -1,0 +1,4 @@
+# libraries and executables for -debug targets are not stripped and not hardened
+epics-areadetector-dev: unstripped-binary-or-object *-debug/*
+epics-areadetector-dev: hardening-no-fortify-functions *-debug/*
+epics-areadetector-dev: arch-dependent-file-not-in-arch-specific-directory *-debug/*

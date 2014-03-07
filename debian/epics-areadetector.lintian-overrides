@@ -1,2 +1,3 @@
-epics-areadetector: unstripped-binary-or-object
-# executables for -debug targets are not stripped
+# libraries and executables for -debug targets are not stripped and not hardened
+epics-areadetector: unstripped-binary-or-object *-debug/*
+epics-areadetector: hardening-no-fortify-functions *-debug/*

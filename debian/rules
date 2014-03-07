@@ -83,4 +83,4 @@ override_dh_install:
 	  -type f -exec chmod -x {} \;
 
 override_dh_shlibdeps:
-	dh_shlibdeps -l$(CURDIR)/debian/tmp/usr/lib
+	dh_shlibdeps -l$(CURDIR)/debian/tmp/usr/lib$(slashtriplet)

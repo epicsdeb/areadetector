@@ -3,7 +3,7 @@ Section: utils
 Priority: extra
 Maintainer: Ralph Lange <Ralph.Lange@gmx.de>
 Uploaders: Michael Davidsaver <mdavidsaver@bnl.gov>
-Build-Depends: debhelper (>= 7.0.50~), epics-debhelper (>= 6~),
+Build-Depends: debhelper (>= 9), epics-debhelper (>= 8.10~),
                epics-dev (>= 3.14.11-2),
                epics-synapps-dev, epics-iocstats-dev,
                epics-msi,
@@ -22,8 +22,10 @@ Vcs-Browser: https://github.com/epicsdeb/areadetector
 Vcs-Git: https://github.com/epicsdeb/areadetector.git
 
 Package: libareadetector1.7
-Architecture: any
 Section: libs
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Recommends: epics-areadetector (= ${binary:Version})
 Description: EPICS video camera and detector driver (library)
@@ -32,8 +34,9 @@ Description: EPICS video camera and detector driver (library)
  areaDetector module
 
 Package: epics-areadetector
-Architecture: any
 Section: video
+Architecture: any
+Multi-Arch: foreign
 Depends: ${shlibs:Depends}, ${misc:Depends},
 Recommends: edm-areadetector (= ${source:Version}),
             libareadetector1.7 (= ${binary:Version}),
@@ -44,8 +47,10 @@ Description: EPICS video camera and detector driver (database files)
  needed by an IOC using the areaDetector support.
 
 Package: epics-areadetector-dev
-Architecture: any
 Section: libdevel
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends},
          epics-areadetector (= ${binary:Version}),
 Recommends: edm-areadetector (= ${source:Version})
@@ -58,6 +63,7 @@ Description: EPICS video camera and detector driver (development files)
 Package: boy-areadetector
 Section: contrib/devel
 Architecture: all
+Multi-Arch: foreign
 Depends: ${misc:Depends},
 Description: EPICS video camera and detector driver (BOY displays)
  .
@@ -67,6 +73,7 @@ Description: EPICS video camera and detector driver (BOY displays)
 Package: edm-areadetector
 Section: contrib/devel
 Architecture: all
+Multi-Arch: foreign
 Depends: ${misc:Depends},
 Breaks: edm-synapps (<< 5.6~),
 Recommends: edm

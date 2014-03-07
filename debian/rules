@@ -67,6 +67,7 @@ convert-adl:
 	sed -i -e 's|"[^c]*composite file |"|g' edl/*.edl
 
 	cp aravis/aravisGigEApp/opi/edl/*.edl edl/
+	cp debian/opi/edl/*.edl edl/
 	sed -i -e 's|arial|helvetica|g' edl/*.edl
 	sed -i -e 's|charter|helvetica|g' edl/*.edl
 	sed -i -e 's|helvetica-bold-r-16\.0|helvetica-bold-r-12.0|g' edl/*.edl

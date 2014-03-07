@@ -1,1 +1,2 @@
-libareadetector1.7: package-name-doesnt-match-sonames libADBase1.7 libBISDetector1.7 libNDPlugin1.7 libPSL1.7 libURLDriver1.7 libadsc1.7 libmar345-1.7 libmarCCD-AD1.7 libpilatusDetector1.7 libprosilica1.7 libsimDetector1.7
+libareadetector1.7: package-name-doesnt-match-sonames libADBase1.7+dfsg1 libBISDetector1.7+dfsg1 libNDPlugin1.7+dfsg1 libPSL1.7+dfsg1 libURLDriver1.7+dfsg1 libadsc1.7+dfsg1 libaravisCamera1.7+dfsg1 libfirewireDCAM1.7+dfsg1 libmar345-1.7+dfsg1 libmarCCD-AD1.7+dfsg1 libpilatusDetector1.7+dfsg1 libsimDetector1.7+dfsg1
+libareadetector1.7: dev-pkg-without-shlib-symlink

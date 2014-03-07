@@ -13,6 +13,7 @@ areadetector (1.7+dfsg1-6) UNRELEASED; urgency=low
   * Switch to Multiarch (needs wheezy, dh9)
   * Add lintian overrides for *-debug libraries and binaries
   * Add panels for AVT GT1920
+  * Fix lintian overrides for libareadetector1.7
 
  -- Ralph Lange <Ralph.Lange@gmx.de>  Sat, 01 Feb 2014 16:53:55 +0100
 

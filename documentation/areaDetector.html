@@ -22,20 +22,6 @@
   <p>
     Devices supported in <b>areaDetector</b> include:</p>
   <p>
-    From <a href="http://www.dectris.com">Dectris</a>
-  </p>
-  <ul>
-    <li>The <a href="http://www.dectris.com/sites/pilatus100k.html">Pilatus</a> pixel-array
-      detector.</li>
-  </ul>
-  <p>
-    From <a href="http://www.prosilica.com">Prosilica</a>
-  </p>
-  <ul>
-    <li>High-speed, high-resolution CCD and CMOS cameras. These use GigE and Firewire
-      interfaces.</li>
-  </ul>
-  <p>
     From <a href="http://www.adsc-xray.com/">ADSC</a>
   </p>
   <ul>
@@ -43,24 +29,25 @@
       IMCA-CAT at the APS. </li>
   </ul>
   <p>
-    From <a href="http://www.mar-usa.com/">Rayonix/Mar-USA</a></p>
+    From <a href="http://www.alliedvisiontec.com">Allied Vision Technologies (formerly
+      Prosilica)</a>
+  </p>
   <ul>
-    <li>MarCCD detectors</li>
+    <li>High-speed, high-resolution CCD and CMOS cameras. These use GigE and Firewire
+      interfaces.</li>
   </ul>
   <p>
-    From <a href="http://www.marresearch.com/">Marresearch GmbH</a></p>
+    From <a href="http://www.andor.com">Andor Technology</a>
+  </p>
   <ul>
-    <li>mar345 online image plate reader</li>
+    <li>Cooled CCD cameras with USB and PCI interfaces.</li>
+    <li>Scientific CMOS (sCMOS) cameras with CameraLink interfaces.</li>
   </ul>
   <p>
-    From <a href="http://www.roperscientific.com/">Roper</a></p>
+    From <a href="http://www.axis.com/">Axis Communications</a> and many other manufacturers.</p>
   <ul>
-    <li>All CCD detectors supported by the WinView and WinSpec programs. This includes
-      all <a href="http://www.princetoninstruments.com/">Princeton Instruments</a> detectors,
-      as well as most <a href="http://www.photomet.com/">Photometrics</a> detectors. </li>
-    <li>All CCD detectors supported by the PVCam library. This includes all <a href="http://www.photomet.com/">
-      Photometrics</a> detectors, as well as many <a href="http://www.princetoninstruments.com/">
-        Princeton Instruments</a> detectors.</li>
+    <li>The areaDetector URL driver can read images from any URL, including Web cameras,
+      video servers, disk files, etc.</li>
   </ul>
   <p>
     From <a href="http://www.bruker-axs.de/">Bruker</a></p>
@@ -69,6 +56,29 @@
     <li>The old SMART CCD camera line with Photometrics cameras. This requires the PCI
       interface card, replacing the old ISA bus card, and requires controlling the detector
       with WinView, not the SMART software.</li>
+  </ul>
+  <p>
+    From <a href="http://www.dectris.com">Dectris</a>
+  </p>
+  <ul>
+    <li>The <a href="http://www.dectris.com/sites/pilatus100k.html">Pilatus</a> pixel-array
+      detector.</li>
+  </ul>
+  <p>
+    From <a href="http://www.marresearch.com/">Marresearch GmbH</a></p>
+  <ul>
+    <li>mar345 online image plate reader</li>
+  </ul>
+  <p>
+    From <a href="http://optoelectronics.perkinelmer.com/">Perkin Elmer</a></p>
+  <ul>
+    <li>Amorphous silicon flat panel detectors. This support was originally written by
+      Brian Tieman and John Hammonds from the APS.</li>
+  </ul>
+  <p>
+    From <a href="http://photonic-science.co.uk/">Photonic Science</a></p>
+  <ul>
+    <li>CCD and CMOS cameras.</li>
   </ul>
   <p>
     From <a href="http://www.ptgrey.com/products/flea2/index.asp">Point Grey Research</a>
@@ -81,21 +91,20 @@
       from the areaDetector module.</li>
   </ul>
   <p>
-    From <a href="http://optoelectronics.perkinelmer.com/">Perkin Elmer</a></p>
+    From <a href="http://www.rayonix.com/">Rayonix (formely Mar-USA)</a></p>
   <ul>
-    <li>Amorphous silicon flat panel detectors. This support was written by Brian Tieman
-      and John Hammonds from the APS.</li>
+    <li>Cooled x-ray CCD detectors</li>
   </ul>
   <p>
-    From <a href="http://www.axis.com/">Axis Communications"</a> and many other manufacturers.</p>
+    From <a href="http://www.roperscientific.com/">Roper</a></p>
   <ul>
-    <li>The areaDetector URL driver can read images from any URL, including Web cameras,
-      video servers, disk files, etc.</li>
-  </ul>
-  <p>
-    From <a href="http://photonic-science.co.uk/">Photonic Science</a></p>
-  <ul>
-    <li>CCD and CMOS cameras.</li>
+    <li>All CCD detectors supported by the WinView and WinSpec programs. This includes
+      all <a href="http://www.princetoninstruments.com/">Princeton Instruments</a> detectors,
+      as well as most <a href="http://www.photomet.com/">Photometrics</a> detectors.
+    </li>
+    <li>All CCD detectors supported by the PVCam library. This includes all <a href="http://www.photomet.com/">
+      Photometrics</a> detectors, as well as many <a href="http://www.princetoninstruments.com/">
+        Princeton Instruments</a> detectors.</li>
   </ul>
   <p>
     Please email any comments and bug reports to <a href="mailto:rivers@cars.uchicago.edu">
@@ -110,8 +119,8 @@
   <p>
     You can also download the software from the links in the table below. The software
     is available both in source code form, and in pre-built form so that it can be used
-    without an EPICS build system. The pre-built form includes binaries for linux-x86,
-    win32-x86, cygwin-x86, and some vxWorks architectures.</p>
+    without an EPICS build system. There are separate pre-built binary packages for
+    linux-x86, linux-x86_64, win32-x86, windows-x64, and cygwin-x86.</p>
   <table border="1" summary="Where to find the software">
     <tbody>
       <tr align="center">
@@ -132,11 +141,106 @@
       </tr>
       <tr>
         <td>
+          1-9-1</td>
+        <td>
+          11-March-2013</td>
+        <td>
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorR1-9-1.tgz">areaDetectorR1-9-1.tgz</a>
+        </td>
+        <td>
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-9-1_linux-x86.tgz">
+            areaDetectorPrebuilt_R1-9-1_linux-x86.tgz</a><br />
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-9-1_linux-x86-gcc43.tgz">
+            areaDetectorPrebuilt_R1-9-1_linux-x86-gcc43.tgz</a><br />
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-9-1_linux-x86_64.tgz">
+            areaDetectorPrebuilt_R1-9-1_linux-x86_64.tgz</a><br />
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-9-1_linux-x86_64-gcc42.tgz">
+            areaDetectorPrebuilt_R1-9-1_linux-x86_64-gcc42.tgz</a><br />
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-9-1_win32-x86.tgz">
+            areaDetectorPrebuilt_R1-9-1_win32-x86.tgz</a><br />
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-9-1_windows_x64.tgz">
+            areaDetectorPrebuilt_R1-9-1_windows_x64.tgz</a><br />
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-9-1_cygwin-x86.tgz">
+            areaDetectorPrebuilt_R1-9-1_cygwin-x86.tgz</a><br />
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-9-1_darwin-x86.tgz">
+            areaDetectorPrebuilt_R1-9-1_darwin-x86.tgz</a> </td>
+        <td>
+          <a href="areaDetectorDoc.html">areaDetectorDoc</a></td>
+        <td>
+          <a href="areaDetectorReleaseNotes.html">Release notes</a></td>
+        <td>
+          See release notes</td>
+      </tr>
+      <tr>
+        <td>
+          1-9</td>
+        <td>
+          27-February-2013</td>
+        <td>
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorR1-9.tgz">areaDetectorR1-9.tgz</a>
+        </td>
+        <td>
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-9_linux-x86.tgz">
+            areaDetectorPrebuilt_R1-9_linux-x86.tgz</a><br />
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-9_linux-x86-gcc43.tgz">
+            areaDetectorPrebuilt_R1-9_linux-x86-gcc43.tgz</a><br />
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-9_linux-x86_64.tgz">
+            areaDetectorPrebuilt_R1-9_linux-x86_64.tgz</a><br />
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-9_linux-x86_64-gcc42.tgz">
+            areaDetectorPrebuilt_R1-9_linux-x86_64-gcc42.tgz</a><br />
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-9_win32-x86.tgz">
+            areaDetectorPrebuilt_R1-9_win32-x86.tgz</a><br />
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-9_windows_x64.tgz">
+            areaDetectorPrebuilt_R1-9_windows_x64.tgz</a><br />
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-9_cygwin-x86.tgz">
+            areaDetectorPrebuilt_R1-9_cygwin-x86.tgz</a><br />
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-9_darwin-x86.tgz">
+            areaDetectorPrebuilt_R1-9_darwin-x86.tgz</a> </td>
+        <td>
+          <a href="areaDetectorDoc.html">areaDetectorDoc</a></td>
+        <td>
+          <a href="areaDetectorReleaseNotes.html">Release notes</a></td>
+        <td>
+          See release notes</td>
+      </tr>
+      <tr>
+        <td>
+          1-8</td>
+        <td>
+          6-October-2012</td>
+        <td>
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorR1-8.tgz">areaDetectorR1-8.tgz</a>
+        </td>
+        <td>
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-8_linux-x86.tgz">
+            areaDetectorPrebuilt_R1-8_linux-x86.tgz</a><br />
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-8_linux-x86-gcc43.tgz">
+            areaDetectorPrebuilt_R1-8_linux-x86-gcc43.tgz</a><br />
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-8_linux-x86_64.tgz">
+            areaDetectorPrebuilt_R1-8_linux-x86_64.tgz</a><br />
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-8_linux-x86_64-gcc42.tgz">
+            areaDetectorPrebuilt_R1-8_linux-x86_64-gcc42.tgz</a><br />
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-8_win32-x86.tgz">
+            areaDetectorPrebuilt_R1-8_win32-x86.tgz</a><br />
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-8_windows_x64.tgz">
+            areaDetectorPrebuilt_R1-8_windows_x64.tgz</a><br />
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-8_cygwin-x86.tgz">
+            areaDetectorPrebuilt_R1-8_cygwin-x86.tgz</a> </td>
+        <td>
+          <a href="areaDetectorDoc.html">areaDetectorDoc</a></td>
+        <td>
+          <a href="areaDetectorReleaseNotes.html">Release notes</a></td>
+        <td>
+          See release notes</td>
+      </tr>
+      <tr>
+        <td>
           1-7</td>
         <td>
           9-Aug-2011</td>
         <td>
-          <a href="http://cars.uchicago.edu/software/pub/areaDetectorR1-7.tgz">areaDetectorR1-7.tgz</a></td>
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorR1-7.tgz">areaDetectorR1-7.tgz</a>
+        </td>
         <td>
           <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-7_linux-x86.tgz">
             areaDetectorPrebuilt_R1-7_linux-x86.tgz</a><br />
@@ -147,8 +251,7 @@
           <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-7_windows_x64.tgz">
             areaDetectorPrebuilt_R1-7_windows_x64.tgz</a><br />
           <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-7_cygwin-x86.tgz">
-            areaDetectorPrebuilt_R1-7_cygwin-x86.tgz</a>
-        </td>
+            areaDetectorPrebuilt_R1-7_cygwin-x86.tgz</a> </td>
         <td>
           <a href="areaDetectorDoc.html">areaDetectorDoc</a></td>
         <td>
@@ -162,9 +265,11 @@
         <td>
           20-May-2010</td>
         <td>
-          <a href="http://cars.uchicago.edu/software/pub/areaDetectorR1-6.tgz">areaDetectorR1-6.tgz</a></td>
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorR1-6.tgz">areaDetectorR1-6.tgz</a>
+        </td>
         <td>
-          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-6.tgz">areaDetectorPrebuilt_R1-6.tgz</a></td>
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-6.tgz">areaDetectorPrebuilt_R1-6.tgz</a>
+        </td>
         <td>
           <a href="areaDetectorDoc.html">areaDetectorDoc</a></td>
         <td>
@@ -178,9 +283,11 @@
         <td>
           23-August-2009</td>
         <td>
-          <a href="http://cars.uchicago.edu/software/pub/areaDetectorR1-5.tgz">areaDetectorR1-5.tgz</a></td>
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorR1-5.tgz">areaDetectorR1-5.tgz</a>
+        </td>
         <td>
-          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-5.tgz">areaDetectorPrebuilt_R1-5.tgz</a></td>
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-5.tgz">areaDetectorPrebuilt_R1-5.tgz</a>
+        </td>
         <td>
           <a href="areaDetectorDoc.html">areaDetectorDoc</a></td>
         <td>
@@ -194,9 +301,11 @@
         <td>
           30-Jan-2009</td>
         <td>
-          <a href="http://cars.uchicago.edu/software/pub/areaDetectorR1-4.tgz">areaDetectorR1-4.tgz</a></td>
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorR1-4.tgz">areaDetectorR1-4.tgz</a>
+        </td>
         <td>
-          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-4.tgz">areaDetectorPrebuilt_R1-4.tgz</a></td>
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-4.tgz">areaDetectorPrebuilt_R1-4.tgz</a>
+        </td>
         <td>
           <a href="areaDetectorDoc.html">areaDetectorDoc</a></td>
         <td>
@@ -210,9 +319,11 @@
         <td>
           24-Nov-2008</td>
         <td>
-          <a href="http://cars.uchicago.edu/software/pub/areaDetectorR1-3.tgz">areaDetectorR1-3.tgz</a></td>
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorR1-3.tgz">areaDetectorR1-3.tgz</a>
+        </td>
         <td>
-          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-3.tgz">areaDetectorPrebuilt_R1-3.tgz</a></td>
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorPrebuilt_R1-3.tgz">areaDetectorPrebuilt_R1-3.tgz</a>
+        </td>
         <td>
           <a href="areaDetectorDoc.html">areaDetectorDoc</a></td>
         <td>
@@ -226,7 +337,8 @@
         <td>
           24-Oct-2008</td>
         <td>
-          <a href="http://cars.uchicago.edu/software/pub/areaDetectorR1-2.tgz">areaDetectorR1-2.tgz</a></td>
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorR1-2.tgz">areaDetectorR1-2.tgz</a>
+        </td>
         <td>
           N.A.</td>
         <td>
@@ -242,7 +354,8 @@
         <td>
           10-May-2008</td>
         <td>
-          <a href="http://cars.uchicago.edu/software/pub/areaDetectorR1-1.tgz">areaDetectorR1-1.tgz</a></td>
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorR1-1.tgz">areaDetectorR1-1.tgz</a>
+        </td>
         <td>
           N.A.</td>
         <td>
@@ -258,7 +371,8 @@
         <td>
           11-Apr-2008</td>
         <td>
-          <a href="http://cars.uchicago.edu/software/pub/areaDetectorR1-0.tgz">areaDetectorR1-0.tgz</a></td>
+          <a href="http://cars.uchicago.edu/software/pub/areaDetectorR1-0.tgz">areaDetectorR1-0.tgz</a>
+        </td>
         <td>
           N.A.</td>
         <td>
@@ -285,6 +399,109 @@
           Required for</th>
       </tr>
       <tr>
+        <td rowspan="6">
+          1-9, 1-9-1</td>
+        <td>
+          EPICS base</td>
+        <td>
+          3.14.12.3</td>
+        <td>
+          Base support</td>
+      </tr>
+      <tr>
+        <td>
+          asyn</td>
+        <td>
+          4-21</td>
+        <td>
+          Socket and interface support</td>
+      </tr>
+      <tr>
+        <td>
+          busy</td>
+        <td>
+          1-4</td>
+        <td>
+          busy record </td>
+      </tr>
+      <tr>
+        <td>
+          calc</td>
+        <td>
+          3-0</td>
+        <td>
+          scalcout and sseq records, needed by sscan database and useful for other databases
+        </td>
+      </tr>
+      <tr>
+        <td>
+          sscan</td>
+        <td>
+          2-8-1</td>
+        <td>
+          sscan record</td>
+      </tr>
+      <tr>
+        <td>
+          autosave</td>
+        <td>
+          5-0</td>
+        <td>
+          Save/restore</td>
+      </tr>
+      <tr>
+        <td rowspan="6">
+          1-8</td>
+        <td>
+          EPICS base</td>
+        <td>
+          3.14.12.2 (with all current patches)</td>
+        <td>
+          Base support</td>
+      </tr>
+      <tr>
+        <td>
+          asyn</td>
+        <td>
+          4-20</td>
+        <td>
+          Socket and interface support</td>
+      </tr>
+      <tr>
+        <td>
+          busy</td>
+        <td>
+          1-4</td>
+        <td>
+          busy record. This was formerly included in sscan, but now has its own support module.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          calc</td>
+        <td>
+          3-0</td>
+        <td>
+          scalcout and sseq records, needed by sscan database and useful for other databases
+        </td>
+      </tr>
+      <tr>
+        <td>
+          sscan</td>
+        <td>
+          2-8-1</td>
+        <td>
+          sscan record</td>
+      </tr>
+      <tr>
+        <td>
+          autosave</td>
+        <td>
+          5-0</td>
+        <td>
+          Save/restore</td>
+      </tr>
+      <tr>
         <td rowspan="7">
           1-7</td>
         <td>
@@ -308,7 +525,8 @@
         <td>
           1-3</td>
         <td>
-          busy record. This was formerly included in sscan, but now has its own support module.</td>
+          busy record. This was formerly included in sscan, but now has its own support module.
+        </td>
       </tr>
       <tr>
         <td>
@@ -332,7 +550,8 @@
         <td>
           7-0</td>
         <td>
-          mca record for getting time sequence of Total or Net counts from statistics plugin</td>
+          mca record for getting time sequence of Total or Net counts from statistics plugin
+        </td>
       </tr>
       <tr>
         <td>
@@ -366,7 +585,8 @@
         <td>
           1-3</td>
         <td>
-          busy record. This was formerly included in sscan, but now has its own support module.</td>
+          busy record. This was formerly included in sscan, but now has its own support module.
+        </td>
       </tr>
       <tr>
         <td>
@@ -390,7 +610,8 @@
         <td>
           6-12-1</td>
         <td>
-          mca record for getting time sequence of Total or Net counts from statistics plugin</td>
+          mca record for getting time sequence of Total or Net counts from statistics plugin
+        </td>
       </tr>
       <tr>
         <td>
@@ -424,7 +645,8 @@
         <td>
           1-2</td>
         <td>
-          busy record. This was formerly included in sscan, but now has its own support module.</td>
+          busy record. This was formerly included in sscan, but now has its own support module.
+        </td>
       </tr>
       <tr>
         <td>
@@ -482,7 +704,8 @@
         <td>
           1-1</td>
         <td>
-          busy record. This was formerly included in sscan, but now has its own support module.</td>
+          busy record. This was formerly included in sscan, but now has its own support module.
+        </td>
       </tr>
       <tr>
         <td>

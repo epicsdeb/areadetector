@@ -11,6 +11,7 @@
 #include <netcdf.h>
 
 #include <epicsStdio.h>
+#include <epicsThread.h>
 #include <iocsh.h>
 
 #include "NDFileNetCDF.h"
@@ -124,8 +125,8 @@ asynStatus NDFileNetCDF::openFile(const char *fileName, NDFileOpenMode_t openMod
         sprintf(dimName, "dim%d", i);
         if ((retval = nc_def_dim(this->ncId, dimName, pArray->dims[j].size, &dimIds[i+1])))
             ERR(retval);
-        size[i]    = pArray->dims[i].size;
-        offset[i]  = pArray->dims[i].offset;
+        size[i]    = (int)pArray->dims[i].size;
+        offset[i]  = (int)pArray->dims[i].offset;
         binning[i] = pArray->dims[i].binning;
         reverse[i]  = pArray->dims[i].reverse;
     }
@@ -344,8 +345,11 @@ asynStatus NDFileNetCDF::writeFile(NDArray *pArray)
 
     switch (pArray->dataType) {
         case NDInt8:
-        case NDUInt8:
             if ((retval = nc_put_vara_schar(this->ncId, this->arrayDataId, start, count, (signed char*)pArray->pData)))
+                ERR(retval);
+            break;
+        case NDUInt8:
+            if ((retval = nc_put_vara_uchar(this->ncId, this->arrayDataId, start, count, (unsigned char*)pArray->pData)))
                 ERR(retval);
             break;
         case NDInt16:
@@ -458,8 +462,10 @@ NDFileNetCDF::NDFileNetCDF(const char *portName, int queueSize, int blockingCall
      * Set autoconnect to 1.  priority and stacksize can be 0, which will use defaults. */
     : NDPluginFile(portName, queueSize, blockingCallbacks,
                    NDArrayPort, NDArrayAddr, 1, NUM_NDFILE_NETCDF_PARAMS,
-                   2, -1, asynGenericPointerMask, asynGenericPointerMask, 
-                   ASYN_CANBLOCK, 1, priority, stackSize)
+                   2, 0, asynGenericPointerMask, asynGenericPointerMask, 
+                   ASYN_CANBLOCK, 1, priority, 
+                   /* netCDF needs a relatively large stack, make the default be large */
+                   (stackSize==0) ? epicsThreadGetStackSize(epicsThreadStackBig) : stackSize)
 {
     //const char *functionName = "NDFileNetCDF";
     
@@ -475,10 +481,8 @@ extern "C" int NDFileNetCDFConfigure(const char *portName, int queueSize, int bl
                                      const char *NDArrayPort, int NDArrayAddr,
                                      int priority, int stackSize)
 {
-    NDFileNetCDF *pPlugin =
-        new NDFileNetCDF(portName, queueSize, blockingCallbacks, NDArrayPort, NDArrayAddr,
-                         priority, stackSize);
-    pPlugin = NULL;  /* This is just to eliminate compiler warning about unused variables/objects */
+    new NDFileNetCDF(portName, queueSize, blockingCallbacks, NDArrayPort, NDArrayAddr,
+                     priority, stackSize);
     return(asynSuccess);
 }
 

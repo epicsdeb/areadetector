@@ -10,7 +10,7 @@
     <h1>
       areaDetector Prosilica driver</h1>
     <h2>
-      August 9, 2011</h2>
+      February 27, 2013</h2>
     <h2>
       Mark Rivers</h2>
     <h2>
@@ -24,7 +24,7 @@
     <li><a href="#Driver_parameters">Prosilica specific parameters</a></li>
     <li><a href="#Configuration">Configuration</a></li>
     <li><a href="#MEDM_screens">MEDM screens</a></li>
-    <li><a href="#Future">Future enhancements</a></li>
+    <li><a href="#ConnectionManagement">Connection management</a></li>
   </ul>
   <h2 id="Overview">
     Overview</h2>
@@ -92,7 +92,8 @@
     <tbody>
       <tr>
         <td align="center" colspan="7,">
-          <b>Parameter Definitions in prosilica.cpp and EPICS Record Definitions in prosilica.template</b></td>
+          <b>Parameter Definitions in prosilica.cpp and EPICS Record Definitions in prosilica.template</b>
+        </td>
       </tr>
       <tr>
         <th>
@@ -113,6 +114,92 @@
       <tr>
         <td align="center" colspan="7,">
           <b>Trigger and I/O Control</b></td>
+      </tr>
+      <tr>
+        <td>
+          PSTriggerEvent</td>
+        <td>
+          asynInt32</td>
+        <td>
+          r/w</td>
+        <td>
+          The edge or level for the selected trigger signal when ADTriggerMode=Sync In 1 to
+          SyncIn 4. Allowed values are:<br />
+          Rising edge<br />
+          Falling edge<br />
+          Any edge<br />
+          High level<br />
+          Low level </td>
+        <td>
+          PS_TRIGGER_EVENT</td>
+        <td>
+          $(P)$(R)TriggerEvent<br />
+          $(P)$(R)TriggerEvent_RBV</td>
+        <td>
+          mbbo
+          <br />
+          mbbi</td>
+      </tr>
+      <tr>
+        <td>
+          PSTriggerDelay</td>
+        <td>
+          asynFloat64</td>
+        <td>
+          r/w</td>
+        <td>
+          The delay in seconds between the trigger signal and when the frame is actually acquired.
+          Minimum value is 1 microsecond. </td>
+        <td>
+          PS_TRIGGER_DELAY</td>
+        <td>
+          $(P)$(R)TriggerDelay<br />
+          $(P)$(R)TriggerDelay_RBV</td>
+        <td>
+          ao
+          <br />
+          ai</td>
+      </tr>
+      <tr>
+        <td>
+          PSTriggerOverlap</td>
+        <td>
+          asynInt32</td>
+        <td>
+          r/w</td>
+        <td>
+          Controls the behavior when an external trigger signal arrives before the camera
+          is ready for the next trigger. Allowed values are:<br />
+          Off - the external trigger is ignored<br />
+          Previous frame - the external trigger is latched and triggers the next frame when
+          the current frame completes<br />
+        </td>
+        <td>
+          PS_TRIGGER_OVERLAP</td>
+        <td>
+          $(P)$(R)TriggerOverlap<br />
+          $(P)$(R)TriggerOverlap_RBV</td>
+        <td>
+          mbbo
+          <br />
+          mbbi</td>
+      </tr>
+      <tr>
+        <td>
+          PSTriggerSoftware</td>
+        <td>
+          asynInt32</td>
+        <td>
+          r/w</td>
+        <td>
+          Processing this record performs a software trigger if ADTriggerMode=Software.
+        </td>
+        <td>
+          PS_TRIGGER_SOFTWARE</td>
+        <td>
+          $(P)$(R)TriggerSoftware</td>
+        <td>
+          bo</td>
       </tr>
       <tr>
         <td>
@@ -194,13 +281,11 @@
         <td>
           $(P)$(R)SyncOut1Mode
           <br />
-          $(P)$(R)SyncOut1Mode_RBV
-        </td>
+          $(P)$(R)SyncOut1Mode_RBV </td>
         <td>
           mbbo
           <br />
-          mbbi
-        </td>
+          mbbi </td>
       </tr>
       <tr>
         <td>
@@ -210,7 +295,8 @@
         <td>
           r/w</td>
         <td>
-          The level of the Sync Out 1 signal. This is only programmable when SyncOut1Mode=GPO.</td>
+          The level of the Sync Out 1 signal. This is only programmable when SyncOut1Mode=GPO.
+        </td>
         <td>
           PS_SYNC_OUT_1_LEVEL</td>
         <td>
@@ -253,13 +339,11 @@
         <td>
           $(P)$(R)SyncOut2Mode
           <br />
-          $(P)$(R)SyncOut2Mode_RBV
-        </td>
+          $(P)$(R)SyncOut2Mode_RBV </td>
         <td>
           mbbo
           <br />
-          mbbi
-        </td>
+          mbbi </td>
       </tr>
       <tr>
         <td>
@@ -269,7 +353,8 @@
         <td>
           r/w</td>
         <td>
-          The level of the Sync Out 2 signal. This is only programmable when SyncOut2Mode=GPO.</td>
+          The level of the Sync Out 2 signal. This is only programmable when SyncOut2Mode=GPO.
+        </td>
         <td>
           PS_SYNC_OUT_2_LEVEL</td>
         <td>
@@ -312,13 +397,11 @@
         <td>
           $(P)$(R)SyncOut3Mode
           <br />
-          $(P)$(R)SyncOut3Mode_RBV
-        </td>
+          $(P)$(R)SyncOut3Mode_RBV </td>
         <td>
           mbbo
           <br />
-          mbbi
-        </td>
+          mbbi </td>
       </tr>
       <tr>
         <td>
@@ -328,7 +411,8 @@
         <td>
           r/w</td>
         <td>
-          The level of the Sync Out 3 signal. This is only programmable when SyncOut3Mode=GPO.</td>
+          The level of the Sync Out 3 signal. This is only programmable when SyncOut3Mode=GPO.
+        </td>
         <td>
           PS_SYNC_OUT_3_LEVEL</td>
         <td>
@@ -395,13 +479,11 @@
         <td>
           $(P)$(R)Strobe1Mode
           <br />
-          $(P)$(R)Strobe1Mode_RBV
-        </td>
+          $(P)$(R)Strobe1Mode_RBV </td>
         <td>
           mbbo
           <br />
-          mbbi
-        </td>
+          mbbi </td>
       </tr>
       <tr>
         <td>
@@ -447,7 +529,8 @@
         <td>
           r/w</td>
         <td>
-          The strobe delay relative to the underlying signal that the strobe is based on.</td>
+          The strobe delay relative to the underlying signal that the strobe is based on.
+        </td>
         <td>
           PS_STROBE_1_DELAY</td>
         <td>
@@ -456,6 +539,59 @@
         <td>
           ao<br />
           ai</td>
+      </tr>
+      <tr>
+        <td align="center" colspan="7,">
+          <b>Timestamp Control</b></td>
+      </tr>
+      <tr>
+        <td>
+          PSResetTimer</td>
+        <td>
+          asynInt32</td>
+        <td>
+          r/w</td>
+        <td>
+          Resets the timestamp timer in the camera. If PSTimestampType is POSIX or EPICS then
+          it also stores the current POSIX or EPICS time in the driver.</td>
+        <td>
+          PS_RESET_TIMER</td>
+        <td>
+          $(P)$(R)PSResetTimer</td>
+        <td>
+          longout</td>
+      </tr>
+      <tr>
+        <td>
+          PSTimestampType</td>
+        <td>
+          asynInt32</td>
+        <td>
+          r/w</td>
+        <td>
+          Controls the type of timestamp in the timeStamp field of each NDArray. Choices are:
+          <ul>
+            <li>NativeTicks: The number of internal camera clock ticks which have elapsed since
+              the last timer reset.</li>
+            <li>NativeSeconds: The number of seconds which have elapsed since the last timer reset.
+              This is NativeTicks divided by the internal camera clock frequency.</li>
+            <li>POSIX: The number of seconds since the POSIX Epoch (00:00:00 UTC, January 1, 1970).</li>
+            <li>EPICS The number of seconds since the EPICS Epoch (January 1, 1990).</li>
+          </ul>
+          The POSIX and EPICS timestamps are calculated as follows: when the timer is reset
+          the current POSIX or EPICS time is stored, and the internal camera timer is reset.
+          The timestamps are then computed by adding the camera ticks (converted to seconds)
+          to the stored POSIX or EPICS time. Thus, the relative times of each frame are accurately
+          controlled by the internal camera clock. The accuracy of the absolute time is determined
+          by the accuracy of the time of day clock in the IOC computer.</td>
+        <td>
+          PS_TIMESTAMP_TYPE</td>
+        <td>
+          $(P)$(R)PSTimestampType<br />
+          $(P)$(R)PSTimestampType_RBV</td>
+        <td>
+          mbbo<br />
+          mbbi</td>
       </tr>
       <tr>
         <td align="center" colspan="7,">
@@ -544,6 +680,24 @@
           $(P)$(R)PSByteRate_RBV</td>
         <td>
           longout<br />
+          longin</td>
+      </tr>
+      <tr>
+        <td>
+          PSPacketSize</td>
+        <td>
+          asynInt32</td>
+        <td>
+          r/o</td>
+        <td>
+          Actual packet size of Ethernet packets. When connecting to the camera the driver
+          always automatically negotiates the largest packet size that the camera and IOC
+          computer support. </td>
+        <td>
+          PS_PACKET_SIZE</td>
+        <td>
+          $(P)$(R)PSPacketSize_RBV</td>
+        <td>
           longin</td>
       </tr>
       <tr>
@@ -747,11 +901,27 @@
     <h3>
       epics_ad_display.pro</h3>
     <img alt="prosilica_tvscl.jpg" src="prosilica_tvscl.jpg" /></div>
-  <h2 id="Future">
-    Future enhancements</h2>
+  <h2 id="ConnectionManagement">
+    Connection management</h2>
   <p>
-    Work is needed on connection management. If the camera is unplugged or powered off
-    when the areaDetector driver is running it does not gracefully recover.
+    The Prosilica driver implements connection management. Cameras do not need to be
+    accessible when the IOC starts up, and can be power-cycled or disconnected and reconnected
+    from the Ethernet without restarting the IOC.</p>
+  <p>
+    Whenever a new camera is detected on the network the Prosilica library issues a
+    callback to the driver. If the driver is not currently connected to a camera it
+    will attempt to connect when receiving the callback. This mechanism should work
+    no matter how the camera is identified in the startup script, i.e. by Unique ID,
+    IP address, or IP name. It is also possible to manually connect and disconnect the
+    camera by using the $(P)$(R)AsynIO.CNCT PV, which is labeled "Connect" and "Disconnect"
+    on the medm screen.</p>
+  <p>
+    If the camera is not accessible when the IOC boots, or is power-cycled then the
+    EPICS output records may not match the actual camera settings and readbacks. They
+    can be made to agree by processing the output record, e.g. by pressing Enter or
+    Return in the medm output widget. In the future this may be improved by sending
+    all of the EPICS settings to the camera when it connects, though it is not clear
+    if this would always be the desired behavior.
   </p>
 </body>
 </html>

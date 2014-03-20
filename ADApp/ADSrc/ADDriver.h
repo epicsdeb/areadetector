@@ -32,14 +32,17 @@ typedef enum
 /** Enumeration of detector status */
 typedef enum
 {
-    ADStatusIdle,       /**< Detector is idle */
-    ADStatusAcquire,    /**< Detector is acquiring */
-    ADStatusReadout,    /**< Detector is reading out */
-    ADStatusCorrect,    /**< Detector is correcting data */
-    ADStatusSaving,     /**< Detector is saving data */
-    ADStatusAborting,   /**< Detector is aborting an operation */
-    ADStatusError,      /**< Detector has encountered an error */
-    ADStatusWaiting     /**< Detector is waiting for something, typically for the acquire period to elapse */
+    ADStatusIdle,         /**< Detector is idle */
+    ADStatusAcquire,      /**< Detector is acquiring */
+    ADStatusReadout,      /**< Detector is reading out */
+    ADStatusCorrect,      /**< Detector is correcting data */
+    ADStatusSaving,       /**< Detector is saving data */
+    ADStatusAborting,     /**< Detector is aborting an operation */
+    ADStatusError,        /**< Detector has encountered an error */
+    ADStatusWaiting,      /**< Detector is waiting for something, typically for the acquire period to elapse */
+    ADStatusInitializing, /**< Detector is initializing, typically at startup */
+    ADStatusDisconnected, /**< Detector is not connected */
+    ADStatusAborted       /**< Detector aquisition has been aborted.*/            
 } ADStatus_t;
 
 /** Enumeration of image collection modes */
@@ -114,6 +117,7 @@ typedef enum
 
     /* Temperature parameters */
 #define ADTemperatureString         "TEMPERATURE"           /**< (asynFloat64,  r/w) Detector temperature */
+#define ADTemperatureActualString   "TEMPERATURE_ACTUAL"    /**< (asynFloat64,  r/o) Actual detector temperature */
 
     /* Statistics on number of images collected and the image rate */
 #define ADNumImagesCounterString    "NIMAGES_COUNTER"       /**< (asynInt32,    r/o) Number of images collected in current acquisition sequence */
@@ -176,12 +180,13 @@ protected:
     int ADShutterOpenDelay;
     int ADShutterCloseDelay;
     int ADTemperature;
+    int ADTemperatureActual;
     int ADReadStatus;
     int ADStatusMessage;
     int ADStringToServer;
     int ADStringFromServer; 
     #define LAST_AD_PARAM ADStringFromServer   
 };
-#define NUM_AD_PARAMS (&LAST_AD_PARAM - &FIRST_AD_PARAM + 1)
+#define NUM_AD_PARAMS ((int)(&LAST_AD_PARAM - &FIRST_AD_PARAM + 1))
 
 #endif

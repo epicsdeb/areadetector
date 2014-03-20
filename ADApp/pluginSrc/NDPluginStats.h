@@ -7,29 +7,62 @@
 #include "NDPluginDriver.h"
 
 typedef struct NDStats {
-    int     nElements;
+    size_t  nElements;
     double  total;
     double  net;
     double  mean;
     double  sigma;
     double  min;
+    size_t  minX;
+    size_t  minY;    
     double  max;
+    size_t  maxX;
+    size_t  maxY;
 } NDStats_t;
 
 typedef enum {
-   profAverage,
-   profThreshold,
-   profCentroid,
-   profCursor
+    profAverage,
+    profThreshold,
+    profCentroid,
+    profCursor
 } NDStatProfileType;
-
 #define MAX_PROFILE_TYPES profCursor+1
+
+typedef enum {
+    TSMinValue,
+    TSMinX,
+    TSMinY,    
+    TSMaxValue,
+    TSMaxX,
+    TSMaxY,
+    TSMeanValue,
+    TSSigmaValue,
+    TSTotal,
+    TSNet,
+    TSCentroidX,
+    TSCentroidY,
+    TSSigmaX,
+    TSSigmaY,
+    TSSigmaXY
+} NDStatTSType;
+#define MAX_TIME_SERIES_TYPES TSSigmaXY+1
+
+typedef enum {
+    TSEraseStart,
+    TSStart,
+    TSStop,
+    TSRead
+} NDStatsTSControl_t;
 
 /* Statistics */
 #define NDPluginStatsComputeStatisticsString  "COMPUTE_STATISTICS"  /* (asynInt32,        r/w) Compute statistics? */
 #define NDPluginStatsBgdWidthString           "BGD_WIDTH"           /* (asynInt32,        r/w) Width of background region when computing net */
 #define NDPluginStatsMinValueString           "MIN_VALUE"           /* (asynFloat64,      r/o) Minimum counts in any element */
+#define NDPluginStatsMinXString               "MIN_X"               /* (asynFloat64,      r/o) X position of minimum counts */
+#define NDPluginStatsMinYString               "MIN_Y"               /* (asynFloat64,      r/o) Y position of minimum counts */
 #define NDPluginStatsMaxValueString           "MAX_VALUE"           /* (asynFloat64,      r/o) Maximum counts in any element */
+#define NDPluginStatsMaxXString               "MAX_X"               /* (asynFloat64,      r/o) X position of maximum counts */
+#define NDPluginStatsMaxYString               "MAX_Y"               /* (asynFloat64,      r/o) Y position of maximum counts */
 #define NDPluginStatsMeanValueString          "MEAN_VALUE"          /* (asynFloat64,      r/o) Mean counts of all elements */
 #define NDPluginStatsSigmaValueString         "SIGMA_VALUE"         /* (asynFloat64,      r/o) Sigma of all elements */
 #define NDPluginStatsTotalString              "TOTAL"               /* (asynFloat64,      r/o) Sum of all elements */
@@ -44,6 +77,28 @@ typedef enum {
 #define NDPluginStatsSigmaYString             "SIGMAY_VALUE"        /* (asynFloat64,      r/o) Sigma Y */
 #define NDPluginStatsSigmaXYString            "SIGMAXY_VALUE"       /* (asynFloat64,      r/o) Sigma XY */
     
+/* Time series of basic statistics and centroid statistics */
+#define NDPluginStatsTSControlString          "TS_CONTROL"          /* (asynInt32,        r/w) Erase/start, stop, start */
+#define NDPluginStatsTSNumPointsString        "TS_NUM_POINTS"       /* (asynInt32,        r/w) Number of time series points to use */
+#define NDPluginStatsTSCurrentPointString     "TS_CURRENT_POINT"    /* (asynInt32,        r/o) Current point in time series */
+#define NDPluginStatsTSAcquiringString        "TS_ACQUIRING"        /* (asynInt32,        r/o) Acquiring time series */
+#define NDPluginStatsTSMinValueString         "TS_MIN_VALUE"        /* (asynFloat64Array, r/o) Series of minimum counts */
+#define NDPluginStatsTSMinXString             "TS_MIN_X"            /* (asynFloat64Array, r/o) Series of X position of minimum counts */
+#define NDPluginStatsTSMinYString             "TS_MIN_Y"            /* (asynFloat64Array, r/o) Series of Y position of minimum counts */
+#define NDPluginStatsTSMaxValueString         "TS_MAX_VALUE"        /* (asynFloat64Array, r/o) Series of maximum counts */
+#define NDPluginStatsTSMaxXString             "TS_MAX_X"            /* (asynFloat64Array, r/o) Series of X position of maximum counts */
+#define NDPluginStatsTSMaxYString             "TS_MAX_Y"            /* (asynFloat64Array, r/o) Series of Y position of maximum counts */
+#define NDPluginStatsTSMeanValueString        "TS_MEAN_VALUE"       /* (asynFloat64Array, r/o) Series of mean counts */
+#define NDPluginStatsTSSigmaValueString       "TS_SIGMA_VALUE"      /* (asynFloat64Array, r/o) Series of sigma */
+#define NDPluginStatsTSTotalString            "TS_TOTAL"            /* (asynFloat64Array, r/o) Series of total */
+#define NDPluginStatsTSNetString              "TS_NET"              /* (asynFloat64Array, r/o) Series of net */
+#define NDPluginStatsTSSeriesMaxString        "TS_MAX_SUM"          /* (asynFloat64Array, r/o) Series of max elements sum */
+#define NDPluginStatsTSCentroidXString        "TS_CENTROIDX_VALUE"  /* (asynFloat64Array, r/o) Series of X centroid */
+#define NDPluginStatsTSCentroidYString        "TS_CENTROIDY_VALUE"  /* (asynFloat64Array, r/o) Series of Y centroid */
+#define NDPluginStatsTSSigmaXString           "TS_SIGMAX_VALUE"     /* (asynFloat64Array, r/o) Series of sigma X */
+#define NDPluginStatsTSSigmaYString           "TS_SIGMAY_VALUE"     /* (asynFloat64Array, r/o) Series of sigma Y */
+#define NDPluginStatsTSSigmaXYString          "TS_SIGMAXY_VALUE"    /* (asynFloat64Array, r/o) Series of sigma XY */
+
 /* Profiles*/   
 #define NDPluginStatsComputeProfilesString    "COMPUTE_PROFILES"    /* (asynInt32,        r/w) Compute profiles? */
 #define NDPluginStatsProfileSizeXString       "PROFILE_SIZE_X"      /* (asynInt32,        r/o) X profile size */
@@ -70,8 +125,6 @@ typedef enum {
 
 /* Arrays of total and net counts for MCA or waveform record */   
 #define NDPluginStatsCallbackPeriodString     "CALLBACK_PERIOD"     /* (asynFloat64,      r/w) Callback period */
-#define NDPluginStatsTotalArrayString         "TOTAL_ARRAY"         /* (asynInt32Array,   r/o) Total counts array */
-#define NDPluginStatsNetArrayString           "NET_ARRAY"           /* (asynInt32Array,   r/o) Net counts array */
 
 /** Does image statistics.  These include
   * Min, max, mean, sigma
@@ -86,10 +139,11 @@ public:
                  int priority, int stackSize);
     /* These methods override the virtual methods in the base class */
     void processCallbacks(NDArray *pArray);
-    asynStatus readFloat64Array(asynUser *pasynUser, epicsFloat64 *value, size_t nElements, size_t *nIn);
     asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
     asynStatus writeFloat64(asynUser *pasynUser, epicsFloat64 value);
     
+    template <typename epicsType> void doComputeStatisticsT(NDArray *pArray, NDStats_t *pStats);
+    int doComputeStatistics(NDArray *pArray, NDStats_t *pStats);
     template <typename epicsType> asynStatus doComputeCentroidT(NDArray *pArray);
     asynStatus doComputeCentroid(NDArray *pArray);
     template <typename epicsType> asynStatus doComputeProfilesT(NDArray *pArray);
@@ -103,7 +157,11 @@ protected:
     /* Statistics */
     int NDPluginStatsBgdWidth;
     int NDPluginStatsMinValue;
+    int NDPluginStatsMinX;
+    int NDPluginStatsMinY;            
     int NDPluginStatsMaxValue;
+    int NDPluginStatsMaxX;
+    int NDPluginStatsMaxY;        
     int NDPluginStatsMeanValue;
     int NDPluginStatsSigmaValue;
     int NDPluginStatsTotal;
@@ -118,6 +176,27 @@ protected:
     int NDPluginStatsSigmaY;
     int NDPluginStatsSigmaXY;
 
+    /* Time Series */
+    int NDPluginStatsTSControl;
+    int NDPluginStatsTSNumPoints;
+    int NDPluginStatsTSCurrentPoint;
+    int NDPluginStatsTSAcquiring;
+    int NDPluginStatsTSMinValue;
+    int NDPluginStatsTSMinX;
+    int NDPluginStatsTSMinY;                
+    int NDPluginStatsTSMaxValue;
+    int NDPluginStatsTSMaxX;
+    int NDPluginStatsTSMaxY;            
+    int NDPluginStatsTSMeanValue;
+    int NDPluginStatsTSSigmaValue;
+    int NDPluginStatsTSTotal;
+    int NDPluginStatsTSNet;
+    int NDPluginStatsTSCentroidX;
+    int NDPluginStatsTSCentroidY;
+    int NDPluginStatsTSSigmaX;
+    int NDPluginStatsTSSigmaY;
+    int NDPluginStatsTSSigmaXY;
+    
     /* Profiles */
     int NDPluginStatsComputeProfiles;
     int NDPluginStatsProfileSizeX;
@@ -141,12 +220,7 @@ protected:
     int NDPluginStatsHistEntropy;
     int NDPluginStatsHistArray;
 
-    /* Arrays of total and net counts for MCA or waveform record */   
-    int NDPluginStatsCallbackPeriod;
-    int NDPluginStatsTotalArray;
-    int NDPluginStatsNetArray;
-
-    #define LAST_NDPLUGIN_STATS_PARAM NDPluginStatsNetArray
+    #define LAST_NDPLUGIN_STATS_PARAM NDPluginStatsHistArray
                                 
 private:
     double  centroidThreshold;
@@ -157,19 +231,21 @@ private:
     double  sigmaXY;
     double  *profileX[MAX_PROFILE_TYPES];
     double  *profileY[MAX_PROFILE_TYPES];
-    int profileSizeX;
-    int profileSizeY;
-    int cursorX;
-    int cursorY;
+    double  *timeSeries[MAX_TIME_SERIES_TYPES];
+    size_t profileSizeX;
+    size_t profileSizeY;
+    size_t cursorX;
+    size_t cursorY;
     epicsInt32 *totalArray;
     epicsInt32 *netArray;
-    int histogramSize;
-    int histSizeNew;
+    size_t histogramSize;
+    size_t histSizeNew;
     double *histogram;
     double histMin;
     double histMax;
     double histEntropy;
+    void doTimeSeriesCallbacks();
 };
-#define NUM_NDPLUGIN_STATS_PARAMS (&LAST_NDPLUGIN_STATS_PARAM - &FIRST_NDPLUGIN_STATS_PARAM + 1)
+#define NUM_NDPLUGIN_STATS_PARAMS ((int)(&LAST_NDPLUGIN_STATS_PARAM - &FIRST_NDPLUGIN_STATS_PARAM + 1))
     
 #endif

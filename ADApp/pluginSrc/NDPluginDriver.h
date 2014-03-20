@@ -9,9 +9,11 @@
 #include "asynNDArrayDriver.h"
 
 #define NDPluginDriverArrayPortString           "NDARRAY_PORT"          /**< (asynOctet,    r/w) The port for the NDArray interface */
-#define NDPluginDriverArrayAddrString           "NDARRAY_ADDR"            /**< (asynInt32,    r/w) The address on the port */
+#define NDPluginDriverArrayAddrString           "NDARRAY_ADDR"          /**< (asynInt32,    r/w) The address on the port */
 #define NDPluginDriverPluginTypeString          "PLUGIN_TYPE"           /**< (asynOctet,    r/o) The type of plugin */
 #define NDPluginDriverDroppedArraysString       "DROPPED_ARRAYS"        /**< (asynInt32,    r/w) Number of dropped arrays */
+#define NDPluginDriverQueueSizeString           "QUEUE_SIZE"            /**< (asynInt32,    r/w) Total queue elements */ 
+#define NDPluginDriverQueueFreeString           "QUEUE_FREE"            /**< (asynInt32,    r/w) Free queue elements */
 #define NDPluginDriverEnableCallbacksString     "ENABLE_CALLBACKS"      /**< (asynInt32,    r/w) Enable callbacks from driver (1=Yes, 0=No) */
 #define NDPluginDriverBlockingCallbacksString   "BLOCKING_CALLBACKS"    /**< (asynInt32,    r/w) Callbacks block (1=Yes, 0=No) */
 #define NDPluginDriverMinCallbackTimeString     "MIN_CALLBACK_TIME"     /**< (asynFloat64,  r/w) Minimum time between calling processCallbacks 
@@ -39,9 +41,6 @@ public:
 protected:
     virtual void processCallbacks(NDArray *pArray);
     virtual asynStatus connectToArrayPort(void);    
-    asynUser *pasynUserGenericPointer;          /**< asynUser for connecting to NDArray driver */
-    void *asynGenericPointerPvt;                /**< Handle for connecting to NDArray driver */
-    asynGenericPointer *pasynGenericPointer;    /**< asyn interface for connecting to NDArray driver */
 
 protected:
     int NDPluginDriverArrayPort;
@@ -49,6 +48,8 @@ protected:
     int NDPluginDriverArrayAddr;
     int NDPluginDriverPluginType;
     int NDPluginDriverDroppedArrays;
+    int NDPluginDriverQueueSize;
+    int NDPluginDriverQueueFree;
     int NDPluginDriverEnableCallbacks;
     int NDPluginDriverBlockingCallbacks;
     int NDPluginDriverMinCallbackTime;
@@ -61,11 +62,15 @@ private:
     void *asynGenericPointerInterruptPvt;
 
     /* Our data */
+    asynUser *pasynUserGenericPointer;          /**< asynUser for connecting to NDArray driver */
+    void *asynGenericPointerPvt;                /**< Handle for connecting to NDArray driver */
+    asynGenericPointer *pasynGenericPointer;    /**< asyn interface for connecting to NDArray driver */
+    bool connectedToArrayPort;
     epicsMessageQueueId msgQId;
     epicsTimeStamp lastProcessTime;
     int dimsPrev[ND_ARRAY_MAX_DIMS];
 };
-#define NUM_NDPLUGIN_PARAMS (&LAST_NDPLUGIN_PARAM - &FIRST_NDPLUGIN_PARAM + 1)
+#define NUM_NDPLUGIN_PARAMS ((int)(&LAST_NDPLUGIN_PARAM - &FIRST_NDPLUGIN_PARAM + 1))
 
     
 #endif

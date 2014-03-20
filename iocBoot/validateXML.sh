@@ -4,7 +4,7 @@
 # $Date: 2011-08-08 23:31:06 -0500 (Mon, 08 Aug 2011) $
 # $Author: jemian $
 # $Revision: 13396 $
-# $HeadURL: https://subversion.xor.aps.anl.gov/synApps/areaDetector/tags/R1-7/iocBoot/validateXML.sh $
+# $HeadURL: https://subversion.xor.aps.anl.gov/synApps/areaDetector/tags/R1-9-1/iocBoot/validateXML.sh $
 # $Id: validateXML.sh 13396 2011-08-09 04:31:06Z jemian $
 ########### SVN repository information ###################
 

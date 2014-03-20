@@ -8,12 +8,14 @@ simDetectorApp_registerRecordDeviceDriver(pdbbase)
 epicsEnvSet("PREFIX", "13SIM1:")
 epicsEnvSet("PORT",   "SIM1")
 epicsEnvSet("QSIZE",  "20")
-epicsEnvSet("XSIZE",  "640")
-epicsEnvSet("YSIZE",  "480")
+epicsEnvSet("XSIZE",  "1024")
+epicsEnvSet("YSIZE",  "1024")
 epicsEnvSet("NCHANS", "2048")
 
 # Create a simDetector driver
-simDetectorConfig("$(PORT)", $(XSIZE), $(YSIZE), 1, 500, -1)
+# simDetectorConfig(const char *portName, int maxSizeX, int maxSizeY, int dataType,
+#                   int maxBuffers, int maxMemory, int priority, int stackSize)
+simDetectorConfig("$(PORT)", $(XSIZE), $(YSIZE), 1, 0, 0)
 dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/ADBase.template",     "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
 dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/simDetector.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
 
@@ -26,11 +28,13 @@ dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/simDetector.template","P=$(PREFIX),R=ca
 NDStdArraysConfigure("Image1", 3, 0, "$(PORT)", 0)
 dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),NDARRAY_ADDR=0")
 
-# This creates a waveform large enough for 640x480x3 (e.g. RGB color) arrays.
+# This creates a waveform large enough for 1024x1024x3 (e.g. RGB color) arrays.
 # This waveform only allows transporting 8-bit images
-dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int8,FTVL=UCHAR,NELEMENTS=921600")
+dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int8,FTVL=UCHAR,NELEMENTS=3145728")
+# This waveform only allows transporting 16-bit images
+#dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int16,FTVL=USHORT,NELEMENTS=3145728")
 # This waveform allows transporting 32-bit images
-#dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int32,FTVL=LONG,NELEMENTS=921600")
+#dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,TYPE=Int32,FTVL=LONG,NELEMENTS=3145728")
 
 # Create a standard arrays plugin, set it to get data from second simDetector driver.
 NDStdArraysConfigure("Image2", 1, 0, "SIM2", 0)
@@ -39,6 +43,11 @@ dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=$(PREFIX),R=i
 # This creates a waveform large enough for 640x480x3 (e.g. RGB color) arrays.
 # This waveform allows transporting 64-bit images, so it can handle any detector data type at the expense of more memory and bandwidth
 dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDStdArrays.template", "P=$(PREFIX),R=image2:,PORT=Image2,ADDR=0,TIMEOUT=1,TYPE=Float64,FTVL=DOUBLE,NELEMENTS=921600")
+
+
+# This loads a database to tie the ROI size to the detector readout size
+dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDROI_sync.template", "P=$(PREFIX),CAM=cam1:,ROI=ROI1:")
+dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDROI_sync.template", "P=$(PREFIX),CAM=cam1:,ROI=ROI2:")
 
 # Load all other plugins using commonPlugins.cmd
 < ../commonPlugins.cmd

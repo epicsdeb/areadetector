@@ -41,9 +41,9 @@ volatile int eraseNDAttributes=0;
 extern "C" {epicsExportAddress(int, eraseNDAttributes);}
 
 /** NDArrayPool constructor
-  * \param[in] maxBuffers Maximum number of NDArray objects that the pool is allowed to contain; -1=unlimited.
+  * \param[in] maxBuffers Maximum number of NDArray objects that the pool is allowed to contain; 0=unlimited.
   * \param[in] maxMemory Maxiumum number of bytes of memory the the pool is allowed to use, summed over
-  * all of the NDArray objects; -1=unlimited.
+  * all of the NDArray objects; 0=unlimited.
   */
 NDArrayPool::NDArrayPool(int maxBuffers, size_t maxMemory)
   : maxBuffers_(maxBuffers), numBuffers_(0), maxMemory_(maxMemory), memorySize_(0), numFree_(0)
@@ -71,7 +71,7 @@ NDArrayPool::NDArrayPool(int maxBuffers, size_t maxMemory)
   * maxMemory then an error will be returned. alloc() sets the reference count for the
   * returned NDArray to 1.
   */
-NDArray* NDArrayPool::alloc(int ndims, int *dims, NDDataType_t dataType, int dataSize, void *pData)
+NDArray* NDArrayPool::alloc(int ndims, size_t *dims, NDDataType_t dataType, size_t dataSize, void *pData)
 {
   NDArray *pArray;
   NDArrayInfo_t arrayInfo;
@@ -116,7 +116,7 @@ NDArray* NDArrayPool::alloc(int ndims, int *dims, NDDataType_t dataType, int dat
     if (dataSize == 0) dataSize = arrayInfo.totalBytes;
     if (arrayInfo.totalBytes > dataSize) {
       printf("%s: ERROR: required size=%d passed size=%d is too small\n",
-      functionName, arrayInfo.totalBytes, dataSize);
+      functionName, (int)arrayInfo.totalBytes, (int)dataSize);
       pArray=NULL;
     }
   }
@@ -193,9 +193,9 @@ NDArray* NDArrayPool::alloc(int ndims, int *dims, NDDataType_t dataType, int dat
 NDArray* NDArrayPool::copy(NDArray *pIn, NDArray *pOut, int copyData)
 {
   //const char *functionName = "copy";
-  int dimSizeOut[ND_ARRAY_MAX_DIMS];
+  size_t dimSizeOut[ND_ARRAY_MAX_DIMS];
   int i;
-  int numCopy;
+  size_t numCopy;
   NDArrayInfo arrayInfo;
 
   /* If the output array does not exist then create it */
@@ -276,7 +276,7 @@ int NDArrayPool::release(NDArray *pArray)
 
 template <typename dataTypeIn, typename dataTypeOut> void convertType(NDArray *pIn, NDArray *pOut)
 {
-  int i;
+  size_t i;
   dataTypeIn *pDataIn = (dataTypeIn *)pIn->pData;
   dataTypeOut *pDataOut = (dataTypeOut *)pOut->pData;
   NDArrayInfo_t arrayInfo;
@@ -331,8 +331,10 @@ template <typename dataTypeIn, typename dataTypeOut> void convertDim(NDArray *pI
   dataTypeIn *pDIn = (dataTypeIn *)pDataIn;
   NDDimension_t *pOutDims = pOut->dims;
   NDDimension_t *pInDims = pIn->dims;
-  int inStep, outStep, inOffset, inDir;
-  int i, inc, in, out, bin;
+  size_t inStep, outStep, inOffset;
+  int inDir;
+  int i, bin;
+  size_t inc, in, out;
 
   inStep = 1;
   outStep = 1;
@@ -484,10 +486,9 @@ int NDArrayPool::convert(NDArray *pIn,
                          NDDimension_t *dimsOut)
 {
   int dimsUnchanged;
-  int dimSizeOut[ND_ARRAY_MAX_DIMS];
+  size_t dimSizeOut[ND_ARRAY_MAX_DIMS];
   NDDimension_t dimsOutCopy[ND_ARRAY_MAX_DIMS];
   int i;
-  int status = ND_SUCCESS;
   NDArray *pOut;
   NDArrayInfo_t arrayInfo;
   NDAttribute *pAttribute;
@@ -506,7 +507,7 @@ int NDArrayPool::convert(NDArray *pIn,
     dimsOutCopy[i].size = dimsOutCopy[i].size/dimsOutCopy[i].binning;
     if (dimsOutCopy[i].size <= 0) {
       printf("%s:%s: ERROR, invalid output dimension, size=%d, binning=%d\n",
-             driverName, functionName, dimsOut[i].size, dimsOut[i].binning);
+             driverName, functionName, (int)dimsOut[i].size, dimsOut[i].binning);
       return(ND_ERROR);
     }
     dimSizeOut[i] = dimsOutCopy[i].size;
@@ -568,7 +569,7 @@ int NDArrayPool::convert(NDArray *pIn,
           convertTypeSwitch <epicsFloat64> (pIn, pOut);
           break;
         default:
-          status = ND_ERROR;
+          //status = ND_ERROR;
           break;
       }
     }
@@ -577,7 +578,7 @@ int NDArrayPool::convert(NDArray *pIn,
      * and/or binning */
     /* Clear entire output array */
     memset(pOut->pData, 0, arrayInfo.totalBytes);
-    status = convertDimension(pIn, pOut, pIn->pData, pOut->pData, pIn->ndims-1);
+    convertDimension(pIn, pOut, pIn->pData, pOut->pData, pIn->ndims-1);
   }
 
   /* Set fields in the output array */
@@ -590,7 +591,7 @@ int NDArrayPool::convert(NDArray *pIn,
   /* If the frame is an RGBx frame and we have collapsed that dimension then change the colorMode */
   pAttribute = pOut->pAttributeList->find("ColorMode");
   if (pAttribute && pAttribute->getValue(NDAttrInt32, &colorMode)) {
-    if    ((colorMode == NDColorModeRGB1) && (pOut->dims[0].size != 3)) 
+    if      ((colorMode == NDColorModeRGB1) && (pOut->dims[0].size != 3)) 
       pAttribute->setValue(NDAttrInt32, (void *)&colorModeMono);
     else if ((colorMode == NDColorModeRGB2) && (pOut->dims[1].size != 3)) 
       pAttribute->setValue(NDAttrInt32, (void *)&colorModeMono);
@@ -600,7 +601,7 @@ int NDArrayPool::convert(NDArray *pIn,
   return ND_SUCCESS;
 }
 
-/** Returns maximum number of buffers this object is allowed to allocate; -1=unlimited */
+/** Returns maximum number of buffers this object is allowed to allocate; 0=unlimited */
 int NDArrayPool::maxBuffers()
 {  
 return maxBuffers_;
@@ -612,7 +613,7 @@ int NDArrayPool::numBuffers()
 return numBuffers_;
 }
 
-/** Returns maximum bytes of memory this object is allowed to allocate; -1=unlimited */
+/** Returns maximum bytes of memory this object is allowed to allocate; 0=unlimited */
 size_t NDArrayPool::maxMemory()
 {  
 return maxMemory_;
@@ -759,7 +760,7 @@ int NDArray::getInfo(NDArrayInfo_t *pInfo)
     }
     pInfo->xSize     = this->dims[pInfo->xDim].size;
     pInfo->ySize     = this->dims[pInfo->yDim].size;
-    pInfo->colorSize   = this->dims[pInfo->colorDim].size;
+    pInfo->colorSize = this->dims[pInfo->colorDim].size;
   }
   return(ND_SUCCESS);
 }
@@ -767,7 +768,7 @@ int NDArray::getInfo(NDArrayInfo_t *pInfo)
 /** Initializes the dimension structure to size=size, binning=1, reverse=0, offset=0.
   * \param[in] pDimension Pointer to an NDDimension_t structure, must have been allocated by caller.
   * \param[in] size The size of this dimension. */
-int NDArray::initDimension(NDDimension_t *pDimension, int size)
+int NDArray::initDimension(NDDimension_t *pDimension, size_t size)
 {
   pDimension->size=size;
   pDimension->binning = 1;
@@ -811,10 +812,10 @@ int NDArray::report(int details)
   printf("NDArray  Array address=%p:\n", this);
   printf("  ndims=%d dims=[",
     this->ndims);
-  for (dim=0; dim<this->ndims; dim++) printf("%d ", this->dims[dim].size);
+  for (dim=0; dim<this->ndims; dim++) printf("%d ", (int)this->dims[dim].size);
   printf("]\n");
   printf("  dataType=%d, dataSize=%d, pData=%p\n",
-        this->dataType, this->dataSize, this->pData);
+        this->dataType, (int)this->dataSize, this->pData);
   printf("  uniqueId=%d, timeStamp=%f\n",
         this->uniqueId, this->timeStamp);
   printf("  number of attributes=%d\n", this->pAttributeList->count());

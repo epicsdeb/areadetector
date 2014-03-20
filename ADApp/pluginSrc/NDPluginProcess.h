@@ -19,6 +19,7 @@
 
 /* Offset and scaling */
 #define NDPluginProcessEnableOffsetScaleString  "ENABLE_OFFSET_SCALE" /* (asynInt32, r/w) Enable offset and scale? */
+#define NDPluginProcessAutoOffsetScaleString    "AUTO_OFFSET_SCALE" /* (asynInt32,   r/w) Oneshot calc of scale and offset value from min and max values */
 #define NDPluginProcessScaleString              "SCALE"             /* (asynFloat64, r/w) Scale value */
 #define NDPluginProcessOffsetString             "OFFSET"            /* (asynFloat64, r/w) Offset value */
 
@@ -31,6 +32,8 @@
 /* Recursive filter */
 #define NDPluginProcessEnableFilterString       "ENABLE_FILTER"     /* (asynInt32,   r/w) Enable frame filtering? */
 #define NDPluginProcessResetFilterString        "RESET_FILTER"      /* (asynInt32,   r/w) Reset frame filtering when 1 */
+#define NDPluginProcessAutoResetFilterString    "AUTO_RESET_FILTER" /* (asynInt32,   r/w) Auto-reset filter on N */
+#define NDPluginProcessFilterCallbacksString    "FILTER_CALLBACKS"  /* (asynInt32,   r/w) Only do callbacks on N */
 #define NDPluginProcessNumFilterString          "NUM_FILTER"        /* (asynInt32,   r/w) Number of frames to filter */
 #define NDPluginProcessNumFilteredString        "NUM_FILTERED"      /* (asynInt32,   r/o) Number of frames filtered */
 #define NDPluginProcessOOffsetString            "FILTER_OOFFSET"    /* (asynFloat64, r/w) Output offset */
@@ -67,6 +70,7 @@ public:
                  int priority, int stackSize);
     /* These methods override the virtual methods in the base class */
     void processCallbacks(NDArray *pArray);
+    asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
     
 protected:
     /* Background array subtraction */
@@ -83,6 +87,7 @@ protected:
 
     /* Scale and offset */
     int NDPluginProcessEnableOffsetScale;
+    int NDPluginProcessAutoOffsetScale;
     int NDPluginProcessScale;
     int NDPluginProcessOffset;
 
@@ -95,6 +100,8 @@ protected:
     /* Frame filtering */
     int NDPluginProcessEnableFilter;
     int NDPluginProcessResetFilter;
+    int NDPluginProcessAutoResetFilter;
+    int NDPluginProcessFilterCallbacks;
     int NDPluginProcessNumFilter;
     int NDPluginProcessNumFiltered;
     int NDPluginProcessOOffset;
@@ -120,12 +127,12 @@ protected:
                                 
 private:
     NDArray *pBackground;
-    int     nBackgroundElements;
+    size_t  nBackgroundElements;
     NDArray *pFlatField;
-    int     nFlatFieldElements;
+    size_t  nFlatFieldElements;
     NDArray *pFilter;
-    int     numFiltered;
+    int  numFiltered;
 };
-#define NUM_NDPLUGIN_PROCESS_PARAMS (&LAST_NDPLUGIN_PROCESS_PARAM - &FIRST_NDPLUGIN_PROCESS_PARAM + 1)
+#define NUM_NDPLUGIN_PROCESS_PARAMS ((int)(&LAST_NDPLUGIN_PROCESS_PARAM - &FIRST_NDPLUGIN_PROCESS_PARAM + 1))
     
 #endif

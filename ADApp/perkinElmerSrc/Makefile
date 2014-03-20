@@ -4,32 +4,31 @@ include $(TOP)/configure/CONFIG
 #  ADD MACRO DEFINITIONS AFTER THIS LINE
 #=============================
 
-# Note: the SDK does support x64 but we need to get the files
-ifeq (win32-x86, $(findstring win32-x86, $(T_A)))
-LIBRARY_IOC = PerkinElmer
-LIB_SRCS += PerkinElmer.cpp
-LIB_SRCS += drvPerkinElmerEpics.c
-
-#Add detector SDK
-LIB_LIBS += XISL
-
-# Note, the following files were manually copied from the Perkin Elmer XIS SDK to this directory
-BIN_INSTALLS   += ../XISL.dll
-LIB_INSTALLS   += ../XISL.lib
-
-PROD_IOC += PerkinElmerApp
+ifeq (windows-x64, $(findstring windows-x64, $(T_A)))
+USR_CPPFLAGS += -D__X64
 endif
 
+LIBRARY_IOC_WIN32 = PerkinElmer
+LIB_SRCS_WIN32 += PerkinElmer.cpp
+
+PROD_NAME = PerkinElmerApp
+PROD_IOC_WIN32 += $(PROD_NAME)
+PROD_HOST_WIN32 += testBinning
+
 # <name>.dbd will be created from <name>Include.dbd
-DBD += PerkinElmerApp.dbd
+DBD += $(PROD_NAME).dbd
+$(PROD_NAME)_DBD += PerkinElmerSupport.dbd
 DBD += PerkinElmerSupport.dbd
 
 # <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
-PROD_SRCS += PerkinElmerApp_registerRecordDeviceDriver.cpp PerkinElmerAppMain.cpp
+PerkinElmerApp_SRCS += PerkinElmerApp_registerRecordDeviceDriver.cpp PerkinElmerAppMain.cpp
 
 # Add locally compiled object code
-PROD_LIBS += PerkinElmer
-PROD_LIBS += XISL
+PerkinElmerApp_LIBS += PerkinElmer
+PerkinElmerApp_LIBS += XISL
+
+testBinning_SRCS += testBinning
+testBinning_LIBS += XISL
 
 include $(TOP)/ADApp/commonDriverMakefile
 

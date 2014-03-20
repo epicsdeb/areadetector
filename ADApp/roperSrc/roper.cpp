@@ -153,7 +153,7 @@ private:
 };
 
 
-#define NUM_ROPER_PARAMS (&LAST_ROPER_PARAM - &FIRST_ROPER_PARAM + 1)
+#define NUM_ROPER_PARAMS ((int)(&LAST_ROPER_PARAM - &FIRST_ROPER_PARAM + 1))
 
 /* Convert from a C string to a BSTR.  This must be freed by the caller! */
 BSTR stringToBSTR(char *str)
@@ -240,7 +240,7 @@ NDArray *roper::getData()
     SAFEARRAY *pData;
     int dim;
     LONG lbound, ubound;
-    int dims[ND_ARRAY_MAX_DIMS];
+    size_t dims[ND_ARRAY_MAX_DIMS];
     int nDims;
     VARTYPE varType;
     NDDataType_t dataType;
@@ -313,8 +313,8 @@ NDArray *roper::getData()
         SafeArrayUnaccessData(pData);
         SafeArrayDestroy(pData);
         setIntegerParam(NDArraySize, arrayInfo.totalBytes);
-        setIntegerParam(NDArraySizeX, dims[0]);
-        setIntegerParam(NDArraySizeY, dims[1]);
+        setIntegerParam(NDArraySizeX, (int)dims[0]);
+        setIntegerParam(NDArraySizeY, (int)dims[1]);
         setIntegerParam(NDDataType, dataType);
     }
     catch(CException *pEx) {

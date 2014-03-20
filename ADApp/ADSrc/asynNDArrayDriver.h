@@ -15,6 +15,10 @@ typedef enum {
     NDFileModeStream        /**< Stream arrays continuously to a single file if the file format supports this */
 } NDFileMode_t;
 
+typedef enum {
+    NDFileWriteOK,
+    NDFileWriteError
+} NDFileWriteStatus_t;
 
 /** Strings defining parameters that affect the behaviour of the detector. 
   * These are the values passed to drvUserCreate. 
@@ -59,6 +63,8 @@ typedef enum {
 #define NDWriteFileString       "WRITE_FILE"        /**< (asynInt32,    r/w) Manually save the most recent array to a file when value=1 */
 #define NDReadFileString        "READ_FILE"         /**< (asynInt32,    r/w) Manually read file when value=1 */
 #define NDFileWriteModeString   "WRITE_MODE"        /**< (asynInt32,    r/w) File saving mode (NDFileMode_t) */
+#define NDFileWriteStatusString "WRITE_STATUS"      /**< (asynInt32,    r/w) File write status */
+#define NDFileWriteMessageString "WRITE_MESSAGE"    /**< (asynOctet,    r/w) File write message */
 #define NDFileNumCaptureString  "NUM_CAPTURE"       /**< (asynInt32,    r/w) Number of arrays to capture */
 #define NDFileNumCapturedString "NUM_CAPTURED"      /**< (asynInt32,    r/o) Number of arrays already captured */
 #define NDFileCaptureString     "CAPTURE"           /**< (asynInt32,    r/w) Start or stop capturing arrays */
@@ -71,6 +77,13 @@ typedef enum {
     /* The detector array data */
 #define NDArrayDataString       "ARRAY_DATA"        /**< (asynGenericPointer,   r/w) NDArray data */
 #define NDArrayCallbacksString  "ARRAY_CALLBACKS"   /**< (asynInt32,    r/w) Do callbacks with array data (0=No, 1=Yes) */
+
+    /* NDArray Pool status */
+#define NDPoolMaxBuffersString      "POOL_MAX_BUFFERS"
+#define NDPoolAllocBuffersString    "POOL_ALLOC_BUFFERS"
+#define NDPoolFreeBuffersString     "POOL_FREE_BUFFERS"
+#define NDPoolMaxMemoryString       "POOL_MAX_MEMORY"
+#define NDPoolUsedMemoryString      "POOL_USED_MEMORY"
 
 /** This is the class from which NDArray drivers are derived; implements the asynGenericPointer functions 
   * for NDArray objects. 
@@ -88,6 +101,8 @@ public:
                           size_t *nActual);
     virtual asynStatus readGenericPointer(asynUser *pasynUser, void *genericPointer);
     virtual asynStatus writeGenericPointer(asynUser *pasynUser, void *genericPointer);
+    virtual asynStatus readInt32(asynUser *pasynUser, epicsInt32 *value);
+    virtual asynStatus readFloat64(asynUser *pasynUser, epicsFloat64 *value);
     virtual void report(FILE *fp, int details);
 
     /* These are the methods that are new to this class */
@@ -124,6 +139,8 @@ protected:
     int NDWriteFile;
     int NDReadFile;
     int NDFileWriteMode;
+    int NDFileWriteStatus;
+    int NDFileWriteMessage;
     int NDFileNumCapture;
     int NDFileNumCaptured;
     int NDFileCapture;   
@@ -131,7 +148,12 @@ protected:
     int NDAttributesFile;
     int NDArrayData;
     int NDArrayCallbacks;
-    #define LAST_NDARRAY_PARAM NDArrayCallbacks
+    int NDPoolMaxBuffers;
+    int NDPoolAllocBuffers;
+    int NDPoolFreeBuffers;
+    int NDPoolMaxMemory;
+    int NDPoolUsedMemory;
+    #define LAST_NDARRAY_PARAM NDPoolUsedMemory
 
     NDArray **pArrays;             /**< An array of NDArray pointers used to store data in the driver */
     NDArrayPool *pNDArrayPool;     /**< An NDArrayPool object used to allocate and manipulate NDArray objects */
@@ -139,5 +161,5 @@ protected:
                                           *  attributes */
 };
 
-#define NUM_NDARRAY_PARAMS (&LAST_NDARRAY_PARAM - &FIRST_NDARRAY_PARAM + 1)
+#define NUM_NDARRAY_PARAMS ((int)(&LAST_NDARRAY_PARAM - &FIRST_NDARRAY_PARAM + 1))
 #endif

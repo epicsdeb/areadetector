@@ -29,10 +29,11 @@ static const char *driverName = "ADDriver";
 void ADDriver::setShutter(int open)
 {
     ADShutterMode_t shutterMode;
+    int itemp;
     double delay;
     double shutterOpenDelay, shutterCloseDelay;
 
-    getIntegerParam(ADShutterMode, (int *)&shutterMode);
+    getIntegerParam(ADShutterMode, &itemp); shutterMode = (ADShutterMode_t)itemp;
     getDoubleParam(ADShutterOpenDelay, &shutterOpenDelay);
     getDoubleParam(ADShutterCloseDelay, &shutterCloseDelay);
 
@@ -136,6 +137,7 @@ ADDriver::ADDriver(const char *portName, int maxAddr, int numParams, int maxBuff
     createParam(ADShutterOpenDelayString,    asynParamFloat64, &ADShutterOpenDelay);
     createParam(ADShutterCloseDelayString,   asynParamFloat64, &ADShutterCloseDelay);
     createParam(ADTemperatureString,         asynParamFloat64, &ADTemperature);
+    createParam(ADTemperatureActualString,   asynParamFloat64, &ADTemperatureActual);
     createParam(ADReadStatusString,          asynParamInt32, &ADReadStatus);
     createParam(ADStatusMessageString,       asynParamOctet, &ADStatusMessage);
     createParam(ADStringToServerString,      asynParamOctet, &ADStringToServer);

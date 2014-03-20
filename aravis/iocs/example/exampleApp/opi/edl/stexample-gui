@@ -14,15 +14,16 @@ if [ "$1" = "-d" ]; then
         done
     fi
     export EDMDATAFILES="${EDMDATAFILES}${TOP}/data:"
-    export EDMDATAFILES="${EDMDATAFILES}/dls_sw/prod/R3.14.11/support/aravisGigE/0-1-10/aravisGigEApp/opi/edl:"
+    export EDMDATAFILES="${EDMDATAFILES}/dls_sw/prod/R3.14.11/support/aravisGigE/0-1-15dls6/aravisGigEApp/opi/edl:"
 
     OPTS="-x -eolc"
 else
     OPTS="-x -eolc -noedit"
 fi
 export EDMDATAFILES="${EDMDATAFILES}${TOP}/data"
-export EDMDATAFILES="${EDMDATAFILES}:/dls_sw/prod/R3.14.11/support/aravisGigE/0-1-10/data"
-export EDMDATAFILES="${EDMDATAFILES}:/dls_sw/prod/R3.14.11/support/areaDetector/1-7beta1-dls2/data"
+export EDMDATAFILES="${EDMDATAFILES}:/dls_sw/prod/R3.14.11/support/aravisGigE/0-1-15dls6/data"
+export EDMDATAFILES="${EDMDATAFILES}:/dls_sw/prod/R3.14.11/support/areaDetector/1-9dls4/data"
+export EDMDATAFILES="${EDMDATAFILES}:/dls_sw/prod/R3.14.11/support/asyn/4-21/data"
 
 
 # Set the path to include any scripts in data dirs

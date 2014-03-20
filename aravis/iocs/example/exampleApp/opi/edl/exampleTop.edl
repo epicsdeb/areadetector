@@ -218,7 +218,7 @@ y 66
 bgColor index 3
 botShadowColor index 0
 displayFileName {
-  0 "Prosilica_GC.edl"
+  0 "AVT_Manta_1_44_4.edl"
   1 "NDStdArrays.edl"
 }
 displaySource "menu"

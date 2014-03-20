@@ -121,15 +121,9 @@ static const char *AdscCcdStateStrings[] = {
   * database (or the ADBase.template database if the default is used) */
 typedef enum {
     AdscTriggerStartInternal,
-    AdscTriggerStartExternSw
+    AdscTriggerStartExternSw,
+    NUM_START_TRIGGER_MODES
 } AdscTriggerStartMode_t;
-
-static const char *AdscTriggerStartStrings[] = {
-    "Internal","Ext. Software"
-};
-
-#define NUM_START_TRIGGER_MODES ((int)(sizeof(AdscTriggerStartStrings) / \
-    sizeof(AdscTriggerStartStrings[0])))
 
 /** Driver-specific parameters for the ADSC driver */
 #define AdscReadConditionString          "ADSC_READ_CONDITION"
@@ -277,7 +271,7 @@ protected:
     epicsEventId stopTriggerEventId;
     epicsEventId lastImageEventId;
 };
-#define NUM_ADSC_PARAMS (&LAST_ADSC_PARAM - &FIRST_ADSC_PARAM + 1)
+#define NUM_ADSC_PARAMS ((int)(&LAST_ADSC_PARAM - &FIRST_ADSC_PARAM + 1))
 
 
 /** Called when asyn clients call pasynInt32->write().

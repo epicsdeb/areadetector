@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>aravisGigE: /dls_sw/prod/R3.14.11/support/aravisGigE/0-1-10/aravisGigEApp/Db/aravisCamera.template File Reference</title>
+<title>aravisGigE: /dls_sw/prod/R3.14.11/support/aravisGigE/0-1-15dls6/aravisGigEApp/Db/aravisCamera.template File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javaScript" src="search/search.js"></script>
@@ -46,8 +46,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
   <div class="navpath">
     <ul>
-      <li><a class="el" href="dir_3e900695e6cb931c4c028701a5a1bc97.html">aravisGigEApp</a>      </li>
-      <li><a class="el" href="dir_358254b7e533386b07cde654362c3d58.html">Db</a>      </li>
+      <li><a class="el" href="dir_61c45ac43a1c7e30092094c7e813ff48.html">aravisGigEApp</a>      </li>
+      <li><a class="el" href="dir_301174cff2c3ea7e10968d97590ae346.html">Db</a>      </li>
     </ul>
   </div>
 </div>
@@ -74,8 +74,15 @@ Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="aravisCamera_8template.html#af12cfe06ff576710e7c1ee1ee9219f2c">record</a> (bi,&quot;$(P)$(R)GETFEATURES_RBV&quot;)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="aravisCamera_8template.html#aa8ed7474a4d470b872d33f87a7af33c7">record</a> (bo,&quot;$(P)$(R)GETFEATURES&quot;)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="aravisCamera_8template.html#a17e1735fde8bcf70ee9c8e5f704007a7">record</a> (longout,&quot;$(P)$(R)CONNECTION&quot;)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="aravisCamera_8template.html#a38a02eb07a44a8ef80cd9af593def05c">record</a> (calcout,&quot;$(P)$(R)CHKCONN&quot;)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="aravisCamera_8template.html#a6a05dda21b0045be4cc1913ac980103e">record</a> (mbbi,&quot;$(P)$(R)LEFTSHIFT_RBV&quot;)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="aravisCamera_8template.html#afcf945c98eb03dc86a33396a5b6228f6">record</a> (mbbo,&quot;$(P)$(R)LEFTSHIFT&quot;)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="aravisCamera_8template.html#ab084ecdde2a593138d199b2959629b13">record</a> (bo,&quot;$(P)$(R)ReverseX&quot;)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="aravisCamera_8template.html#a90187cd6ba786e325ffdb2ad82c3e437">record</a> (bo,&quot;$(P)$(R)ReverseY&quot;)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="aravisCamera_8template.html#ae0daa30aa5f773bad6e9a3504f41ab71">record</a> (longout,&quot;$(P)$(R)NumExposures&quot;)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="aravisCamera_8template.html#ae3f4d0a8f6f9c07184129e67b0d05af0">record</a> (longin,&quot;$(P)$(R)NumExposures_RBV&quot;)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="aravisCamera_8template.html#ad99e9279ddcfd524d11658fff523c4d7">record</a> (longin,&quot;$(P)$(R)NumExposuresCounter_RBV&quot;)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="aravisCamera_8template.html#a30c1e2fd35bc83692c9b284d38d7ccc8">record</a> (mbbo,&quot;$(P)$(R)TriggerMode&quot;)</td></tr>
 </table>
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <dl><dt><b>Parameters:</b></dt><dd>
@@ -122,6 +129,180 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a30c1e2fd35bc83692c9b284d38d7ccc8"></a><!-- doxytag: member="aravisCamera.template::record" ref="a30c1e2fd35bc83692c9b284d38d7ccc8" args="(mbbo,&quot;$(P)$(R)TriggerMode&quot;)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">record </td>
+          <td>(</td>
+          <td class="paramtype">mbbo&nbsp;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&quot;$(P)$(R)TriggerMode&quot;&nbsp;</td>
+          <td class="paramname"></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="aravisCamera_8template_source.html#l00200">200</a> of file <a class="el" href="aravisCamera_8template_source.html">aravisCamera.template</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ad99e9279ddcfd524d11658fff523c4d7"></a><!-- doxytag: member="aravisCamera.template::record" ref="ad99e9279ddcfd524d11658fff523c4d7" args="(longin,&quot;$(P)$(R)NumExposuresCounter_RBV&quot;)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">record </td>
+          <td>(</td>
+          <td class="paramtype">longin&nbsp;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&quot;$(P)$(R)NumExposuresCounter_RBV&quot;&nbsp;</td>
+          <td class="paramname"></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="aravisCamera_8template_source.html#l00197">197</a> of file <a class="el" href="aravisCamera_8template_source.html">aravisCamera.template</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae3f4d0a8f6f9c07184129e67b0d05af0"></a><!-- doxytag: member="aravisCamera.template::record" ref="ae3f4d0a8f6f9c07184129e67b0d05af0" args="(longin,&quot;$(P)$(R)NumExposures_RBV&quot;)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">record </td>
+          <td>(</td>
+          <td class="paramtype">longin&nbsp;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&quot;$(P)$(R)NumExposures_RBV&quot;&nbsp;</td>
+          <td class="paramname"></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="aravisCamera_8template_source.html#l00194">194</a> of file <a class="el" href="aravisCamera_8template_source.html">aravisCamera.template</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae0daa30aa5f773bad6e9a3504f41ab71"></a><!-- doxytag: member="aravisCamera.template::record" ref="ae0daa30aa5f773bad6e9a3504f41ab71" args="(longout,&quot;$(P)$(R)NumExposures&quot;)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">record </td>
+          <td>(</td>
+          <td class="paramtype">longout&nbsp;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&quot;$(P)$(R)NumExposures&quot;&nbsp;</td>
+          <td class="paramname"></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="aravisCamera_8template_source.html#l00191">191</a> of file <a class="el" href="aravisCamera_8template_source.html">aravisCamera.template</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a90187cd6ba786e325ffdb2ad82c3e437"></a><!-- doxytag: member="aravisCamera.template::record" ref="a90187cd6ba786e325ffdb2ad82c3e437" args="(bo,&quot;$(P)$(R)ReverseY&quot;)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">record </td>
+          <td>(</td>
+          <td class="paramtype">bo&nbsp;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&quot;$(P)$(R)ReverseY&quot;&nbsp;</td>
+          <td class="paramname"></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="aravisCamera_8template_source.html#l00188">188</a> of file <a class="el" href="aravisCamera_8template_source.html">aravisCamera.template</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ab084ecdde2a593138d199b2959629b13"></a><!-- doxytag: member="aravisCamera.template::record" ref="ab084ecdde2a593138d199b2959629b13" args="(bo,&quot;$(P)$(R)ReverseX&quot;)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">record </td>
+          <td>(</td>
+          <td class="paramtype">bo&nbsp;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&quot;$(P)$(R)ReverseX&quot;&nbsp;</td>
+          <td class="paramname"></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="aravisCamera_8template_source.html#l00185">185</a> of file <a class="el" href="aravisCamera_8template_source.html">aravisCamera.template</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="afcf945c98eb03dc86a33396a5b6228f6"></a><!-- doxytag: member="aravisCamera.template::record" ref="afcf945c98eb03dc86a33396a5b6228f6" args="(mbbo,&quot;$(P)$(R)LEFTSHIFT&quot;)" -->
 <div class="memitem">
 <div class="memproto">
@@ -148,7 +329,7 @@ Functions</h2></td></tr>
 <div class="memdoc">
 <p>If this is set to 1, then 10, 12 and 16 bit images will be left shifted so that a pixel with maximum exposure = 2^16 no matter what the pixel format </p>
 
-<p>Definition at line <a class="el" href="aravisCamera_8template_source.html#l00166">166</a> of file <a class="el" href="aravisCamera_8template_source.html">aravisCamera.template</a>.</p>
+<p>Definition at line <a class="el" href="aravisCamera_8template_source.html#l00175">175</a> of file <a class="el" href="aravisCamera_8template_source.html">aravisCamera.template</a>.</p>
 
 </div>
 </div>
@@ -166,6 +347,35 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&quot;$(P)$(R)LEFTSHIFT_RBV&quot;&nbsp;</td>
+          <td class="paramname"></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="aravisCamera_8template_source.html#l00163">163</a> of file <a class="el" href="aravisCamera_8template_source.html">aravisCamera.template</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a38a02eb07a44a8ef80cd9af593def05c"></a><!-- doxytag: member="aravisCamera.template::record" ref="a38a02eb07a44a8ef80cd9af593def05c" args="(calcout,&quot;$(P)$(R)CHKCONN&quot;)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">record </td>
+          <td>(</td>
+          <td class="paramtype">calcout&nbsp;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&quot;$(P)$(R)CHKCONN&quot;&nbsp;</td>
           <td class="paramname"></td><td>&nbsp;</td>
         </tr>
         <tr>
@@ -235,7 +445,7 @@ Functions</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="aravisCamera_8template_source.html#l00136">136</a> of file <a class="el" href="aravisCamera_8template_source.html">aravisCamera.template</a>.</p>
+<p>Definition at line <a class="el" href="aravisCamera_8template_source.html#l00137">137</a> of file <a class="el" href="aravisCamera_8template_source.html">aravisCamera.template</a>.</p>
 
 </div>
 </div>
@@ -264,7 +474,7 @@ Functions</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="aravisCamera_8template_source.html#l00128">128</a> of file <a class="el" href="aravisCamera_8template_source.html">aravisCamera.template</a>.</p>
+<p>Definition at line <a class="el" href="aravisCamera_8template_source.html#l00129">129</a> of file <a class="el" href="aravisCamera_8template_source.html">aravisCamera.template</a>.</p>
 
 </div>
 </div>
@@ -486,7 +696,7 @@ Functions</h2></td></tr>
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Tue Jul 19 2011 16:02:30 for aravisGigE by&nbsp;
+<hr class="footer"/><address class="footer"><small>Generated on Wed Jun 12 2013 15:30:12 for aravisGigE by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.1 </small></address>
 </body>

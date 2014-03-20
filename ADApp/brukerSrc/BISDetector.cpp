@@ -100,7 +100,7 @@ public:
     asynUser *pasynUserStatus;
 };
 
-#define NUM_BIS_PARAMS (&LAST_BIS_PARAM - &FIRST_BIS_PARAM + 1)
+#define NUM_BIS_PARAMS ((int)(&LAST_BIS_PARAM - &FIRST_BIS_PARAM + 1))
 
 /** This function reads .SFRM files.  It is not intended to be general,
  * it is intended to read the .SFRM files that BIS creates.  It does not implement under/overflows.  It checks to make sure
@@ -123,7 +123,8 @@ asynStatus BISDetector::readSFRM(const char *fileName, epicsTimeStamp *pStartTim
     int status=-1;
     const char *functionName = "readSFRM";
     int offset, version, format;
-    int nBytes, nPixels, nRead=0;
+    int nPixels;
+    size_t nBytes, nRead=0;
     int headerBlocks;
     int numUnderflows, numOverflows1, numOverflows2;
     int nRows, nCols;
@@ -165,7 +166,9 @@ asynStatus BISDetector::readSFRM(const char *fileName, epicsTimeStamp *pStartTim
             file = NULL;
         }
         /* Sleep, but check for stop event, which can be used to abort a long acquisition */
+        unlock();
         status = epicsEventWaitWithTimeout(this->stopEventId, FILE_READ_DELAY);
+        lock();
         if (status == epicsEventWaitOK) {
             return(asynError);
         }
@@ -258,8 +261,8 @@ asynStatus BISDetector::readSFRM(const char *fileName, epicsTimeStamp *pStartTim
     }
     if (nRead != nBytes) {
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-            "%s:%s: error reading file %s, only read %d/%d bytes\n",
-            driverName, functionName, fileName, nRead, nBytes);
+            "%s:%s: error reading file %s, only read %lu/%lu bytes\n",
+            driverName, functionName, fileName, (unsigned long)nRead, (unsigned long)nBytes);
     }
     /* Read the underflow and overflow tables */
     if (numUnderflows > 0) {
@@ -286,7 +289,7 @@ asynStatus BISDetector::readSFRM(const char *fileName, epicsTimeStamp *pStartTim
         if ((bytesPerPixel != 4) && (pData[i] == 65535)) {
             pData[i] = pOverflows2[n2++];
         }
-        if ((pData[i] == 0)) {
+        if (pData[i] == 0) {
             if (numUnderflows > 0) {
                 pData[i] = pUnderflows[nu++];
             }
@@ -328,10 +331,11 @@ asynStatus BISDetector::writeBIS(double timeout)
 void BISDetector::setShutter(int open)
 {
     ADShutterMode_t shutterMode;
+    int itemp;
     double delay;
     double shutterOpenDelay, shutterCloseDelay;
     
-    getIntegerParam(ADShutterMode, (int *)&shutterMode);
+    getIntegerParam(ADShutterMode, &itemp); shutterMode = (ADShutterMode_t)itemp;
     getDoubleParam(ADShutterOpenDelay, &shutterOpenDelay);
     getDoubleParam(ADShutterCloseDelay, &shutterCloseDelay);
 
@@ -462,7 +466,8 @@ void BISDetector::BISTask()
     const char *functionName = "BISTask";
     char fullFileName[MAX_FILENAME_LEN];
     char statusMessage[MAX_MESSAGE_SIZE];
-    int dims[2];
+    size_t dims[2];
+    int itemp;
     int arrayCallbacks;
     
     this->lock();
@@ -490,7 +495,7 @@ void BISDetector::BISTask()
         getIntegerParam(ADFrameType, &frameType);
         /* Get the exposure parameters */
         getDoubleParam(ADAcquireTime, &acquireTime);
-        getIntegerParam(ADShutterMode, (int *)&shutterMode);
+        getIntegerParam(ADShutterMode, &itemp);  shutterMode = (ADShutterMode_t)itemp;
         getDoubleParam(BISSFRMTimeout, &readSFRMTimeout);
         
         setIntegerParam(ADStatus, ADStatusAcquire);
@@ -577,17 +582,13 @@ void BISDetector::BISTask()
 
         if (arrayCallbacks && frameType != BISFrameDark) {
             /* Get an image buffer from the pool */
-            getIntegerParam(ADSizeX, &dims[0]);
-            getIntegerParam(ADSizeY, &dims[1]);
+            getIntegerParam(ADSizeX, &itemp); dims[0] = itemp;
+            getIntegerParam(ADSizeY, &itemp); dims[1] = itemp;
             pImage = this->pNDArrayPool->alloc(2, dims, NDInt32, 0, NULL);
             epicsSnprintf(statusMessage, sizeof(statusMessage), "Reading from File %s", fullFileName);
             setStringParam(ADStatusMessage, statusMessage);
             callParamCallbacks();
-            /* We release the mutex when calling readSFRM, because this takes a long time and
-             * we need to allow abort operations to get through */
-            this->unlock(); 
             status = readSFRM(fullFileName, &startTime, acquireTime + readSFRMTimeout, pImage); 
-            this->lock(); 
             /* If there was an error jump to bottom of loop */
             if (status) {
                 setIntegerParam(ADAcquire, 0);
@@ -710,10 +711,8 @@ extern "C" int BISDetectorConfig(const char *portName, const char *commandPort, 
                                    int maxBuffers, size_t maxMemory,
                                    int priority, int stackSize)
 {
-    BISDetector *dummy 
-        = new BISDetector(portName, commandPort, statusPort, maxBuffers, maxMemory,
+    new BISDetector(portName, commandPort, statusPort, maxBuffers, maxMemory,
                         priority, stackSize);
-    dummy = NULL;
     return(asynSuccess);
 }
 

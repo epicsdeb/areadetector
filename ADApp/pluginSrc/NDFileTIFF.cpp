@@ -32,7 +32,8 @@ asynStatus NDFileTIFF::openFile(const char *fileName, NDFileOpenMode_t openMode,
     /* When we create TIFF variables and dimensions, we get back an
      * ID for each one. */
     static const char *functionName = "openFile";
-    int sizeX, sizeY, rowsPerStrip, samplesPerPixel, photoMetric, planarConfig;
+    size_t sizeX, sizeY, rowsPerStrip;
+    int bitsPerSample=8, sampleFormat=SAMPLEFORMAT_INT, samplesPerPixel, photoMetric, planarConfig;
     int colorMode=NDColorModeMono;
     NDAttribute *pAttribute;
     char ManufacturerString[MAX_ATTRIBUTE_STRING_SIZE] = "Unknown";
@@ -57,22 +58,36 @@ asynStatus NDFileTIFF::openFile(const char *fileName, NDFileOpenMode_t openMode,
 
     switch (pArray->dataType) {
         case NDInt8:
+            sampleFormat = SAMPLEFORMAT_INT;
+            bitsPerSample = 8;
+            break;
         case NDUInt8:
-            this->bitsPerSample = 8;
+            sampleFormat = SAMPLEFORMAT_UINT;
+            bitsPerSample = 8;
             break;
         case NDInt16:
+            sampleFormat = SAMPLEFORMAT_INT;
+            bitsPerSample = 16;
+            break;
         case NDUInt16:
-            this->bitsPerSample = 16;
+            sampleFormat = SAMPLEFORMAT_UINT;
+            bitsPerSample = 16;
             break;
         case NDInt32:
+            sampleFormat = SAMPLEFORMAT_INT;
+            bitsPerSample = 32;
+            break;
         case NDUInt32:
-            this->bitsPerSample = 32;
+            sampleFormat = SAMPLEFORMAT_UINT;
+            bitsPerSample = 32;
             break;
         case NDFloat32:
-            this->bitsPerSample = 8;
+            sampleFormat = SAMPLEFORMAT_IEEEFP;
+            bitsPerSample = 32;
             break;
         case NDFloat64:
-            this->bitsPerSample = 8;
+            sampleFormat = SAMPLEFORMAT_IEEEFP;
+            bitsPerSample = 64;
             break;
     }
     if (pArray->ndims == 2) {
@@ -114,13 +129,21 @@ asynStatus NDFileTIFF::openFile(const char *fileName, NDFileOpenMode_t openMode,
         return(asynError);
     }
 
+    /* this is in the unallocated 'reusable' range */
+    static const int TIFFTAG_NDTIMESTAMP = 65000;
+    static const TIFFFieldInfo fi = {
+        TIFFTAG_NDTIMESTAMP,1,1,TIFF_DOUBLE,FIELD_CUSTOM,1,0,(char *)"NDTimeStamp"
+    };
+    TIFFMergeFieldInfo(output, &fi, 1);
+    TIFFSetField(this->output, TIFFTAG_NDTIMESTAMP, pArray->timeStamp);
     TIFFSetField(this->output, TIFFTAG_BITSPERSAMPLE, bitsPerSample);
+    TIFFSetField(this->output, TIFFTAG_SAMPLEFORMAT, sampleFormat);
     TIFFSetField(this->output, TIFFTAG_SAMPLESPERPIXEL, samplesPerPixel);
     TIFFSetField(this->output, TIFFTAG_PHOTOMETRIC, photoMetric);
     TIFFSetField(this->output, TIFFTAG_PLANARCONFIG, planarConfig);
-    TIFFSetField(this->output, TIFFTAG_IMAGEWIDTH, sizeX);
-    TIFFSetField(this->output, TIFFTAG_IMAGELENGTH, sizeY);
-    TIFFSetField(this->output, TIFFTAG_ROWSPERSTRIP, rowsPerStrip);
+    TIFFSetField(this->output, TIFFTAG_IMAGEWIDTH, (epicsUInt32)sizeX);
+    TIFFSetField(this->output, TIFFTAG_IMAGELENGTH, (epicsUInt32)sizeY);
+    TIFFSetField(this->output, TIFFTAG_ROWSPERSTRIP, (epicsUInt32)rowsPerStrip);
     TIFFSetField(this->output, TIFFTAG_MAKE, ManufacturerString);
     TIFFSetField(this->output, TIFFTAG_MODEL, ModelString);
     
@@ -132,17 +155,24 @@ asynStatus NDFileTIFF::openFile(const char *fileName, NDFileOpenMode_t openMode,
   */
 asynStatus NDFileTIFF::writeFile(NDArray *pArray)
 {
-    unsigned long int stripSize;
+    unsigned long stripSize;
     tsize_t nwrite=0;
     int strip, sizeY;
     unsigned char *pRed, *pGreen, *pBlue;
     static const char *functionName = "writeFile";
 
     asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW,
-              "%s:s: %d, %d\n", 
-              driverName, functionName, pArray->dims[0].size, pArray->dims[1].size);
+              "%s:%s: %lu, %lu\n", 
+              driverName, functionName, (unsigned long)pArray->dims[0].size, (unsigned long)pArray->dims[1].size);
 
-    stripSize = TIFFStripSize(this->output);
+    if (this->output == NULL) {
+        asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, 
+        "%s:%s NULL TIFF file\n",
+        driverName, functionName);
+        return(asynError);
+    }
+
+    stripSize = (unsigned long)TIFFStripSize(this->output);
     TIFFGetField(this->output, TIFFTAG_IMAGELENGTH, &sizeY);
 
     switch (this->colorMode) {
@@ -197,7 +227,14 @@ asynStatus NDFileTIFF::readFile(NDArray **pArray)
 /** Closes the TIFF file. */
 asynStatus NDFileTIFF::closeFile()
 {
-    //static const char *functionName = "closeFile";
+    static const char *functionName = "closeFile";
+
+    if (this->output == NULL) {
+        asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, 
+        "%s:%s NULL TIFF file\n",
+        driverName, functionName);
+        return(asynError);
+    }
 
     TIFFClose(this->output);
 
@@ -227,7 +264,7 @@ NDFileTIFF::NDFileTIFF(const char *portName, int queueSize, int blockingCallback
      * Set autoconnect to 1.  priority and stacksize can be 0, which will use defaults. */
     : NDPluginFile(portName, queueSize, blockingCallbacks,
                    NDArrayPort, NDArrayAddr, 1, NUM_NDFILE_TIFF_PARAMS,
-                   2, -1, asynGenericPointerMask, asynGenericPointerMask, 
+                   2, 0, asynGenericPointerMask, asynGenericPointerMask, 
                    ASYN_CANBLOCK, 1, priority, stackSize)
 {
     //const char *functionName = "NDFileTIFF";
@@ -243,10 +280,8 @@ extern "C" int NDFileTIFFConfigure(const char *portName, int queueSize, int bloc
                                    const char *NDArrayPort, int NDArrayAddr,
                                    int priority, int stackSize)
 {
-    NDFileTIFF *pPlugin = 
-        new NDFileTIFF(portName, queueSize, blockingCallbacks, NDArrayPort, NDArrayAddr,
-                       priority, stackSize);
-    pPlugin = NULL;  /* This is just to eliminate compiler warning about unused variables/objects */
+    new NDFileTIFF(portName, queueSize, blockingCallbacks, NDArrayPort, NDArrayAddr,
+                   priority, stackSize);
     return(asynSuccess);
 }
 

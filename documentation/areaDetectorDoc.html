@@ -10,9 +10,9 @@
     <h1>
       areaDetector: EPICS Area Detector Support</h1>
     <h2>
-      Release 1-7</h2>
+      Release 1-9-1</h2>
     <h2>
-      August 9, 2011</h2>
+      March 11, 2013</h2>
     <h2>
       Mark Rivers</h2>
     <h2>
@@ -40,7 +40,9 @@
         <li><a href="#ADDriver">ADDriver</a></li>
         <li><a href="#Guidelines">Guidelines and rules for drivers</a></li>
         <li><a href="adscDoc.html">ADSC driver</a></li>
-        <li><a href="brukerDoc.html">Bruker driver</a></li>
+        <li><a href="andorDoc.html">Andor driver (Andor CCD cameras)</a></li>
+        <li><a href="andor3Doc.html">Andor3 driver (Andor sCMOS cameras)</a></li>
+        <li><a href="BrukerDoc.html">Bruker driver</a></li>
         <li><a href="http://controls.diamond.ac.uk/downloads/support/firewireDCAM/index.html">
           Firewire Linux driver</a></li>
         <li><a href="FirewireWinDoc.html">Firewire Windows driver</a></li>
@@ -812,6 +814,40 @@
       </tr>
       <tr>
         <td>
+          NDFileWriteStatus</td>
+        <td>
+          asynInt32</td>
+        <td>
+          r/o</td>
+        <td>
+          File write status. Gives status information on last file open or file write operation.
+          Values are WriteOK (0) and WriteError (1).</td>
+        <td>
+          WRITE_STATUS</td>
+        <td>
+          $(P)$(R)FileWriteStatus</td>
+        <td>
+          mbbi</td>
+      </tr>
+      <tr>
+        <td>
+          NDFileWriteMessage</td>
+        <td>
+          asynOctet</td>
+        <td>
+          r/o</td>
+        <td>
+          File write error message. An error message string if the previous file open or file
+          write operation resulted in an error.</td>
+        <td>
+          WRITE_MESSAGE</td>
+        <td>
+          $(P)$(R)FileWriteMessage</td>
+        <td>
+          waveform</td>
+      </tr>
+      <tr>
+        <td>
           NDFileCapture</td>
         <td>
           asynInt32</td>
@@ -952,7 +988,8 @@
         <td>
           r/o</td>
         <td>
-          Rate at which arrays are being acquired. Computed in the ADBase.template database.</td>
+          Rate at which arrays are being acquired. Computed in the ADBase.template database.
+        </td>
         <td>
           N/A</td>
         <td>
@@ -982,6 +1019,110 @@
           $(P)$(R)NDAttributesFile</td>
         <td>
           waveform</td>
+      </tr>
+      <tr>
+        <td align="center" colspan="7">
+          <b>Array pool status</b></td>
+      </tr>
+      <tr>
+        <td>
+          NDPoolMaxMemory</td>
+        <td>
+          asynFloat64</td>
+        <td>
+          r/o</td>
+        <td>
+          The maximum number of NDArrayPool memory bytes that can be allocated. 0=unlimited.
+        </td>
+        <td>
+          POOL_MAX_MEMORY</td>
+        <td>
+          $(P)$(R)PoolMaxMem</td>
+        <td>
+          ai</td>
+      </tr>
+      <tr>
+        <td>
+          NDPoolUsedMemory</td>
+        <td>
+          asynFloat64</td>
+        <td>
+          r/o</td>
+        <td>
+          The number of NDArrayPool memory bytes currently allocated. The SCAN rate of this
+          record controls the scanning of all of the dynamic NDArrayPool status records.
+        </td>
+        <td>
+          POOL_USED_MEMORY</td>
+        <td>
+          $(P)$(R)PoolUsedMem</td>
+        <td>
+          ai</td>
+      </tr>
+      <tr>
+        <td>
+          NDPoolMaxBuffers</td>
+        <td>
+          asynInt32</td>
+        <td>
+          r/o</td>
+        <td>
+          The maximum number of NDArrayPool buffers that can be allocated. 0=unlimited.</td>
+        <td>
+          POOL_MAX_BUFFERS</td>
+        <td>
+          $(P)$(R)PoolMaxBuffers</td>
+        <td>
+          longin</td>
+      </tr>
+      <tr>
+        <td>
+          NDPoolAllocBuffers</td>
+        <td>
+          asynInt32</td>
+        <td>
+          r/o</td>
+        <td>
+          The number of NDArrayPool buffers currently allocated.</td>
+        <td>
+          POOL_ALLOC_BUFFERS</td>
+        <td>
+          $(P)$(R)PoolAllocBuffers</td>
+        <td>
+          longin</td>
+      </tr>
+      <tr>
+        <td>
+          NDPoolFreeBuffers</td>
+        <td>
+          asynInt32</td>
+        <td>
+          r/o</td>
+        <td>
+          The number of NDArrayPool buffers currently allocated but free.</td>
+        <td>
+          POOL_FREE_BUFFERS</td>
+        <td>
+          $(P)$(R)PoolFreeBuffers</td>
+        <td>
+          longin</td>
+      </tr>
+      <tr>
+        <td>
+          N.A.</td>
+        <td>
+          N.A.</td>
+        <td>
+          r/o</td>
+        <td>
+          The number of NDArrayPool buffers currently in use. This is calculated as NDPoolAllocBuffers
+          - NDPoolFreeBuffers.</td>
+        <td>
+          N.A.</td>
+        <td>
+          $(P)$(R)PoolUsedBuffers</td>
+        <td>
+          calc</td>
       </tr>
       <tr>
         <td align="center" colspan="7">
@@ -1021,7 +1162,8 @@
     <tbody>
       <tr>
         <td align="center" colspan="7">
-          <b>Parameter Definitions in ADDriver.h and EPICS Record Definitions in ADBase.template</b></td>
+          <b>Parameter Definitions in ADDriver.h and EPICS Record Definitions in ADBase.template</b>
+        </td>
       </tr>
       <tr>
         <th>
@@ -1127,8 +1269,25 @@
           ai</td>
       </tr>
       <tr>
+        <td>
+          ADTemperatureActual</td>
+        <td>
+          asynFloat64</td>
+        <td>
+          r/o</td>
+        <td>
+          Actual detector temperature</td>
+        <td>
+          TEMPERATURE_ACTUAL</td>
+        <td>
+          $(P)$(R)Temperature_Actual </td>
+        <td>
+          ai</td>
+      </tr>
+      <tr>
         <td align="center" colspan="7">
-          <b>Detector readout control including gain, binning, region start and size, reversal</b></td>
+          <b>Detector readout control including gain, binning, region start and size, reversal</b>
+        </td>
       </tr>
       <tr>
         <td>
@@ -1614,7 +1773,8 @@
         <td>
           r/w</td>
         <td>
-          Shutter mode (None, detector-controlled or EPICS-controlled) (ADShutterMode_t)</td>
+          Shutter mode (None, detector-controlled or EPICS-controlled) (ADShutterMode_t)
+        </td>
         <td>
           SHUTTER_MODE</td>
         <td>
@@ -1632,7 +1792,8 @@
         <td>
           r/w</td>
         <td>
-          Shutter control for the selected (detector or EPICS) shutter (ADShutterStatus_t)</td>
+          Shutter control for the selected (detector or EPICS) shutter (ADShutterStatus_t)
+        </td>
         <td>
           SHUTTER_CONTROL</td>
         <td>

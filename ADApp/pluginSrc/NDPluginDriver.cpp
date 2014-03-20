@@ -21,6 +21,8 @@
 #include <epicsMessageQueue.h>
 #include <cantProceed.h>
 
+#include <asynCommonSyncIO.h>
+
 #include "NDPluginDriver.h"
 
 
@@ -36,7 +38,8 @@ static const char *driverName="NDPluginDriver";
     void NDPluginDriver::processCallbacks(NDArray *pArray)
 {
     int arrayCounter;
-    int i, dimsChanged, size;
+    int i, dimsChanged;
+    int size;
     NDAttribute *pAttribute;
     int colorMode=NDColorModeMono, bayerPattern=NDBayerRGGB;
     
@@ -56,7 +59,7 @@ static const char *driverName="NDPluginDriver";
     setDoubleParam(NDTimeStamp, pArray->timeStamp);
     /* See if the array dimensions have changed.  If so then do callbacks on them. */
     for (i=0, dimsChanged=0; i<ND_ARRAY_MAX_DIMS; i++) {
-        size = pArray->dims[i].size;
+        size = (int)pArray->dims[i].size;
         if (i >= pArray->ndims) size = 0;
         if (size != this->dimsPrev[i]) {
             this->dimsPrev[i] = size;
@@ -91,18 +94,19 @@ void NDPluginDriver::driverCallback(asynUser *pasynUser, void *genericPointer)
     double minCallbackTime, deltaTime;
     int status=0;
     int blockingCallbacks;
-    int arrayCounter, droppedArrays;
-    const char *functionName = "driverCallback";
+    int arrayCounter, droppedArrays, queueSize, queueFree;
+    static const char *functionName = "driverCallback";
 
     this->lock();
 
     status |= getDoubleParam(NDPluginDriverMinCallbackTime, &minCallbackTime);
     status |= getIntegerParam(NDPluginDriverBlockingCallbacks, &blockingCallbacks);
+    status |= getIntegerParam(NDPluginDriverQueueSize, &queueSize);
     
     epicsTimeGetCurrent(&tNow);
     deltaTime = epicsTimeDiffInSeconds(&tNow, &this->lastProcessTime);
 
-    if (deltaTime > minCallbackTime) {  
+    if ((minCallbackTime == 0.) || (deltaTime > minCallbackTime)) {  
         /* Time to process the next array */
         
         /* The callbacks can operate in 2 modes: blocking or non-blocking.
@@ -122,6 +126,8 @@ void NDPluginDriver::driverCallback(asynUser *pasynUser, void *genericPointer)
             /* Try to put this array on the message queue.  If there is no room then return
              * immediately. */
             status = epicsMessageQueueTrySend(this->msgQId, &pArray, sizeof(&pArray));
+            queueFree = queueSize - epicsMessageQueuePending(this->msgQId);
+            setIntegerParam(NDPluginDriverQueueFree, queueFree);
             if (status) {
                 status |= getIntegerParam(NDArrayCounter, &arrayCounter);
                 status |= getIntegerParam(NDPluginDriverDroppedArrays, &droppedArrays);
@@ -156,6 +162,7 @@ void processTask(void *drvPvt)
 void NDPluginDriver::processTask(void)
 {
     /* This thread processes a new array when it arrives */
+    int queueSize, queueFree;
 
     /* Loop forever */
     NDArray *pArray;
@@ -167,7 +174,11 @@ void NDPluginDriver::processTask(void)
         /* Take the lock.  The function we are calling must release the lock
          * during time-consuming operations when it does not need it. */
         this->lock();
-        /* Call the function that does the callbacks to standard asyn interfaces */
+        getIntegerParam(NDPluginDriverQueueSize, &queueSize);
+        queueFree = queueSize - epicsMessageQueuePending(this->msgQId);
+        setIntegerParam(NDPluginDriverQueueFree, queueFree);
+
+        /* Call the function that does the business of this callback */
         processCallbacks(pArray); 
         this->unlock();
         
@@ -183,9 +194,9 @@ void NDPluginDriver::processTask(void)
 asynStatus NDPluginDriver::setArrayInterrupt(int enableCallbacks)
 {
     asynStatus status = asynSuccess;
-    const char *functionName = "setArrayInterrupt";
+    static const char *functionName = "setArrayInterrupt";
     
-    if (enableCallbacks) {
+    if (enableCallbacks && !this->asynGenericPointerInterruptPvt) {
         status = this->pasynGenericPointer->registerInterruptUser(
                     this->asynGenericPointerPvt, this->pasynUserGenericPointer,
                     ::driverCallback, this, &this->asynGenericPointerInterruptPvt);
@@ -195,7 +206,8 @@ asynStatus NDPluginDriver::setArrayInterrupt(int enableCallbacks)
                 driverName, functionName, this->pasynUserGenericPointer->errorMessage);
             return(status);
         }
-    } else {
+    } 
+    if (!enableCallbacks && this->asynGenericPointerInterruptPvt) {
         if (this->asynGenericPointerInterruptPvt) {
             status = this->pasynGenericPointer->cancelInterruptUser(this->asynGenericPointerPvt, 
                             this->pasynUserGenericPointer, this->asynGenericPointerInterruptPvt);
@@ -217,35 +229,31 @@ asynStatus NDPluginDriver::connectToArrayPort(void)
 {
     asynStatus status;
     asynInterface *pasynInterface;
-    int isConnected;
     int enableCallbacks;
     char arrayPort[20];
     int arrayAddr;
-    const char *functionName = "connectToArrayPort";
+    static const char *functionName = "connectToArrayPort";
 
     getStringParam(NDPluginDriverArrayPort, sizeof(arrayPort), arrayPort);
     getIntegerParam(NDPluginDriverArrayAddr, &arrayAddr);
     getIntegerParam(NDPluginDriverEnableCallbacks, &enableCallbacks);
-    status = pasynManager->isConnected(this->pasynUserGenericPointer, &isConnected);
-    if (status) isConnected=0;
 
-    /* If we are currently connected cancel interrupt request */    
-    if (isConnected) {       
+    /* If we are currently connected to an array port cancel interrupt request */    
+    if (this->connectedToArrayPort) {
         status = setArrayInterrupt(0);
     }
     
     /* Disconnect the array port from our asynUser.  Ignore error if there is no device
      * currently connected. */
-    pasynManager->exceptionCallbackRemove(this->pasynUserGenericPointer);
     pasynManager->disconnect(this->pasynUserGenericPointer);
+    this->connectedToArrayPort = false;
 
     /* Connect to the array port driver */
     status = pasynManager->connectDevice(this->pasynUserGenericPointer, arrayPort, arrayAddr);
     if (status != asynSuccess) {
         asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,
-                  "%s::%s ERROR: Can't connect to array port %s address %d: %s\n",
-                  driverName, functionName, arrayPort, arrayAddr, this->pasynUserGenericPointer->errorMessage);
-        pasynManager->exceptionDisconnect(this->pasynUserSelf);
+                  "%s::%s Error calling pasynManager->connectDevice to array port %s address %d, status=%d, error=%s\n",
+                  driverName, functionName, arrayPort, arrayAddr, status, this->pasynUserGenericPointer->errorMessage);
         return (status);
     }
 
@@ -255,12 +263,11 @@ asynStatus NDPluginDriver::connectToArrayPort(void)
         asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,
                   "%s::connectToPort ERROR: Can't find asynGenericPointer interface on array port %s address %d\n",
                   driverName, arrayPort, arrayAddr);
-        pasynManager->exceptionDisconnect(this->pasynUserSelf);
         return(asynError);
     }
     this->pasynGenericPointer = (asynGenericPointer *)pasynInterface->pinterface;
     this->asynGenericPointerPvt = pasynInterface->drvPvt;
-    pasynManager->exceptionConnect(this->pasynUserSelf);
+    this->connectedToArrayPort = true;
 
     /* Enable or disable interrupt callbacks */
     status = setArrayInterrupt(enableCallbacks);
@@ -280,25 +287,16 @@ asynStatus NDPluginDriver::writeInt32(asynUser *pasynUser, epicsInt32 value)
     int function = pasynUser->reason;
     int addr=0;
     asynStatus status = asynSuccess;
-    int isConnected;
-    int currentlyPosting;
-    const char* functionName = "writeInt32";
+    static const char* functionName = "writeInt32";
 
     status = getAddress(pasynUser, &addr); if (status != asynSuccess) return(status);
-
-    /* See if we are connected */
-    status = pasynManager->isConnected(this->pasynUserGenericPointer, &isConnected);
-    if (status) {isConnected=0; status=asynSuccess;}
-
-    /* See if we are currently getting callbacks so we don't add more than 1 callback request */
-    currentlyPosting = (this->asynGenericPointerInterruptPvt != NULL);
 
     /* Set the parameter in the parameter library. */
     status = (asynStatus) setIntegerParam(addr, function, value);
 
     if (function == NDPluginDriverEnableCallbacks) {
         if (value) {  
-            if (isConnected && !currentlyPosting) {
+            if (this->connectedToArrayPort) {
                 /* We need to register to be called with interrupts from the detector driver on 
                  * the asynGenericPointer interface. Must do this with the lock released. */
                 this->unlock();
@@ -306,8 +304,7 @@ asynStatus NDPluginDriver::writeInt32(asynUser *pasynUser, epicsInt32 value)
                 this->lock();
             }
         } else {
-            /* If we are currently connected and there is a callback registered, cancel it */    
-            if (isConnected && currentlyPosting) {
+            if (this->connectedToArrayPort) {
                 this->unlock();
                 status = setArrayInterrupt(0);
                 this->lock();
@@ -315,7 +312,7 @@ asynStatus NDPluginDriver::writeInt32(asynUser *pasynUser, epicsInt32 value)
         }
     } else if (function == NDPluginDriverArrayAddr) {
         this->unlock();
-        connectToArrayPort();
+        status = connectToArrayPort();
         this->lock();
     } else {
         /* If this parameter belongs to a base class call its method */
@@ -324,16 +321,16 @@ asynStatus NDPluginDriver::writeInt32(asynUser *pasynUser, epicsInt32 value)
     }
     
     /* Do callbacks so higher layers see any changes */
-    status = (asynStatus) callParamCallbacks(addr, addr);
+    callParamCallbacks(addr);
     
     if (status) 
-        epicsSnprintf(pasynUser->errorMessage, pasynUser->errorMessageSize, 
-                  "%s:%s: status=%d, function=%d, value=%d", 
-                  driverName, functionName, status, function, value);
+        asynPrint(pasynUser, ASYN_TRACE_ERROR, 
+              "%s:%s: function=%d, value=%d, connectedToArrayPort=%d\n", 
+              driverName, functionName, function, value, this->connectedToArrayPort);
     else        
         asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, 
-              "%s:%s: function=%d, value=%d, isConnected=%d, currentlyPosting=%d\n", 
-              driverName, functionName, function, value, isConnected, currentlyPosting);
+              "%s:%s: function=%d, value=%d, connectedToArrayPort=%d\n", 
+              driverName, functionName, function, value, connectedToArrayPort);
     return status;
 }
 
@@ -351,7 +348,7 @@ asynStatus NDPluginDriver::writeOctet(asynUser *pasynUser, const char *value,
     int addr=0;
     int function = pasynUser->reason;
     asynStatus status = asynSuccess;
-    const char *functionName = "writeOctet";
+    static const char *functionName = "writeOctet";
 
     status = getAddress(pasynUser, &addr); if (status != asynSuccess) return(status);
     /* Set the parameter in the parameter library. */
@@ -368,7 +365,7 @@ asynStatus NDPluginDriver::writeOctet(asynUser *pasynUser, const char *value,
     }
     
      /* Do callbacks so higher layers see any changes */
-    status = (asynStatus)callParamCallbacks(addr, addr);
+    status = (asynStatus)callParamCallbacks(addr);
 
     if (status) 
         epicsSnprintf(pasynUser->errorMessage, pasynUser->errorMessageSize, 
@@ -395,7 +392,7 @@ asynStatus NDPluginDriver::readInt32Array(asynUser *pasynUser, epicsInt32 *value
     int addr=0;
     size_t ncopy;
     asynStatus status = asynSuccess;
-    const char *functionName = "readInt32Array";
+    static const char *functionName = "readInt32Array";
 
     status = getAddress(pasynUser, &addr); if (status != asynSuccess) return(status);
     if (function == NDDimensions) {
@@ -457,7 +454,8 @@ NDPluginDriver::NDPluginDriver(const char *portName, int queueSize, int blocking
           asynFlags, autoConnect, priority, stackSize)    
 {
     asynStatus status;
-    const char *functionName = "NDPluginDriver";
+    static const char *functionName = "NDPluginDriver";
+    char taskName[256];
     asynUser *pasynUser;
 
     /* Initialize some members to 0 */
@@ -466,6 +464,7 @@ NDPluginDriver::NDPluginDriver(const char *portName, int queueSize, int blocking
     this->pasynGenericPointer = NULL;
     this->asynGenericPointerPvt = NULL;
     this->asynGenericPointerInterruptPvt = NULL;
+    this->connectedToArrayPort = false;
        
     /* Create asynUser for communicating with NDArray port */
     pasynUser = pasynManager->createAsynUser(0, 0);
@@ -483,8 +482,10 @@ NDPluginDriver::NDPluginDriver(const char *portName, int queueSize, int blocking
     /* We use the same stack size for our callback thread as for the port thread */
     if (stackSize <= 0) stackSize = epicsThreadGetStackSize(epicsThreadStackMedium);
 
+    strcpy(taskName, portName);
+    strcat(taskName, "_Plugin");
     /* Create the thread that handles the NDArray callbacks */
-    status = (asynStatus)(epicsThreadCreate("NDPluginTask",
+    status = (asynStatus)(epicsThreadCreate(taskName,
                           epicsThreadPriorityMedium,
                           stackSize,
                           (EPICSTHREADFUNC)::processTask,
@@ -497,6 +498,8 @@ NDPluginDriver::NDPluginDriver(const char *portName, int queueSize, int blocking
     createParam(NDPluginDriverArrayAddrString,         asynParamInt32, &NDPluginDriverArrayAddr);
     createParam(NDPluginDriverPluginTypeString,        asynParamOctet, &NDPluginDriverPluginType);
     createParam(NDPluginDriverDroppedArraysString,     asynParamInt32, &NDPluginDriverDroppedArrays);
+    createParam(NDPluginDriverQueueSizeString,         asynParamInt32, &NDPluginDriverQueueSize);
+    createParam(NDPluginDriverQueueFreeString,         asynParamInt32, &NDPluginDriverQueueFree);
     createParam(NDPluginDriverEnableCallbacksString,   asynParamInt32, &NDPluginDriverEnableCallbacks);
     createParam(NDPluginDriverBlockingCallbacksString, asynParamInt32, &NDPluginDriverBlockingCallbacks);
     createParam(NDPluginDriverMinCallbackTimeString,   asynParamFloat64, &NDPluginDriverMinCallbackTime);
@@ -509,6 +512,9 @@ NDPluginDriver::NDPluginDriver(const char *portName, int queueSize, int blocking
      * Values set here will be overridden by values from save/restore if they exist. */
     setStringParam (NDPluginDriverArrayPort, NDArrayPort);
     setIntegerParam(NDPluginDriverArrayAddr, NDArrayAddr);
+    setIntegerParam(NDPluginDriverEnableCallbacks, 0);
     setIntegerParam(NDPluginDriverDroppedArrays, 0);
+    setIntegerParam(NDPluginDriverQueueSize, queueSize);
+    setIntegerParam(NDPluginDriverQueueFree, queueSize);
 }
 

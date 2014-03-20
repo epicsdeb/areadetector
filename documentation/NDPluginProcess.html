@@ -10,7 +10,7 @@
     <h1>
       areaDetector Plugin NDPluginProcess</h1>
     <h2>
-      August 9, 2011</h2>
+      October 1, 2012</h2>
     <h2>
       Mark Rivers</h2>
     <h2>
@@ -74,7 +74,8 @@
     <tbody>
       <tr>
         <td align="center" colspan="7,">
-          <b>Parameter Definitions in NDPluginProcess.h and EPICS Record Definitions in NDProcess.template</b></td>
+          <b>Parameter Definitions in NDPluginProcess.h and EPICS Record Definitions in NDProcess.template</b>
+        </td>
       </tr>
       <tr>
         <th>
@@ -240,8 +241,7 @@
         <td>
           The scale factor to multiply by after dividing the array by the flat field array.
           This scale factor is normally chosen so that the data after scaling fills the dynamic
-          range of the output data type.
-        </td>
+          range of the output data type. </td>
         <td>
           SCALE_FLAT_FIELD</td>
         <td>
@@ -269,7 +269,7 @@
           <br />
           Array = Array * Scale + Offset</td>
         <td>
-          ENABLE_SCALE_OFFSET</td>
+          ENABLE_OFFSET_SCALE</td>
         <td>
           $(P)$(R)EnableOffsetScale<br />
           $(P)$(R)EnableOffsetScale_RBV</td>
@@ -280,14 +280,36 @@
       <tr>
         <td>
           NDPluginProcess<br />
+          AutoOffsetScale</td>
+        <td>
+          asynInt32</td>
+        <td>
+          r/w</td>
+        <td>
+          Processing this record will enable Offset and Scale calculations, and set the Offset=-min(Array)
+          and Scale=MaxScale/(max(Array)-min(Array)), where MaxScale is the maximum value
+          of the output data type. The output array will thus be scaled to completely fill
+          the range of the output data type. Note that the calculation of the offset and scale
+          factors is only done once when this record is processed, and these values are used
+          for subsequent array callbacks, i.e. it does not autoscale on each array callback.
+          Thanks to Tom Cobb for this addition.
+          <td>
+            AUTO_OFFSET_SCALE</td>
+          <td>
+            $(P)$(R)AutoOffsetScale</td>
+          <td>
+            busy</td>
+      </tr>
+      <tr>
+        <td>
+          NDPluginProcess<br />
           Scale</td>
         <td>
           asynFloat64</td>
         <td>
           r/w</td>
         <td>
-          The scale factor to multiply by.
-        </td>
+          The scale factor to multiply by. </td>
         <td>
           SCALE</td>
         <td>
@@ -306,8 +328,7 @@
         <td>
           r/w</td>
         <td>
-          The offset to add.
-        </td>
+          The offset to add. </td>
         <td>
           OFFSET</td>
         <td>
@@ -331,8 +352,7 @@
           r/w</td>
         <td>
           Flag to control whether to clip values to the LowClip value for this array (0=Disable,
-          1=Enable).
-        </td>
+          1=Enable). </td>
         <td>
           ENABLE_LOW_CLIP</td>
         <td>
@@ -352,8 +372,7 @@
           r/w</td>
         <td>
           The minimum allowed value for this array. If EnableLowClip=1, then all values in
-          the array less than LowClip will be replaced by LowClip.
-        </td>
+          the array less than LowClip will be replaced by LowClip. </td>
         <td>
           LOW_CLIP</td>
         <td>
@@ -373,8 +392,7 @@
           r/w</td>
         <td>
           Flag to control whether to clip values to the HighClip value for this array (0=Disable,
-          1=Enable).
-        </td>
+          1=Enable). </td>
         <td>
           ENABLE_HIGH_CLIP</td>
         <td>
@@ -394,8 +412,7 @@
           r/w</td>
         <td>
           The maximum allowed value for this array. If EnableHighClip=1, then all values in
-          the array greater than HighClip will be replaced by HighClip.
-        </td>
+          the array greater than HighClip will be replaced by HighClip. </td>
         <td>
           HIGH_CLIP</td>
         <td>
@@ -472,6 +489,53 @@
       <tr>
         <td>
           NDPluginProcess<br />
+          AutoResetFilter</td>
+        <td>
+          asynInt32</td>
+        <td>
+          r/w</td>
+        <td>
+          If enabled then when NumFiltered=NumFilter the filter automatically resets. This
+          can be very useful when using the Average or Sum filter modes. As soon as N sums
+          or averages have been performed the filter resets, so the next sum or average is
+          computed.</td>
+        <td>
+          AUTO_RESET_FILTER</td>
+        <td>
+          $(P)$(R)AutoResetFilter<br />
+          $(P)$(R)AutoResetFilter_RBV</td>
+        <td>
+          bo<br />
+          bi</td>
+      </tr>
+      <tr>
+        <td>
+          NDPluginProcess<br />
+          FilterCallbacks</td>
+        <td>
+          asynInt32</td>
+        <td>
+          r/w</td>
+        <td>
+          Choices are "Every array" and "Array N only". If "Every array" is selected then
+          the plugin does callbacks for every incoming array it receives. If "Array N only"
+          is selected then the plugin only does callbacks when NumFiltered=NumFilter. This
+          can be very useful when using the Sum or Average filter modes. Callbacks are then
+          done only when N sums or averages have been performed. If used with AutoResetFilter
+          then as input arrays arrive the plugin will continually output one summed or averaged
+          array after every N incoming arrays.</td>
+        <td>
+          FILTER_CALLBACKS</td>
+        <td>
+          $(P)$(R)FilterCallbacks<br />
+          $(P)$(R)FilterCallbacks_RBV</td>
+        <td>
+          bo<br />
+          bi</td>
+      </tr>
+      <tr>
+        <td>
+          NDPluginProcess<br />
           NumFilter</td>
         <td>
           asynInt32</td>
@@ -481,8 +545,7 @@
           The characteristic number of arrays to use when filtering. The value of NumFiltered
           will increase as each array is processed, until it reaches the value of NumFilter,
           when it will no longer increase. The value of NumFiltered is used in the filter
-          equations, as explained below.
-        </td>
+          equations, as explained below. </td>
         <td>
           NUM_FILTER</td>
         <td>
@@ -504,8 +567,7 @@
           The number of arrays that have been processed by the filter since the filter was
           last reset. The value of NumFiltered is incremented as each array is processed,
           until it reaches the value of NumFilter, when it will cease incrementing. The value
-          of NumFiltered is used in the filter equations, as explained below.
-        </td>
+          of NumFiltered is used in the filter equations, as explained below. </td>
         <td>
           NUM_FILTERED</td>
         <td>
@@ -521,8 +583,7 @@
         <td>
           r/w</td>
         <td>
-          The filter type, chosen from a predefined list, as described below.
-        </td>
+          The filter type, chosen from a predefined list, as described below. </td>
         <td>
           N.A.</td>
         <td>
@@ -539,8 +600,7 @@
         <td>
           r/w</td>
         <td>
-          Output offset coefficient.
-        </td>
+          Output offset coefficient. </td>
         <td>
           FILTER_OOFFSET</td>
         <td>
@@ -559,8 +619,7 @@
         <td>
           r/w</td>
         <td>
-          Output scale coefficient.
-        </td>
+          Output scale coefficient. </td>
         <td>
           FILTER_OSCALE</td>
         <td>
@@ -579,8 +638,7 @@
         <td>
           r/w</td>
         <td>
-          Output coefficient #1.
-        </td>
+          Output coefficient #1. </td>
         <td>
           FILTER_OC1</td>
         <td>
@@ -599,8 +657,7 @@
         <td>
           r/w</td>
         <td>
-          Output coefficient #2.
-        </td>
+          Output coefficient #2. </td>
         <td>
           FILTER_OC2</td>
         <td>
@@ -619,8 +676,7 @@
         <td>
           r/w</td>
         <td>
-          Output coefficient #3.
-        </td>
+          Output coefficient #3. </td>
         <td>
           FILTER_OC3</td>
         <td>
@@ -639,8 +695,7 @@
         <td>
           r/w</td>
         <td>
-          Output coefficient #4.
-        </td>
+          Output coefficient #4. </td>
         <td>
           FILTER_OC4</td>
         <td>
@@ -659,8 +714,7 @@
         <td>
           r/w</td>
         <td>
-          Filter offset coefficient.
-        </td>
+          Filter offset coefficient. </td>
         <td>
           FILTER_FOFFSET</td>
         <td>
@@ -679,8 +733,7 @@
         <td>
           r/w</td>
         <td>
-          Filter scale coefficient.
-        </td>
+          Filter scale coefficient. </td>
         <td>
           FILTER_FSCALE</td>
         <td>
@@ -699,8 +752,7 @@
         <td>
           r/w</td>
         <td>
-          Filter coefficient #1.
-        </td>
+          Filter coefficient #1. </td>
         <td>
           FILTER_FC1</td>
         <td>
@@ -719,8 +771,7 @@
         <td>
           r/w</td>
         <td>
-          Filter coefficient #2.
-        </td>
+          Filter coefficient #2. </td>
         <td>
           FILTER_FC2</td>
         <td>
@@ -739,8 +790,7 @@
         <td>
           r/w</td>
         <td>
-          Filter coefficient #3.
-        </td>
+          Filter coefficient #3. </td>
         <td>
           FILTER_FC3</td>
         <td>
@@ -759,8 +809,7 @@
         <td>
           r/w</td>
         <td>
-          Filter coefficient #4.
-        </td>
+          Filter coefficient #4. </td>
         <td>
           FILTER_FC4</td>
         <td>
@@ -779,8 +828,7 @@
         <td>
           r/w</td>
         <td>
-          Reset offset coefficient.
-        </td>
+          Reset offset coefficient. </td>
         <td>
           FILTER_ROFFSET</td>
         <td>
@@ -799,8 +847,7 @@
         <td>
           r/w</td>
         <td>
-          Filter coefficient #1.
-        </td>
+          Filter coefficient #1. </td>
         <td>
           FILTER_RC1</td>
         <td>
@@ -819,8 +866,7 @@
         <td>
           r/w</td>
         <td>
-          Filter coefficient #2.
-        </td>
+          Filter coefficient #2. </td>
         <td>
           FILTER_RC2</td>
         <td>
@@ -900,17 +946,34 @@ O[n] = F[n] = (1-1/N)*F[n-1] + 1/N*I[n]
     the output data type.
   </p>
   <h4>
-    Recursive Sum</h4>
+    Average</h4>
   <p>
-    The recursive average filter does input array summing. It is defined as:</p>
+    The average filter does input array averaging. It is defined as:</p>
   <pre>
 O[n] = F[n] = F[n-1] + 1/N*I[n]
 </pre>
   <p>
-    N is the characteristic number of arrays in the sum. For example, if N=100, then
-    each new array is weighted by 0.01. When this filter is reset the filter array is
-    initialized to 0. This filter typically cannot be run forever, because the output
-    grows monotonically and will lead to overflow.
+    N is the number of arrays in the average. For example, if N=100, then each new array
+    is weighted by 0.01. When this filter is reset the filter array is initialized to
+    0. This filter typically cannot be run forever, because the output grows monotonically
+    and will lead to overflow. However, if AutoResetFilter is enabled then the filter
+    will be reset when NumFiltered=NumFilter. If ArrayCallbacks is "Array N only" then
+    callbacks will be done only with the final averaged value.
+  </p>
+  <h4>
+    Sum</h4>
+  <p>
+    The sum filter does input array summing. It is defined as:</p>
+  <pre>
+O[n] = F[n] = F[n-1] + I[n]
+</pre>
+  <p>
+    This filter simply computes the sum of input arrays. When this filter is reset the
+    filter array is initialized to 0. It is often necessary to set the output data type
+    to one with a larger maximum value than the input array to prevent overflow. If
+    AutoResetFilter is enabled then the filter will be reset when NumFiltered=NumFilter.
+    If ArrayCallbacks is "Array N only" then callbacks will be done only with the final
+    summed value.
   </p>
   <h4>
     Difference</h4>

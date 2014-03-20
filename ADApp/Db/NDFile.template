@@ -140,7 +140,6 @@ record(bo, "$(P)$(R)AutoSave")
     field(PINI, "YES")
     field(DTYP, "asynInt32")
     field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AUTO_SAVE")
-    field(VAL,  "1")
     field(ZNAM, "No")
     field(ONAM, "Yes")
 }
@@ -306,6 +305,26 @@ record(bi, "$(P)$(R)DeleteDriverFile_RBV")
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DELETE_DRIVER_FILE")
     field(ZNAM, "No")
     field(ONAM, "Yes")
+    field(SCAN, "I/O Intr")
+}
+
+record(bi, "$(P)$(R)WriteStatus")
+{
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))WRITE_STATUS")
+    field(ZNAM, "Write OK")
+    field(ZSV,  "NO_ALARM")
+    field(ONAM, "Write error")
+    field(OSV,  "MAJOR")
+    field(SCAN, "I/O Intr")
+}
+
+record(waveform, "$(P)$(R)WriteMessage")
+{
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))WRITE_MESSAGE")
+    field(FTVL, "CHAR")
+    field(NELM, "256")
     field(SCAN, "I/O Intr")
 }
 

@@ -54,13 +54,13 @@ private:
 
 #define URLNameString "URL_NAME"
 
-#define NUM_URL_DRIVER_PARAMS (&LAST_URL_DRIVER_PARAM - &FIRST_URL_DRIVER_PARAM + 1)
+#define NUM_URL_DRIVER_PARAMS ((int)(&LAST_URL_DRIVER_PARAM - &FIRST_URL_DRIVER_PARAM + 1))
 
 
 asynStatus URLDriver::readImage()
 {
     char URLString[MAX_FILENAME_LEN];
-    int dims[3];
+    size_t dims[3];
     int ndims;
     int nrows, ncols;
     ImageType imageType;
@@ -130,8 +130,9 @@ asynStatus URLDriver::readImage()
         this->pArrays[0] = this->pNDArrayPool->alloc(ndims, dims, dataType, 0, NULL);
         pImage = this->pArrays[0];
         asynPrint(this->pasynUserSelf, ASYN_TRACEIO_DRIVER,
-            "%s:%s: reading URL=%s, dimensions=[%d,%d,%d], ImageType=%d, depth=%d\n",
-            driverName, functionName, URLString, dims[0], dims[1], dims[2], imageType, depth);
+            "%s:%s: reading URL=%s, dimensions=[%lu,%lu,%lu], ImageType=%d, depth=%d\n",
+            driverName, functionName, URLString, 
+            (unsigned long)dims[0], (unsigned long)dims[1], (unsigned long)dims[2], imageType, depth);
         image.write(0, 0, ncols, nrows, map, storageType, pImage->pData);
         pImage->pAttributeList->add("ColorMode", "Color mode", NDAttrInt32, &colorMode);
         setIntegerParam(ADSizeX, ncols);
@@ -139,7 +140,7 @@ asynStatus URLDriver::readImage()
         setIntegerParam(ADSizeY, nrows);
         setIntegerParam(NDArraySizeY, nrows);
         pImage->getInfo(&arrayInfo);
-        setIntegerParam(NDArraySize,  arrayInfo.totalBytes);
+        setIntegerParam(NDArraySize,  (int)arrayInfo.totalBytes);
         setIntegerParam(NDDataType, dataType);
         setIntegerParam(NDColorMode, colorMode);
     }
@@ -166,7 +167,6 @@ static void URLTaskC(void *drvPvt)
   * It implements the logic for single, multiple or continuous acquisition. */
 void URLDriver::URLTask()
 {
-    int status = asynSuccess;
     asynStatus imageStatus;
     int imageCounter;
     int numImages, numImagesCounter;
@@ -193,7 +193,7 @@ void URLDriver::URLTask()
             asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW,
                 "%s:%s: waiting for acquire to start\n", driverName, functionName);
             this->unlock();
-            status = epicsEventWait(this->startEventId);
+            epicsEventWait(this->startEventId);
             this->lock();
             setIntegerParam(ADNumImagesCounter, 0);
         }
@@ -255,7 +255,8 @@ void URLDriver::URLTask()
         }
 
         /* See if acquisition is done */
-        if ((imageMode == ADImageSingle) ||
+        if ((imageStatus != asynSuccess) ||
+            (imageMode == ADImageSingle) ||
             ((imageMode == ADImageMultiple) &&
              (numImagesCounter >= numImages))) {
             setIntegerParam(ADAcquire, 0);
@@ -280,7 +281,7 @@ void URLDriver::URLTask()
                 setIntegerParam(ADStatus, ADStatusWaiting);
                 callParamCallbacks();
                 this->unlock();
-                status = epicsEventWaitWithTimeout(this->stopEventId, delay);
+                epicsEventWaitWithTimeout(this->stopEventId, delay);
                 this->lock();
             }
         }
@@ -428,9 +429,7 @@ URLDriver::URLDriver(const char *portName, int maxBuffers, size_t maxMemory,
 extern "C" int URLDriverConfig(const char *portName, int maxBuffers, size_t maxMemory, 
                                int priority, int stackSize)
 {
-    URLDriver *pURLDriver
-        = new URLDriver(portName, maxBuffers, maxMemory, priority, stackSize);
-    pURLDriver = NULL;
+    new URLDriver(portName, maxBuffers, maxMemory, priority, stackSize);
     return(asynSuccess);
 }
 

@@ -172,12 +172,13 @@ private:
     asynUser *pasynUserServer;
 };
 
-#define NUM_MAR345_PARAMS (&LAST_MAR345_PARAM - &FIRST_MAR345_PARAM + 1)
+#define NUM_MAR345_PARAMS ((int)(&LAST_MAR345_PARAM - &FIRST_MAR345_PARAM + 1))
 
 void mar345::getImageData()
 {
     char fullFileName[MAX_FILENAME_LEN];
-    int dims[2];
+    size_t dims[2];
+    int itemp;
     int imageCounter;
     NDArray *pImage;
     char statusMessage[MAX_MESSAGE_SIZE];
@@ -187,8 +188,8 @@ void mar345::getImageData()
 
     /* Inquire about the image dimensions */
     getStringParam(NDFullFileName, MAX_FILENAME_LEN, fullFileName);
-    getIntegerParam(NDArraySizeX, &dims[0]);
-    getIntegerParam(NDArraySizeY, &dims[1]);
+    getIntegerParam(NDArraySizeX, &itemp); dims[0] = itemp;
+    getIntegerParam(NDArraySizeY, &itemp); dims[1] = itemp;
     getIntegerParam(NDArrayCounter, &imageCounter);
     pImage = this->pNDArrayPool->alloc(2, dims, NDUInt16, 0, NULL);
 
@@ -203,7 +204,7 @@ void mar345::getImageData()
             driverName, functionName, fullFileName, errorBuffer);
         return;
     }
-	get_pck(input, (epicsInt16 *)pImage->pData);
+    get_pck(input, (epicsInt16 *)pImage->pData);
     fclose(input);
 
     /* Put the frame number and time stamp into the buffer */
@@ -259,12 +260,14 @@ asynStatus mar345::readServer(char *input, size_t maxChars, double timeout)
     int eomReason;
     const char *functionName="readServer";
 
+    unlock();
     status = pasynOctetSyncIO->read(pasynUser, input, maxChars, timeout,
                                     &nread, &eomReason);
+    lock();
     if (nread == 0) return(status);
     if (status) asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                    "%s:%s, timeout=%f, status=%d received %d bytes\n%s\n",
-                    driverName, functionName, timeout, status, nread, input);
+                    "%s:%s, timeout=%f, status=%d received %lu bytes\n%s\n",
+                    driverName, functionName, timeout, status, (unsigned long)nread, input);
     /* Set output string so it can get back to EPICS */
     setStringParam(ADStringFromServer, input);
     callParamCallbacks();
@@ -289,9 +292,7 @@ asynStatus mar345::waitForCompletion(const char *doneString, double timeout)
  
     epicsTimeGetCurrent(&start);
     while (1) {
-        this->unlock();
         status = readServer(response, sizeof(response), MAR345_POLL_DELAY);
-        this->lock();
         if (status == asynSuccess) {
             if (strstr(response, doneString)) return(asynSuccess);
         }
@@ -363,10 +364,11 @@ asynStatus mar345::erase()
 void mar345::setShutter(int open)
 {
     ADShutterMode_t shutterMode;
+    int itemp;
     double delay;
     double shutterOpenDelay, shutterCloseDelay;
     
-    getIntegerParam(ADShutterMode, (int *)&shutterMode);
+    getIntegerParam(ADShutterMode, &itemp); shutterMode = (ADShutterMode_t)itemp;
     getDoubleParam(ADShutterOpenDelay, &shutterOpenDelay);
     getDoubleParam(ADShutterCloseDelay, &shutterCloseDelay);
     
@@ -699,7 +701,7 @@ mar345::mar345(const char *portName, const char *serverPort,
     int status = asynSuccess;
     epicsTimerQueueId timerQ;
     const char *functionName = "mar345";
-    int dims[2];
+    size_t dims[2];
 
     createParam(mar345EraseString,     asynParamInt32, &mar345Erase);
     createParam(mar345EraseModeString, asynParamInt32, &mar345EraseMode);
@@ -743,8 +745,8 @@ mar345::mar345(const char *portName, const char *serverPort,
     dims[0] = 3450;
     dims[1] = 3450;
     /* Allocate the raw buffer we use to files.  Only do this once */
-    setIntegerParam(ADMaxSizeX, dims[0]);
-    setIntegerParam(ADMaxSizeY, dims[1]);
+    setIntegerParam(ADMaxSizeX, (int)dims[0]);
+    setIntegerParam(ADMaxSizeY, (int)dims[1]);
     this->pData = this->pNDArrayPool->alloc(2, dims, NDInt16, 0, NULL);
 
     /* Set some default values for parameters */

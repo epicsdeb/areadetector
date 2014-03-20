@@ -105,7 +105,7 @@ typedef enum {
 #define SimPeakHeightVariationString  "SIM_PEAK_HEIGHT_VARIATION"
 
 
-#define NUM_SIM_DETECTOR_PARAMS (&LAST_SIM_DETECTOR_PARAM - &FIRST_SIM_DETECTOR_PARAM + 1)
+#define NUM_SIM_DETECTOR_PARAMS ((int)(&LAST_SIM_DETECTOR_PARAM - &FIRST_SIM_DETECTOR_PARAM + 1))
 
 
 
@@ -241,9 +241,9 @@ template <typename epicsType> int simDetector::computeLinearRampArray(int sizeX,
 /** Compute array for array of peaks */
 template <typename epicsType> int simDetector::computePeaksArray(int sizeX, int sizeY)
 {
-    epicsType *pMono=NULL, *pRed=NULL, *pGreen=NULL, *pBlue=NULL;
+    epicsType *pMono=NULL, *pRed=NULL;
     epicsType *pMono2=NULL, *pRed2=NULL, *pGreen2=NULL, *pBlue2=NULL;
-    int columnStep=0, rowStep=0, colorMode;
+    int columnStep=0, colorMode;
     int peaksStartX, peaksStartY, peaksStepX, peaksStepY;
     int peaksNumX, peaksNumY, peaksWidthX, peaksWidthY;
      int status = asynSuccess;
@@ -280,24 +280,15 @@ template <typename epicsType> int simDetector::computePeaksArray(int sizeX, int 
             break;
         case NDColorModeRGB1:
             columnStep = 3;
-            rowStep = 0;
             pRed   = (epicsType *)this->pRaw->pData;
-            pGreen = (epicsType *)this->pRaw->pData+1;
-            pBlue  = (epicsType *)this->pRaw->pData+2;
             break;
         case NDColorModeRGB2:
             columnStep = 1;
-            rowStep = 2 * sizeX;
             pRed   = (epicsType *)this->pRaw->pData;
-            pGreen = (epicsType *)this->pRaw->pData + sizeX;
-            pBlue  = (epicsType *)this->pRaw->pData + 2*sizeX;
             break;
         case NDColorModeRGB3:
             columnStep = 1;
-            rowStep = 0;
             pRed   = (epicsType *)this->pRaw->pData;
-            pGreen = (epicsType *)this->pRaw->pData + sizeX*sizeY;
-            pBlue  = (epicsType *)this->pRaw->pData + 2*sizeX*sizeY;
             break;
     }
     this->pRaw->pAttributeList->add("ColorMode", "Color mode", NDAttrInt32, &colorMode);
@@ -441,6 +432,7 @@ int simDetector::computeImage()
 {
     int status = asynSuccess;
     NDDataType_t dataType;
+    int itemp;
     int binX, binY, minX, minY, sizeX, sizeY, reverseX, reverseY;
     int xDim=0, yDim=1, colorDim=-1;
     int resetImage;
@@ -448,7 +440,7 @@ int simDetector::computeImage()
     int colorMode;
     int ndims=0;
     NDDimension_t dimsOut[3];
-    int dims[3];
+    size_t dims[3];
     NDArrayInfo_t arrayInfo;
     NDArray *pImage;
     const char* functionName = "computeImage";
@@ -466,7 +458,7 @@ int simDetector::computeImage()
     status |= getIntegerParam(ADMaxSizeX,     &maxSizeX);
     status |= getIntegerParam(ADMaxSizeY,     &maxSizeY);
     status |= getIntegerParam(NDColorMode,    &colorMode);
-    status |= getIntegerParam(NDDataType,     (int *)&dataType);
+    status |= getIntegerParam(NDDataType,     &itemp); dataType = (NDDataType_t)itemp;
     status |= getIntegerParam(SimResetImage,  &resetImage);
     if (status) asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,
                     "%s:%s: error getting parameters\n",
@@ -604,9 +596,9 @@ int simDetector::computeImage()
     pImage = this->pArrays[0];
     pImage->getInfo(&arrayInfo);
     status = asynSuccess;
-    status |= setIntegerParam(NDArraySize,  arrayInfo.totalBytes);
-    status |= setIntegerParam(NDArraySizeX, pImage->dims[xDim].size);
-    status |= setIntegerParam(NDArraySizeY, pImage->dims[yDim].size);
+    status |= setIntegerParam(NDArraySize,  (int)arrayInfo.totalBytes);
+    status |= setIntegerParam(NDArraySizeX, (int)pImage->dims[xDim].size);
+    status |= setIntegerParam(NDArraySizeY, (int)pImage->dims[yDim].size);
     status |= setIntegerParam(SimResetImage, 0);
     if (status) asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,
                     "%s:%s: error setting parameters\n",
@@ -630,7 +622,7 @@ void simDetector::simTask()
     int numImages, numImagesCounter;
     int imageMode;
     int arrayCallbacks;
-    int acquire;
+    int acquire=0;
     NDArray *pImage;
     double acquireTime, acquirePeriod, delay;
     epicsTimeStamp startTime, endTime;
@@ -640,25 +632,23 @@ void simDetector::simTask()
     this->lock();
     /* Loop forever */
     while (1) {
-        /* Is acquisition active? */
-        getIntegerParam(ADAcquire, &acquire);
-
-        /* If we are not acquiring then wait for a semaphore that is given when acquisition is started */
+       /* If we are not acquiring then wait for a semaphore that is given when acquisition is started */
         if (!acquire) {
-            setIntegerParam(ADStatus, ADStatusIdle);
-            callParamCallbacks();
-            /* Release the lock while we wait for an event that says acquire has started, then lock again */
+          /* Release the lock while we wait for an event that says acquire has started, then lock again */
             asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW,
                 "%s:%s: waiting for acquire to start\n", driverName, functionName);
             this->unlock();
             status = epicsEventWait(this->startEventId);
             this->lock();
+            acquire = 1;
+            setStringParam(ADStatusMessage, "Acquiring data");
             setIntegerParam(ADNumImagesCounter, 0);
         }
 
         /* We are acquiring. */
         /* Get the current time */
         epicsTimeGetCurrent(&startTime);
+        getIntegerParam(ADImageMode, &imageMode);
 
         /* Get the exposure parameters */
         getDoubleParam(ADAcquireTime, &acquireTime);
@@ -679,7 +669,19 @@ void simDetector::simTask()
             this->unlock();
             status = epicsEventWaitWithTimeout(this->stopEventId, acquireTime);
             this->lock();
+        } else {
+            status = epicsEventTryWait(this->stopEventId);
+        }        
+        if (status == epicsEventWaitOK) {
+            acquire = 0;
+            if (imageMode == ADImageContinuous) {
+              setIntegerParam(ADStatus, ADStatusIdle);
+            } else {
+              setIntegerParam(ADStatus, ADStatusAborted);
+            }
+            callParamCallbacks();
         }
+            
 
         /* Update the image */
         status = computeImage();
@@ -687,6 +689,9 @@ void simDetector::simTask()
 
         /* Close the shutter */
         setShutter(ADShutterClosed);
+        
+        if (!acquire) continue;
+
         setIntegerParam(ADStatus, ADStatusReadout);
         /* Call the callbacks to update any changes */
         callParamCallbacks();
@@ -697,7 +702,6 @@ void simDetector::simTask()
         getIntegerParam(NDArrayCounter, &imageCounter);
         getIntegerParam(ADNumImages, &numImages);
         getIntegerParam(ADNumImagesCounter, &numImagesCounter);
-        getIntegerParam(ADImageMode, &imageMode);
         getIntegerParam(NDArrayCallbacks, &arrayCallbacks);
         imageCounter++;
         numImagesCounter++;
@@ -712,45 +716,60 @@ void simDetector::simTask()
         this->getAttributes(pImage->pAttributeList);
 
         if (arrayCallbacks) {
-            /* Call the NDArray callback */
-            /* Must release the lock here, or we can get into a deadlock, because we can
-             * block on the plugin lock, and the plugin can be calling us */
-            this->unlock();
-            asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW,
-                 "%s:%s: calling imageData callback\n", driverName, functionName);
-            doCallbacksGenericPointer(pImage, NDArrayData, 0);
-            this->lock();
+          /* Call the NDArray callback */
+          /* Must release the lock here, or we can get into a deadlock, because we can
+           * block on the plugin lock, and the plugin can be calling us */
+          this->unlock();
+          asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW,
+                    "%s:%s: calling imageData callback\n", driverName, functionName);
+          doCallbacksGenericPointer(pImage, NDArrayData, 0);
+          this->lock();
         }
 
         /* See if acquisition is done */
         if ((imageMode == ADImageSingle) ||
             ((imageMode == ADImageMultiple) &&
              (numImagesCounter >= numImages))) {
-            setIntegerParam(ADAcquire, 0);
-            asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW,
-                  "%s:%s: acquisition completed\n", driverName, functionName);
+
+          /* First do callback on ADStatus. */
+          setStringParam(ADStatusMessage, "Waiting for acquisition");
+          setIntegerParam(ADStatus, ADStatusIdle);
+          callParamCallbacks();
+
+          acquire = 0;
+          setIntegerParam(ADAcquire, acquire);
+          asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW,
+                    "%s:%s: acquisition completed\n", driverName, functionName);
         }
 
         /* Call the callbacks to update any changes */
         callParamCallbacks();
-        getIntegerParam(ADAcquire, &acquire);
 
         /* If we are acquiring then sleep for the acquire period minus elapsed time. */
         if (acquire) {
-            epicsTimeGetCurrent(&endTime);
-            elapsedTime = epicsTimeDiffInSeconds(&endTime, &startTime);
-            delay = acquirePeriod - elapsedTime;
-            asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW,
-                     "%s:%s: delay=%f\n",
-                      driverName, functionName, delay);
-            if (delay >= 0.0) {
-                /* We set the status to readOut to indicate we are in the period delay */
-                setIntegerParam(ADStatus, ADStatusWaiting);
-                callParamCallbacks();
-                this->unlock();
-                status = epicsEventWaitWithTimeout(this->stopEventId, delay);
-                this->lock();
+          epicsTimeGetCurrent(&endTime);
+          elapsedTime = epicsTimeDiffInSeconds(&endTime, &startTime);
+          delay = acquirePeriod - elapsedTime;
+          asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW,
+                    "%s:%s: delay=%f\n",
+                    driverName, functionName, delay);
+          if (delay >= 0.0) {
+            /* We set the status to waiting to indicate we are in the period delay */
+            setIntegerParam(ADStatus, ADStatusWaiting);
+            callParamCallbacks();
+            this->unlock();
+            status = epicsEventWaitWithTimeout(this->stopEventId, delay);
+            this->lock();
+            if (status == epicsEventWaitOK) {
+              acquire = 0;
+              if (imageMode == ADImageContinuous) {
+                setIntegerParam(ADStatus, ADStatusIdle);
+              } else {
+                setIntegerParam(ADStatus, ADStatusAborted);
+              }
+              callParamCallbacks();
             }
+          }
         }
     }
 }
@@ -765,24 +784,45 @@ asynStatus simDetector::writeInt32(asynUser *pasynUser, epicsInt32 value)
 {
     int function = pasynUser->reason;
     int adstatus;
+    int acquiring;
+    int imageMode;
     asynStatus status = asynSuccess;
 
+    /* Ensure that ADStatus is set correctly before we set ADAcquire.*/
+    getIntegerParam(ADStatus, &adstatus);
+    getIntegerParam(ADAcquire, &acquiring);
+    if (function == ADAcquire) {
+      if (value && !acquiring) {
+        setStringParam(ADStatusMessage, "Acquiring data");
+        getIntegerParam(ADImageMode, &imageMode);
+      }
+      if (!value && acquiring) {
+        setStringParam(ADStatusMessage, "Acquisition stopped");
+        if (imageMode == ADImageContinuous) {
+          setIntegerParam(ADStatus, ADStatusIdle);
+        } else {
+          setIntegerParam(ADStatus, ADStatusAborted);
+        }
+        setIntegerParam(ADStatus, ADStatusAcquire); 
+      }
+    }
+    callParamCallbacks();
+ 
     /* Set the parameter and readback in the parameter library.  This may be overwritten when we read back the
      * status at the end, but that's OK */
     status = setIntegerParam(function, value);
 
     /* For a real detector this is where the parameter is sent to the hardware */
     if (function == ADAcquire) {
-        getIntegerParam(ADStatus, &adstatus);
-        if (value && (adstatus == ADStatusIdle)) {
+        if (value && !acquiring) {
             /* Send an event to wake up the simulation task.
              * It won't actually start generating new images until we release the lock below */
-            epicsEventSignal(this->startEventId);
+            epicsEventSignal(this->startEventId); 
         }
-        if (!value && (adstatus != ADStatusIdle)) {
+        if (!value && acquiring) {
             /* This was a command to stop acquisition */
             /* Send the stop event */
-            epicsEventSignal(this->stopEventId);
+            epicsEventSignal(this->stopEventId); 
         }
     } else if ((function == NDDataType) || 
                (function == NDColorMode) ||
@@ -985,12 +1025,12 @@ simDetector::simDetector(const char *portName, int maxSizeX, int maxSizeY, NDDat
 
 /** Configuration command, called directly or from iocsh */
 extern "C" int simDetectorConfig(const char *portName, int maxSizeX, int maxSizeY, int dataType,
-                                 int maxBuffers, size_t maxMemory, int priority, int stackSize)
+                                 int maxBuffers, int maxMemory, int priority, int stackSize)
 {
-    simDetector *pSimDetector
-        = new simDetector(portName, maxSizeX, maxSizeY, (NDDataType_t)dataType,
-                          maxBuffers, maxMemory, priority, stackSize);
-    pSimDetector = NULL;
+    new simDetector(portName, maxSizeX, maxSizeY, (NDDataType_t)dataType,
+                    (maxBuffers < 0) ? 0 : maxBuffers,
+                    (maxMemory < 0) ? 0 : maxMemory, 
+                    priority, stackSize);
     return(asynSuccess);
 }
 

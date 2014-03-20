@@ -23,7 +23,6 @@
 
 #include <epicsTime.h>
 #include <epicsThread.h>
-#include <epicsEvent.h>
 #include <epicsString.h>
 #include <epicsStdio.h>
 #include <epicsMutex.h>
@@ -43,27 +42,46 @@ static int PvApiInitialized;
 
 #define MAX_PVAPI_FRAMES  2  /**< Number of frame buffers for PvApi */
 #define MAX_PACKET_SIZE 8228
-                                      
+ 
+/* Static functions to interface with PvAPI */
+static void PVDECL GlobalCameraLinkCallback(void* Context, tPvInterface Interface, 
+                                            tPvLinkEvent Event, unsigned long UniqueId);
+                                     
 /** Driver for Prosilica GigE and CameraLink cameras using their PvApi library */
 class prosilica : public ADDriver {
 public:
+    /* Constructor and Destructor */
     prosilica(const char *portName, const char *cameraId, int maxBuffers, size_t maxMemory,
               int priority, int stackSize, int maxPvAPIFrames);
-                 
+    ~prosilica();
+
+    /* These methods are overwritten from asynPortDriver */
+    virtual asynStatus connect(asynUser* pasynUser);
+    virtual asynStatus disconnect(asynUser* pasynUser);
+
     /* These are the methods that we override from ADDriver */
     virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
     virtual asynStatus writeFloat64(asynUser *pasynUser, epicsFloat64 value);
     void report(FILE *fp, int details);
-    void frameCallback(tPvFrame *pFrame); /**< This should be private, but is called from C, must be public */
-    void shutdown(); /** This is called by epicsAtExit */
+    
+    /* These are called from C and so must be public */
+     /* This is called by the AVT driver when the connection status of a camera changes */
+    asynStatus cameraLinkCallback(tPvInterface Interface, tPvLinkEvent Event, unsigned long UniqueId);
+    void frameCallback(tPvFrame *pFrame);
+    /* Removes the PvAPI callback functions and disconnects the camera */
+    static void shutdown(void *arg);
 
+ 
 protected:
     int PSReadStatistics;
     #define FIRST_PS_PARAM PSReadStatistics
     int PSDriverType;
     int PSFilterVersion;
+    int PSTimestampType;
+    int PSResetTimer;
     int PSFrameRate;
     int PSByteRate;
+    int PSPacketSize;
     int PSFramesCompleted;
     int PSFramesDropped;
     int PSPacketsErroneous;
@@ -72,6 +90,10 @@ protected:
     int PSPacketsRequested;
     int PSPacketsResent;
     int PSBadFrameCounter;
+    int PSTriggerDelay;
+    int PSTriggerEvent;
+    int PSTriggerOverlap;
+    int PSTriggerSoftware;
     int PSSyncIn1Level;
     int PSSyncIn2Level;
     int PSSyncOut1Mode;
@@ -97,6 +119,7 @@ private:
     asynStatus readParameters();
     asynStatus disconnectCamera();
     asynStatus connectCamera();
+    asynStatus syncTimer();
     
     /* These items are specific to the Prosilica driver */
     tPvHandle PvHandle;            /* GenericPointer for the Prosilica PvAPI library */
@@ -104,7 +127,7 @@ private:
     unsigned long uniqueId;
     tPvCameraInfoEx PvCameraInfo;
     tPvFrame *PvFrames;
-    size_t maxFrameSize;
+    int maxFrameSize;
     int maxPvAPIFrames_;
     int framesRemaining;
     char sensorType[20];
@@ -113,9 +136,10 @@ private:
     tPvUint32 sensorWidth;
     tPvUint32 sensorHeight;
     tPvUint32 timeStampFrequency;
+    struct epicsTimeStamp lastSyncTime;
 };
 
-#define NUM_PS_PARAMS (&LAST_PS_PARAM - &FIRST_PS_PARAM + 1)
+#define NUM_PS_PARAMS ((int)(&LAST_PS_PARAM - &FIRST_PS_PARAM + 1))
 typedef enum {
     /* These parameters describe the trigger modes of the Prosilica
      * They must agree with the values in the mbbo/mbbi records in
@@ -129,6 +153,17 @@ typedef enum {
     PSTriggerStartSoftware
 } PSTriggerStartMode_t;
 
+
+/* These describe the contents of the NDArray timeStamp parameter */
+typedef enum {
+    PSTimestampTypeNativeTicks,   // The number of internal camera clock ticks which have elapsed since the last timer reset
+    PSTimestampTypeNativeSeconds, // The number of seconds which have elapsed since the last timer reset
+    PSTimestampTypePOSIX,         // IntegerPart(timeStamp) is the number of seconds since the POSIX Epoch (00:00:00 UTC, January 1, 1970)
+                                  // DecimalPart(timestamp) is the fraction of the second afterward
+    PSTimestampTypeEPICS          // IntegerPart(timeStamp) is the number of seconds since the EPICS Epoch (January 1, 1990)
+                                  // DecimalPart(timestamp) is the fraction of the second afterward
+} PSTimestampType_t;
+
 static const char *PSTriggerStartModes[] = {
     "Freerun",
     "SyncIn1",
@@ -138,7 +173,22 @@ static const char *PSTriggerStartModes[] = {
     "FixedRate",
     "Software"
 };
-#define NUM_START_TRIGGER_MODES (int)(sizeof(PSTriggerStartModes) / sizeof(PSTriggerStartModes[0]))
+#define NUM_TRIGGER_START_MODES (int)(sizeof(PSTriggerStartModes) / sizeof(PSTriggerStartModes[0]))
+
+static const char *PSTriggerEventModes[] = {
+    "EdgeRising",
+    "EdgeFalling",
+    "EdgeAny",
+    "LevelHigh",
+    "LevelLow"
+};
+#define NUM_TRIGGER_EVENT_MODES (int)(sizeof(PSTriggerEventModes) / sizeof(PSTriggerEventModes[0]))
+
+static const char *PSTriggerOverlapModes[] = {
+    "Off",
+    "PreviousFrame"
+};
+#define NUM_TRIGGER_OVERLAP_MODES (int)(sizeof(PSTriggerOverlapModes) / sizeof(PSTriggerOverlapModes[0]))
 
 static const char *PSSyncOutModes[] = {
     "GPO",
@@ -181,8 +231,11 @@ static const char *PSStrobeModes[] = {
 #define PSReadStatisticsString       "PS_READ_STATISTICS"      /* (asynInt32,    r/w) Write to read statistics  */ 
 #define PSDriverTypeString           "PS_DRIVER_TYPE"          /* (asynOctet,    r/o) Ethernet driver type */ 
 #define PSFilterVersionString        "PS_FILTER_VERSION"       /* (asynOctet,    r/o) Ethernet packet filter version */ 
+#define PSTimestampTypeString        "PS_TIMESTAMP_TYPE"       /* (asynInt32,    r/w) Choose how the timestamping is performed */
+#define PSResetTimerString           "PS_RESET_TIMER"          /* (asynInt32,    n/a) Software timer reset/sync */
 #define PSFrameRateString            "PS_FRAME_RATE"           /* (asynFloat64,  r/o) Frame rate */ 
 #define PSByteRateString             "PS_BYTE_RATE"            /* (asynInt32,    r/w) Stream bytes per second */ 
+#define PSPacketSizeString           "PS_PACKET_SIZE"          /* (asynInt32,    r/o) Packet size */ 
 #define PSFramesCompletedString      "PS_FRAMES_COMPLETED"     /* (asynInt32,    r/o) Frames completed */ 
 #define PSFramesDroppedString        "PS_FRAMES_DROPPED"       /* (asynInt32,    r/o) Frames dropped */ 
 #define PSPacketsErroneousString     "PS_PACKETS_ERRONEOUS"    /* (asynInt32,    r/o) Erroneous packets */ 
@@ -191,6 +244,10 @@ static const char *PSStrobeModes[] = {
 #define PSPacketsRequestedString     "PS_PACKETS_REQUESTED"    /* (asynInt32,    r/o) Packets requested */ 
 #define PSPacketsResentString        "PS_PACKETS_RESENT"       /* (asynInt32,    r/o) Packets resent */
 #define PSBadFrameCounterString      "PS_BAD_FRAME_COUNTER"    /* (asynInt32,    r/o) Bad frame counter */
+#define PSTriggerDelayString         "PS_TRIGGER_DELAY"        /* (asynFloat64,  r/w) Frame start trigger delay */
+#define PSTriggerEventString         "PS_TRIGGER_EVENT"        /* (asynInt32,    r/w) Frame start trigger event */
+#define PSTriggerOverlapString       "PS_TRIGGER_OVERLAP"      /* (asynInt32,    r/w) Frame start trigger overlap */
+#define PSTriggerSoftwareString      "PS_TRIGGER_SOFTWARE"     /* (asynInt32  ,  r/w) Frame start trigger software*/
 #define PSSyncIn1LevelString         "PS_SYNC_IN_1_LEVEL"      /* (asynInt32,    r/o) Sync input 1 level */
 #define PSSyncIn2LevelString         "PS_SYNC_IN_2_LEVEL"      /* (asynInt32,    r/o) Sync input 2 level */
 #define PSSyncOut1ModeString         "PS_SYNC_OUT_1_MODE"      /* (asynInt32,    r/w) Sync output 1 mode */
@@ -207,21 +264,99 @@ static const char *PSStrobeModes[] = {
 #define PSStrobe1CtlDurationString   "PS_STROBE_1_CTL_DURATION"/* (asynInt32,    r/w) Strobe 1 controlled duration */
 #define PSStrobe1DurationString      "PS_STROBE_1_DURATION"    /* (asynFloat64,  r/w) Strobe 1 duration */
 
-static void c_shutdown(void* arg) {
+void prosilica::shutdown (void* arg) {
+
     prosilica *p = (prosilica*)arg;
-    p->shutdown();
+    if (p) delete p;
 }
 
-void prosilica::shutdown() {
-    printf("Closing Prosilica camera...");
-    if (this->PvHandle) {
-        PvCaptureQueueClear(this->PvHandle);
-        PvCaptureEnd(this->PvHandle);
-        PvCameraClose(this->PvHandle);
+
+prosilica::~prosilica() {
+
+    int status;
+    static const char *functionName = "~prosilica";
+
+    this->lock();
+    disconnectCamera();
+    this->unlock();
+    status = PvLinkCallbackUnRegister(GlobalCameraLinkCallback, ePvLinkAdd);
+    if (status) {
+        asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s:%s: error calling PvLinkCallbackUnRegister for ePvLinkAdd, status=%d\n",
+            driverName, functionName, status);
     }
-    PvUnInitialize();
-    printf("OK\n");
-}    
+    status = PvLinkCallbackUnRegister(GlobalCameraLinkCallback, ePvLinkRemove);
+    if (status) {
+        asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s:%s: error calling PvLinkCallbackUnRegister for ePvLinkRemove, status=%d\n",
+            driverName, functionName, status);
+    }
+
+    if (PvApiInitialized) {
+        printf("Uninitializing PvAPI\n");
+        PvUnInitialize();
+        PvApiInitialized = false;
+    }
+}
+
+
+// callback function called on seperate thread when a registered camera event received
+void PVDECL GlobalCameraLinkCallback(void* Context,
+                                     tPvInterface Interface,
+                                     tPvLinkEvent Event,
+                                     unsigned long UniqueId) {
+ 
+    prosilica *p = (prosilica*)Context;
+    if ( p ) p->cameraLinkCallback(Interface, Event, UniqueId);
+}
+
+// Changes the connection status of the camera based on information from the AVT library
+asynStatus prosilica::cameraLinkCallback( tPvInterface Interface, tPvLinkEvent Event, unsigned long UniqueId ) {
+
+    asynStatus status = asynSuccess;
+    //static const char *functionName = "cameraLinkCallback";
+    
+    this->lock();
+    switch( Event ) {
+        case ePvLinkAdd: {
+            // We cannot check to see if the UniqueId matches ours, because the camera may have been
+            // specified by IP address or IP name and may never have connected yet, so we don't know its
+            // uniqueId.
+            // So instead whenever any camera comes online and we are not connected we try to connect to it, 
+            // in hopes that it is our camera.
+            if (this->PvHandle == 0) {
+                status = this->connectCamera();
+            }
+            break;
+        }
+        case ePvLinkRemove: {
+            if( UniqueId == this->uniqueId ) {
+                // the camera has disconnected
+                status = this->disconnectCamera();
+            }
+            break;
+        }
+        default:
+            break;
+    }
+    this->unlock();
+    return status;
+}
+
+
+/* From asynPortDriver: Connects driver to device; */
+asynStatus prosilica::connect( asynUser* pasynUser ) {
+
+    return connectCamera();
+}
+
+
+/* From asynPortDriver: Disconnects driver from device; */
+asynStatus prosilica::disconnect( asynUser* pasynUser ) {
+
+    return disconnectCamera();
+}
+
 
 static void PVDECL frameCallbackC(tPvFrame *pFrame)
 {
@@ -230,11 +365,28 @@ static void PVDECL frameCallbackC(tPvFrame *pFrame)
     pPvt->frameCallback(pFrame);
 }
 
+
+/** Sync the camera time with an EPICS timestamp */
+asynStatus prosilica::syncTimer() {
+
+    //static const char *functionName = "syncTimer";
+    if (this->PvHandle) {
+        epicsTimeGetCurrent( &lastSyncTime );
+        // Tell the camera to reset its internal clock
+        PvCommandRun(this->PvHandle, "TimeStampReset");
+        return asynSuccess;
+    }
+    else {
+        return asynError;
+    }
+}
+
+
 /** This function gets called in a thread from the PvApi library when a new frame arrives */
 void prosilica::frameCallback(tPvFrame *pFrame)
 {
-    int status = asynSuccess;
-    int ndims, dims[2];
+    int ndims;
+    size_t dims[2];
     int imageCounter;
     int arrayCallbacks;
     NDArray *pImage;
@@ -355,10 +507,45 @@ void prosilica::frameCallback(tPvFrame *pFrame)
         
         /* Set the uniqueId and time stamp */
         pImage->uniqueId = pFrame->FrameCount;
-        if (this->timeStampFrequency == 0) this->timeStampFrequency = 1;
-        pImage->timeStamp = ((double)pFrame->TimestampLo + 
-                             (double)pFrame->TimestampHi*4294967296.)/this->timeStampFrequency;
-        
+        const double native_frame_ticks =  ((double)pFrame->TimestampLo + (double)pFrame->TimestampHi*4294967296.);
+
+        /* Determine how to set the timeStamp */
+        PSTimestampType_t timestamp_type = PSTimestampTypeNativeTicks;
+        getIntegerParam(PSTimestampType, (int*)&timestamp_type);
+
+
+        switch( timestamp_type ) {
+            case PSTimestampTypeNativeTicks:
+                pImage->timeStamp = native_frame_ticks;
+                break;
+
+            case PSTimestampTypeNativeSeconds:
+                if (this->timeStampFrequency == 0) this->timeStampFrequency = 1;
+                pImage->timeStamp = native_frame_ticks / this->timeStampFrequency;
+                break;
+
+            case PSTimestampTypePOSIX: {
+                    if (this->timeStampFrequency == 0) this->timeStampFrequency = 1;
+                    epicsTimeStamp epics_frame_time = lastSyncTime;
+                    epicsTimeAddSeconds( &epics_frame_time, native_frame_ticks/this->timeStampFrequency);
+                    timespec ts;
+                    epicsTimeToTimespec( &ts, &epics_frame_time );
+                    pImage->timeStamp = (double)ts.tv_sec + ((double)ts.tv_nsec * 1.0e-09);
+                }
+                break;
+
+            case PSTimestampTypeEPICS: {
+                    if (this->timeStampFrequency == 0) this->timeStampFrequency = 1;
+                    epicsTimeStamp epics_frame_time = lastSyncTime;
+                    epicsTimeAddSeconds( &epics_frame_time, native_frame_ticks/this->timeStampFrequency);
+                    pImage->timeStamp = (double)epics_frame_time.secPastEpoch + ((double)epics_frame_time.nsec * 1.0e-09);
+                }
+                break;
+
+            default:
+                pImage->timeStamp = native_frame_ticks;
+        }
+
         /* Get any attributes that have been defined for this driver */        
         this->getAttributes(pImage->pAttributeList);
         
@@ -412,7 +599,7 @@ void prosilica::frameCallback(tPvFrame *pFrame)
     callParamCallbacks();
     
     /* Queue this frame to run again */
-    status = PvCaptureQueueFrame(this->PvHandle, pFrame, frameCallbackC); 
+    PvCaptureQueueFrame(this->PvHandle, pFrame, frameCallbackC); 
     this->unlock();
 }
 
@@ -446,7 +633,7 @@ asynStatus prosilica::setGeometry()
 {
     int status = asynSuccess;
     int s;
-    int binX, binY, minY, minX, sizeX, sizeY;
+    int binX, binY, minY, minX, sizeX, sizeY, maxSizeX, maxSizeY;
     static const char *functionName = "setGeometry";
     
     /* Get all of the current geometry parameters from the parameter library */
@@ -458,12 +645,22 @@ asynStatus prosilica::setGeometry()
     status |= getIntegerParam(ADMinY, &minY);
     status |= getIntegerParam(ADSizeX, &sizeX);
     status |= getIntegerParam(ADSizeY, &sizeY);
+    status |= getIntegerParam(ADMaxSizeX, &maxSizeX);
+    status |= getIntegerParam(ADMaxSizeY, &maxSizeY);
     
     /* CMOS cameras don't support binning, so ignore ePvErrNotFound errors */
     s = PvAttrUint32Set(this->PvHandle, "BinningX", binX);
     if (s != ePvErrNotFound) status |= s;
     s = PvAttrUint32Set(this->PvHandle, "BinningY", binY);
     if (s != ePvErrNotFound) status |= s;
+    if (minX + sizeX > maxSizeX) {
+        sizeX = maxSizeX - minX;
+        setIntegerParam(ADSizeX, sizeX);
+    }
+    if (minY + sizeY > maxSizeY) {
+        sizeY = maxSizeY - minY;
+        setIntegerParam(ADSizeY, sizeY);
+    }
     status |= PvAttrUint32Set(this->PvHandle, "RegionX", minX/binX);
     status |= PvAttrUint32Set(this->PvHandle, "RegionY", minY/binY);
     status |= PvAttrUint32Set(this->PvHandle, "Width",   sizeX/binX);
@@ -539,9 +736,11 @@ asynStatus prosilica::readStats()
     }
     status |= setStringParam (PSFilterVersion, buffer);
     status |= PvAttrFloat32Get   (this->PvHandle, "StatFrameRate", &fval);
+    status |= setDoubleParam (PSFrameRate, fval);
     status |= PvAttrUint32Get    (this->PvHandle, "StreamBytesPerSecond", &uval);
     status |= setIntegerParam(PSByteRate, (int)uval);
-    status |= setDoubleParam (PSFrameRate, fval);
+    status |= PvAttrUint32Get    (this->PvHandle, "PacketSize", &uval);
+    status |= setIntegerParam(PSPacketSize, (int)uval);
     status |= PvAttrUint32Get    (this->PvHandle, "StatFramesCompleted", &uval);
     status |= setIntegerParam(PSFramesCompleted, (int)uval);
     status |= PvAttrUint32Get    (this->PvHandle, "StatFramesDropped", &uval);
@@ -563,6 +762,36 @@ asynStatus prosilica::readStats()
     status |= setIntegerParam(PSSyncOut1Level, uval&0x01 ? 1:0);
     status |= setIntegerParam(PSSyncOut2Level, uval&0x02 ? 1:0);
     status |= setIntegerParam(PSSyncOut3Level, uval&0x04 ? 1:0);
+    status |= PvAttrUint32Get    (this->PvHandle, "FrameStartTriggerDelay", &uval);
+    status |= setDoubleParam(PSTriggerDelay, uval/1.e6);
+    status |= PvAttrEnumGet(this->PvHandle, "FrameStartTriggerEvent", buffer, sizeof(buffer), &nchars);
+    for (i=0; i<NUM_TRIGGER_EVENT_MODES; i++) {
+        if (strcmp(buffer, PSTriggerEventModes[i]) == 0) {
+            status |= setIntegerParam(PSTriggerEvent, i);
+            break;
+        }
+    }
+    if (i == NUM_TRIGGER_EVENT_MODES) {
+        status |= setIntegerParam(PSTriggerEvent, 0);
+        status |= asynError;
+    }    
+    status |= PvAttrEnumGet(this->PvHandle, "FrameStartTriggerOverlap", buffer, sizeof(buffer), &nchars);
+    /* This parameter can be not supported */
+    if (status == ePvErrNotFound) {
+        status = 0;
+        status |= setIntegerParam(PSTriggerOverlap, 0);
+    } else {
+        for (i=0; i<NUM_TRIGGER_OVERLAP_MODES; i++) {
+            if (strcmp(buffer, PSTriggerOverlapModes[i]) == 0) {
+                status |= setIntegerParam(PSTriggerOverlap, i);
+                break;
+            }
+        }
+        if (i == NUM_TRIGGER_OVERLAP_MODES) {
+            status |= setIntegerParam(PSTriggerOverlap, 0);
+            status |= asynError;
+        }
+    }
     status |= PvAttrEnumGet(this->PvHandle, "SyncOut1Mode", buffer, sizeof(buffer), &nchars);
     for (i=0; i<NUM_SYNC_OUT_MODES; i++) {
         if (strcmp(buffer, PSSyncOutModes[i]) == 0) {
@@ -597,10 +826,10 @@ asynStatus prosilica::readStats()
                 break;
             }
         }
-    }
-    if (i == NUM_SYNC_OUT_MODES) {
-        status |= setIntegerParam(PSSyncOut3Mode, 0);
-        status |= asynError;
+        if (i == NUM_SYNC_OUT_MODES) {
+            status |= setIntegerParam(PSSyncOut3Mode, 0);
+            status |= asynError;
+        }
     }
     
     status |= PvAttrEnumGet(this->PvHandle, "SyncOut1Invert", buffer, sizeof(buffer), &nchars);
@@ -727,13 +956,13 @@ asynStatus prosilica::readParameters()
     status |= setIntegerParam(ADImageMode, i);
 
     status |= PvAttrEnumGet(this->PvHandle, "FrameStartTriggerMode", buffer, sizeof(buffer), &nchars);
-    for (i=0; i<NUM_START_TRIGGER_MODES; i++) {
+    for (i=0; i<NUM_TRIGGER_START_MODES; i++) {
         if (strcmp(buffer, PSTriggerStartModes[i]) == 0) {
             status |= setIntegerParam(ADTriggerMode, i);
             break;
         }
     }
-    if (i == NUM_START_TRIGGER_MODES) {
+    if (i == NUM_TRIGGER_START_MODES) {
         status |= setIntegerParam(ADTriggerMode, 0);
         status |= asynError;
     }
@@ -773,28 +1002,52 @@ asynStatus prosilica::disconnectCamera()
     NDArray *pImage;
     static const char *functionName = "disconnectCamera";
 
+    /* Ensure that PvAPI has been initialised */
+    if ( !PvApiInitialized ) {
+        asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, 
+            "%s:%s: Disconnecting from camera %ld while the PvAPI is uninitialized.\n", 
+            driverName, functionName, this->uniqueId);
+        return asynError;
+    }
+
     if (!this->PvHandle) return(asynSuccess);
+    // We have the lock at this point, but these functions can block resulting in a deadlock
+    //  Release the lock
+    unlock();
     status |= PvCaptureQueueClear(this->PvHandle);
     status |= PvCaptureEnd(this->PvHandle);
     status |= PvCameraClose(this->PvHandle);
+    lock();
     asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, 
-          "%s:%s: disconnecting camera %d\n", 
+          "%s:%s: disconnecting camera %ld\n", 
           driverName, functionName, this->uniqueId);
     if (status) {
         asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, 
-              "%s:%s: unable to close camera %d\n",
+              "%s:%s: unable to close camera %lu\n",
               driverName, functionName, this->uniqueId);
     }
     /* If we have allocated frame buffers, free them. */
     /* Must first free any image buffers they point to */
-    pFrame = this->PvFrames;
-    while (pFrame) {
+    for( int i = 0; i < maxPvAPIFrames_; i++ ) {
+        pFrame = &(this->PvFrames[i]);
+        if (! pFrame ) continue;
+
         pImage = (NDArray *)pFrame->Context[1];
         if (pImage) pImage->release();
         pFrame->Context[1] = 0;
-        pFrame++;
     }
+
     this->PvHandle = NULL;
+    /* We've disconnected the camera. Signal to asynManager that we are disconnected. */
+    status = pasynManager->exceptionDisconnect(this->pasynUserSelf);
+    if (status) {
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s:%s: error calling pasynManager->exceptionDisconnect, error=%s\n",
+            driverName, functionName, pasynUserSelf->errorMessage);
+    }
+    asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, 
+        "%s:%s: Camera disconnected; unique id: %ld\n", 
+        driverName, functionName, this->uniqueId);
     return((asynStatus)status);
 }
 
@@ -804,17 +1057,27 @@ asynStatus prosilica::connectCamera()
     unsigned long nchars;
     tPvFrame *pFrame;
     int i;
-    int ndims, dims[2];
+    int ndims;
+    size_t dims[2];
     int bytesPerPixel;
     NDArray *pImage;
     struct in_addr ipAddr;
     bool isUniqueId;
     static const char *functionName = "connectCamera";
 
+    /* Ensure that PvAPI has been initialised */
+    if ( !PvApiInitialized ) {
+        asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, 
+            "%s:%s: Connecting to camera %ld while the PvAPI is uninitialized.\n", 
+            driverName, functionName, this->uniqueId);
+        return asynError;
+    }
+
     /* First disconnect from the camera */
     disconnectCamera();
     
-    /* Determine if we have been passed a uniqueID (all characters in cameraId are digits), or an IP address (anything else) */
+    /* Determine if we have been passed a uniqueID (all characters in cameraId are digits), 
+     * or an IP address (anything else) */
     isUniqueId = true;
     for (i=0; i<(int)strlen(this->cameraId); i++) {
       if (!isdigit(this->cameraId[i])) isUniqueId = false;
@@ -825,7 +1088,7 @@ asynStatus prosilica::connectCamera()
         status = PvCameraInfoEx(this->uniqueId, &this->PvCameraInfo, sizeof(this->PvCameraInfo));
         if (status) {
             asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, 
-                  "%s:%s: Cannot find camera %d\n", 
+                  "%s:%s: Cannot find camera %lu\n", 
                   driverName, functionName, this->uniqueId);
             return asynError;
         }
@@ -850,7 +1113,7 @@ asynStatus prosilica::connectCamera()
 
     if ((this->PvCameraInfo.PermittedAccess & ePvAccessMaster) == 0) {
         asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, 
-              "%s:%s: Cannot get control of camera %d, access flags=%lx\n", 
+              "%s:%s: Cannot get control of camera %lu, access flags=%lx\n", 
                driverName, functionName, this->uniqueId, this->PvCameraInfo.PermittedAccess);
         return asynError;
     }
@@ -862,16 +1125,17 @@ asynStatus prosilica::connectCamera()
     
     if (status) {
         asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, 
-              "%s:%s: unable to open camera %d\n",
+              "%s:%s: unable to open camera %lu\n",
               driverName, functionName, this->uniqueId);
-       return asynError;
+        this->PvHandle = NULL;
+        return asynError;
     }
     
     /* Negotiate maximum frame size */
     status = PvCaptureAdjustPacketSize(this->PvHandle, MAX_PACKET_SIZE);
     if (status) {
         asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, 
-              "%s:%s: unable to adjust packet size %d\n",
+              "%s:%s: unable to adjust packet size on camera %lu\n",
               driverName, functionName, this->uniqueId);
        return asynError;
     }
@@ -880,7 +1144,7 @@ asynStatus prosilica::connectCamera()
     status = PvCaptureStart(this->PvHandle);
     if (status) {
         asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, 
-              "%s:%s: unable to start capture on camera %d\n",
+              "%s:%s: unable to start capture on camera %lu\n",
               driverName, functionName, this->uniqueId);
         return asynError;
     }
@@ -900,7 +1164,7 @@ asynStatus prosilica::connectCamera()
                               sizeof(this->IPAddress), &nchars);
     if (status) {
         asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, 
-              "%s:%s: unable to get sensor data on camera %d\n",
+              "%s:%s: unable to get sensor data on camera %lu\n",
               driverName, functionName, this->uniqueId);
         return asynError;
     }
@@ -918,7 +1182,7 @@ asynStatus prosilica::connectCamera()
         pImage = this->pNDArrayPool->alloc(ndims, dims, NDInt8, this->maxFrameSize, NULL);
         if (!pImage) {
             asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, 
-                  "%s:%s: unable to allocate image %d on camera %d\n",
+                  "%s:%s: unable to allocate image %d on camera %lu\n",
                   driverName, functionName, i, this->uniqueId);
             return asynError;
         }
@@ -932,7 +1196,7 @@ asynStatus prosilica::connectCamera()
         status = PvCaptureQueueFrame(this->PvHandle, pFrame, frameCallbackC); 
         if (status) {
             asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, 
-                  "%s:%s: unable to queue frame %d on camera %d\n",
+                  "%s:%s: unable to queue frame %d on camera %lu\n",
                   driverName, functionName, i, this->uniqueId);
             return asynError;
         }
@@ -948,7 +1212,7 @@ asynStatus prosilica::connectCamera()
     status |= setIntegerParam(PSBadFrameCounter, 0);
     if (status) {
         asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, 
-              "%s:%s: unable to set camera parameters on camera %d\n",
+              "%s:%s: unable to set camera parameters on camera %lu\n",
               driverName, functionName, this->uniqueId);
         return asynError;
     }
@@ -967,8 +1231,17 @@ asynStatus prosilica::connectCamera()
     PvCommandRun(this->PvHandle, "AcquisitionAbort");
         
     /* We found the camera and everything is OK.  Signal to asynManager that we are connected. */
-    pasynManager->exceptionConnect(this->pasynUserSelf);
-    return((asynStatus)status);
+    status = pasynManager->exceptionConnect(this->pasynUserSelf);
+    if (status) {
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s:%s: error calling pasynManager->exceptionConnect, error=%s\n",
+            driverName, functionName, pasynUserSelf->errorMessage);
+        return asynError;
+    }
+    asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, 
+        "%s:%s: Camera connected; unique id: %ld\n", 
+        driverName, functionName, this->uniqueId);
+    return asynSuccess;
 }
 
 
@@ -1039,7 +1312,7 @@ asynStatus prosilica::writeInt32(asynUser *pasynUser, epicsInt32 value)
             status |= PvCommandRun(this->PvHandle, "AcquisitionAbort");
         }
     } else if (function == ADTriggerMode) {
-        if ((value < 0) || (value > (NUM_START_TRIGGER_MODES-1))) {
+        if ((value < 0) || (value > (NUM_TRIGGER_START_MODES-1))) {
             status = asynError;
         } else {
             status |= PvAttrEnumSet(this->PvHandle, "FrameStartTriggerMode", 
@@ -1049,6 +1322,12 @@ asynStatus prosilica::writeInt32(asynUser *pasynUser, epicsInt32 value)
             status |= PvAttrUint32Set(this->PvHandle, "StreamBytesPerSecond", value);
     } else if (function == PSReadStatistics) {
             readStats();
+    } else if (function == PSTriggerEvent) {
+            status |= PvAttrEnumSet(this->PvHandle, "FrameStartTriggerEvent", PSTriggerEventModes[value]);
+    } else if (function == PSTriggerOverlap) {
+            status |= PvAttrEnumSet(this->PvHandle, "FrameStartTriggerOverlap", PSTriggerOverlapModes[value]);
+    } else if (function == PSTriggerSoftware) {
+            status |= PvCommandRun(this->PvHandle, "FrameStartTriggerSoftware");
     } else if (function == PSSyncOut1Mode) {
             status |= PvAttrEnumSet(this->PvHandle, "SyncOut1Mode", PSSyncOutModes[value]);
     } else if (function == PSSyncOut2Mode) {
@@ -1080,8 +1359,10 @@ asynStatus prosilica::writeInt32(asynUser *pasynUser, epicsInt32 value)
     } else if (function == PSStrobe1CtlDuration) {
             status |= PvAttrEnumSet(this->PvHandle, "Strobe1ControlledDuration", value ? "On":"Off");
     } else if ((function == NDDataType) ||
-                (function == NDColorMode)) {
+               (function == NDColorMode)) {
             status = setPixelFormat();
+    } else if ( function == PSResetTimer ) {
+            status = syncTimer();
     } else {
             /* If this is not a parameter we have handled call the base class */
             if (function < FIRST_PS_PARAM) status = ADDriver::writeInt32(pasynUser, value);
@@ -1127,6 +1408,9 @@ asynStatus prosilica::writeFloat64(asynUser *pasynUser, epicsFloat64 value)
     } else if (function == ADGain) {
         /* Prosilica uses an integer value */
         status |= PvAttrUint32Set(this->PvHandle, "GainValue", (tPvUint32)(value));
+    } else if (function == PSTriggerDelay) {
+        /* Prosilica uses integer microseconds */
+        status |= PvAttrUint32Set(this->PvHandle, "FrameStartTriggerDelay", (tPvUint32)(value*1e6));
     } else if (function == PSStrobe1Delay) {
         /* Prosilica uses integer microseconds */
         status |= PvAttrUint32Set(this->PvHandle, "Strobe1Delay", (tPvUint32)(value*1e6));
@@ -1161,7 +1445,7 @@ void prosilica::report(FILE *fp, int details)
 {
     tPvCameraInfoEx cameraInfo[20], *pInfo; 
     int i;
-    unsigned long numReturned, numTotal;
+    unsigned long numReturned, numTotal, versionMajor, versionMinor;
     
     numReturned = PvCameraListEx(cameraInfo, 20, &numTotal, sizeof(tPvCameraInfoEx));
 
@@ -1169,6 +1453,8 @@ void prosilica::report(FILE *fp, int details)
             this->portName, (int)this->uniqueId);
     pInfo = &this->PvCameraInfo;
     if (details > 0) {
+        PvVersion(&versionMajor, &versionMinor);
+        fprintf(fp, "  PvAPI version:     %ld.%ld\n", versionMajor, versionMinor);
         fprintf(fp, "  ID:                %lu\n", pInfo->UniqueId);
         fprintf(fp, "  IP address:        %s\n",  this->IPAddress);
         fprintf(fp, "  Serial number:     %s\n",  pInfo->SerialNumber);
@@ -1229,7 +1515,7 @@ prosilica::prosilica(const char *portName, const char *cameraId, int maxBuffers,
                      int priority, int stackSize, int maxPvAPIFrames)
     : ADDriver(portName, 1, NUM_PS_PARAMS, maxBuffers, maxMemory, 
                0, 0,               /* No interfaces beyond those set in ADDriver.cpp */
-               ASYN_CANBLOCK, 1,   /* ASYN_CANBLOCK=1, ASYN_MULTIDEVICE=0, autoConnect=1 */
+               ASYN_CANBLOCK, 0,   /* ASYN_CANBLOCK=1, ASYN_MULTIDEVICE=0, autoConnect=1 */
                priority, stackSize), 
       PvHandle(NULL), maxPvAPIFrames_(maxPvAPIFrames), framesRemaining(0) 
 
@@ -1239,34 +1525,41 @@ prosilica::prosilica(const char *portName, const char *cameraId, int maxBuffers,
 
     this->cameraId = epicsStrDup(cameraId);
     
-    createParam(PSReadStatisticsString,    asynParamInt32, &PSReadStatistics);
-    createParam(PSDriverTypeString,        asynParamOctet,   &PSDriverType);
-    createParam(PSFilterVersionString,     asynParamOctet,   &PSFilterVersion);
-    createParam(PSFrameRateString,         asynParamFloat64, &PSFrameRate);
-    createParam(PSByteRateString,          asynParamInt32, &PSByteRate);
-    createParam(PSFramesCompletedString,   asynParamInt32, &PSFramesCompleted);
-    createParam(PSFramesDroppedString,     asynParamInt32, &PSFramesDropped);
-    createParam(PSPacketsErroneousString,  asynParamInt32, &PSPacketsErroneous);
-    createParam(PSPacketsMissedString,     asynParamInt32, &PSPacketsMissed);
-    createParam(PSPacketsReceivedString,   asynParamInt32, &PSPacketsReceived);
-    createParam(PSPacketsRequestedString,  asynParamInt32, &PSPacketsRequested);
-    createParam(PSPacketsResentString,     asynParamInt32, &PSPacketsResent);
-    createParam(PSBadFrameCounterString,   asynParamInt32, &PSBadFrameCounter);
-    createParam(PSSyncIn1LevelString,      asynParamInt32, &PSSyncIn1Level);
-    createParam(PSSyncIn2LevelString,      asynParamInt32, &PSSyncIn2Level);
-    createParam(PSSyncOut1ModeString,      asynParamInt32, &PSSyncOut1Mode);
-    createParam(PSSyncOut1LevelString,     asynParamInt32, &PSSyncOut1Level);
-    createParam(PSSyncOut1InvertString,    asynParamInt32, &PSSyncOut1Invert);
-    createParam(PSSyncOut2ModeString,      asynParamInt32, &PSSyncOut2Mode);
-    createParam(PSSyncOut2LevelString,     asynParamInt32, &PSSyncOut2Level);
-    createParam(PSSyncOut2InvertString,    asynParamInt32, &PSSyncOut2Invert);
-    createParam(PSSyncOut3ModeString,      asynParamInt32, &PSSyncOut3Mode);
-    createParam(PSSyncOut3LevelString,     asynParamInt32, &PSSyncOut3Level);
-    createParam(PSSyncOut3InvertString,    asynParamInt32, &PSSyncOut3Invert);
-    createParam(PSStrobe1ModeString,       asynParamInt32, &PSStrobe1Mode);
-    createParam(PSStrobe1DelayString,      asynParamFloat64, &PSStrobe1Delay);
-    createParam(PSStrobe1CtlDurationString,asynParamInt32, &PSStrobe1CtlDuration);
-    createParam(PSStrobe1DurationString,   asynParamFloat64, &PSStrobe1Duration);
+    createParam(PSReadStatisticsString,    asynParamInt32,    &PSReadStatistics);
+    createParam(PSDriverTypeString,        asynParamOctet,    &PSDriverType);
+    createParam(PSFilterVersionString,     asynParamOctet,    &PSFilterVersion);
+    createParam(PSTimestampTypeString,     asynParamInt32,    &PSTimestampType);
+    createParam(PSResetTimerString,        asynParamInt32,    &PSResetTimer);
+    createParam(PSFrameRateString,         asynParamFloat64,  &PSFrameRate);
+    createParam(PSByteRateString,          asynParamInt32,    &PSByteRate);
+    createParam(PSPacketSizeString,        asynParamInt32,    &PSPacketSize);
+    createParam(PSFramesCompletedString,   asynParamInt32,    &PSFramesCompleted);
+    createParam(PSFramesDroppedString,     asynParamInt32,    &PSFramesDropped);
+    createParam(PSPacketsErroneousString,  asynParamInt32,    &PSPacketsErroneous);
+    createParam(PSPacketsMissedString,     asynParamInt32,    &PSPacketsMissed);
+    createParam(PSPacketsReceivedString,   asynParamInt32,    &PSPacketsReceived);
+    createParam(PSPacketsRequestedString,  asynParamInt32,    &PSPacketsRequested);
+    createParam(PSPacketsResentString,     asynParamInt32,    &PSPacketsResent);
+    createParam(PSBadFrameCounterString,   asynParamInt32,    &PSBadFrameCounter);
+    createParam(PSTriggerDelayString,      asynParamFloat64,  &PSTriggerDelay);
+    createParam(PSTriggerEventString,      asynParamInt32,    &PSTriggerEvent);
+    createParam(PSTriggerOverlapString,    asynParamInt32,    &PSTriggerOverlap);
+    createParam(PSTriggerSoftwareString,   asynParamInt32,    &PSTriggerSoftware);
+    createParam(PSSyncIn1LevelString,      asynParamInt32,    &PSSyncIn1Level);
+    createParam(PSSyncIn2LevelString,      asynParamInt32,    &PSSyncIn2Level);
+    createParam(PSSyncOut1ModeString,      asynParamInt32,    &PSSyncOut1Mode);
+    createParam(PSSyncOut1LevelString,     asynParamInt32,    &PSSyncOut1Level);
+    createParam(PSSyncOut1InvertString,    asynParamInt32,    &PSSyncOut1Invert);
+    createParam(PSSyncOut2ModeString,      asynParamInt32,    &PSSyncOut2Mode);
+    createParam(PSSyncOut2LevelString,     asynParamInt32,    &PSSyncOut2Level);
+    createParam(PSSyncOut2InvertString,    asynParamInt32,    &PSSyncOut2Invert);
+    createParam(PSSyncOut3ModeString,      asynParamInt32,    &PSSyncOut3Mode);
+    createParam(PSSyncOut3LevelString,     asynParamInt32,    &PSSyncOut3Level);
+    createParam(PSSyncOut3InvertString,    asynParamInt32,    &PSSyncOut3Invert);
+    createParam(PSStrobe1ModeString,       asynParamInt32,    &PSStrobe1Mode);
+    createParam(PSStrobe1DelayString,      asynParamFloat64,  &PSStrobe1Delay);
+    createParam(PSStrobe1CtlDurationString,asynParamInt32,    &PSStrobe1CtlDuration);
+    createParam(PSStrobe1DurationString,   asynParamFloat64,  &PSStrobe1Duration);
 
     /* There is a conflict with readline use of signals, don't use readline signal handlers */
 #ifdef linux
@@ -1277,6 +1570,7 @@ prosilica::prosilica(const char *portName, const char *cameraId, int maxBuffers,
     if (maxPvAPIFrames_ == 0) maxPvAPIFrames_ = MAX_PVAPI_FRAMES;
     /* Create the PvFrames buffer.  Note that these structures must be set to 0! */
     PvFrames = (tPvFrame *)calloc(maxPvAPIFrames_, sizeof(tPvFrame));
+    
 
     /* Initialize the Prosilica PvAPI library 
      * We get an error if we call this twice, so we need a global flag to see if 
@@ -1291,13 +1585,24 @@ prosilica::prosilica(const char *portName, const char *cameraId, int maxBuffers,
         PvApiInitialized = 1;
     }
     
+    tPvErr errCode;
+    // register camera connection callback
+    if((errCode = PvLinkCallbackRegister(GlobalCameraLinkCallback,ePvLinkAdd,(void*)this)) != ePvErrSuccess)
+        printf("PvLinkCallbackRegister err: %u\n", errCode);
+
+    // register camera disconnection callback
+    if((errCode = PvLinkCallbackRegister(GlobalCameraLinkCallback,ePvLinkRemove,(void*)this)) != ePvErrSuccess)
+        printf("PvLinkCallbackRegister err: %u\n", errCode);
+
     /* Need to wait a short while for the PvAPI library to find the cameras (0.2 seconds is not long enough in 1.24) */
     epicsThreadSleep(1.0);
     
     /* Try to connect to the camera.  
      * It is not a fatal error if we cannot now, the camera may be off or owned by
      * someone else.  It may connect later. */
+    this->lock();
     status = connectCamera();
+    this->unlock();
     if (status) {
         printf("%s:%s: cannot connect to camera %s, manually connect when available.\n", 
                driverName, functionName, cameraId);
@@ -1305,8 +1610,7 @@ prosilica::prosilica(const char *portName, const char *cameraId, int maxBuffers,
     }
     
     /* Register the shutdown function for epicsAtExit */
-    epicsAtExit(c_shutdown, (void*)this);
-        
+    epicsAtExit(shutdown, (void*)this);
 }
 
 /* Code for iocsh registration */

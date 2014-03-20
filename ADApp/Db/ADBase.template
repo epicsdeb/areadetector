@@ -392,7 +392,7 @@ record(mbbo, "$(P)$(R)FrameType")
    field(TWST, "FlatField")
    field(TWVL, "2")
    field(THST, "DblCorrelation")
-   field(THVL, "2")
+   field(THVL, "3")
    field(VAL,  "0")
 }
 
@@ -407,7 +407,7 @@ record(mbbi, "$(P)$(R)FrameType_RBV")
    field(TWST, "FlatField")
    field(TWVL, "2")
    field(THST, "DblCorrelation")
-   field(THVL, "2")
+   field(THVL, "3")
    field(SCAN, "I/O Intr")
 }
 
@@ -603,6 +603,9 @@ record(mbbi, "$(P)$(R)DetectorState_RBV")
     field(NIST, "Disconnected")
     field(NIVL, "9")
     field(NISV, "INVALID")
+    field(TEST, "Aborted")
+    field(TEVL, "10")
+    field(TESV, "MINOR")
     field(SCAN, "I/O Intr")
 }
 
@@ -848,6 +851,69 @@ record(ai, "$(P)$(R)Temperature_RBV")
    field(PREC, "3")
    field(SCAN, "I/O Intr")
 }
+
+record(ai, "$(P)$(R)TemperatureActual")
+{
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))TEMPERATURE_ACTUAL")
+   field(PREC, "3")
+   field(SCAN, "I/O Intr")
+}
+
+
+###################################################################
+#  Status of NDArrayPool - number of buffers, memory used etc.    # 
+###################################################################
+
+record(ai, "$(P)$(R)PoolMaxMem")
+{
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))POOL_MAX_MEMORY")
+   field(PREC, "1")
+   field(EGU,  "MB")
+   field(SCAN, "Passive")
+   field(PINI, "YES")
+}
+
+record(longin, "$(P)$(R)PoolMaxBuffers")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))POOL_MAX_BUFFERS")
+   field(SCAN, "Passive")
+   field(PINI, "YES")
+}
+
+record(ai, "$(P)$(R)PoolUsedMem")
+{
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))POOL_USED_MEMORY")
+   field(PREC, "1")
+   field(EGU,  "MB")
+   field(SCAN, "1 second")
+   field(FLNK, "$(P)$(R)PoolAllocBuffers")
+}
+
+record(longin, "$(P)$(R)PoolAllocBuffers")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))POOL_ALLOC_BUFFERS")
+   field(FLNK, "$(P)$(R)PoolFreeBuffers")
+}
+
+record(longin, "$(P)$(R)PoolFreeBuffers")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))POOL_FREE_BUFFERS")
+   field(FLNK, "$(P)$(R)PoolUsedBuffers")
+}
+
+record(calc, "$(P)$(R)PoolUsedBuffers")
+{
+    field(INPA, "$(P)$(R)PoolAllocBuffers NPP MS")
+    field(INPB, "$(P)$(R)PoolFreeBuffers NPP MS")
+    field(CALC, "A-B")
+}
+
 
 ###################################################################
 #  The asynRecord is used for mainly for trace mask               # 

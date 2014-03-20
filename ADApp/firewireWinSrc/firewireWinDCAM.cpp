@@ -90,6 +90,7 @@
 #define FDC_current_modeString       "FDC_CURRENT_MODE"
 #define FDC_current_framerateString  "FDC_CURRENT_FRAMERATE"
 #define FDC_current_colorcodeString  "FDC_CURRENT_COLORCODE"
+#define FDC_readout_timeString       "FDC_READOUT_TIME"
 #define FDC_dropped_framesString     "FDC_DROPPED_FRAMES"
 
 /** Only used for debugging/error messages to identify where the message comes from*/
@@ -138,6 +139,7 @@ protected:
     int FDC_current_mode;                  /** Read back the current video mode (octet, read)*/
     int FDC_current_framerate;             /** Read back the current frame rate (octet, read)*/
     int FDC_current_colorcode;             /** Read back the current color mcde (octet, read)*/
+    int FDC_readout_time;                  /** Readout time (float64, read/write)*/
     int FDC_dropped_frames;                /** Number of dropped frames (int32, read)*/
     #define LAST_FDC_PARAM FDC_dropped_frames
 
@@ -172,7 +174,7 @@ private:
 /* end of FirewireWinDCAM class description */
 
 /** Number of asyn parameters (asyn commands) this driver supports. */
-#define NUM_FDC_PARAMS (&LAST_FDC_PARAM - &FIRST_FDC_PARAM + 1)
+#define NUM_FDC_PARAMS ((int)(&LAST_FDC_PARAM - &FIRST_FDC_PARAM + 1))
 
 /** Configuration function to configure one camera.
  *
@@ -403,6 +405,7 @@ FirewireWinDCAM::FirewireWinDCAM(    const char *portName, const char* camid,
     createParam(FDC_current_modeString,         asynParamOctet,   &FDC_current_mode);
     createParam(FDC_current_framerateString,    asynParamOctet,   &FDC_current_framerate);
     createParam(FDC_current_colorcodeString,    asynParamOctet,   &FDC_current_colorcode);
+    createParam(FDC_readout_timeString,       asynParamFloat64,   &FDC_readout_time);
     createParam(FDC_dropped_framesString,       asynParamInt32,   &FDC_dropped_frames);
 
     this->pCamera->GetCameraVendor(vendorName, sizeof(vendorName));
@@ -479,19 +482,18 @@ void FirewireWinDCAM::imageGrabTask()
             setIntegerParam(ADStatus, ADStatusIdle);
             callParamCallbacks();
 
-            /* Release the lock while we wait for an event that says acquire has started, then lock again */
-            this->unlock();
-
             /* Wait for a signal that tells this thread that the transmission
              * has started and we can start asking for image buffers...     */
             asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW,
                 "%s::%s [%s]: waiting for acquire to start\n", 
                 driverName, functionName, this->portName);
+            /* Release the lock while we wait for an event that says acquire has started, then lock again */
+            this->unlock();
             status = epicsEventWait(this->startEventId);
+            this->lock();
             asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW,
                 "%s::%s [%s]: started!\n", 
                 driverName, functionName, this->portName);
-            this->lock();
             setIntegerParam(ADNumImagesCounter, 0);
             setIntegerParam(ADAcquire, 1);
         }
@@ -583,7 +585,7 @@ int FirewireWinDCAM::grabImage()
 {
     int status = asynSuccess;
     NDDataType_t dataType;
-    int dims[3];
+    size_t dims[3];
     int err;
     unsigned long lsizeX, lsizeY;
     unsigned short sizeX, sizeY;
@@ -603,8 +605,8 @@ int FirewireWinDCAM::grabImage()
     /* unlock the driver while we wait for a new image to be ready */
     this->unlock();
     err = this->pCamera->AcquireImageEx(TRUE, &newDroppedFrames);
-    status = PERR(err);
     this->lock();
+    status = PERR(err);
     if (status) return status;   /* if we didn't get an image properly... */
 
     getIntegerParam(FDC_dropped_frames, &droppedFrames);
@@ -1599,18 +1601,20 @@ asynStatus FirewireWinDCAM::startCapture()
     asynStatus status = asynSuccess;
     int err;
     int msTimeout;
-    double timeout;
+    double acquireTime;
+    double readoutTime;
     const char* functionName = "startCapture";
 
-    getDoubleParam(ADAcquireTime, &timeout);
-    /* The timeout for waiting for a frame will be the exposure time plus 1 second margin */
-    msTimeout = 1000 * (int)(timeout + 1.0);
+    getDoubleParam(ADAcquireTime, &acquireTime);
+    getDoubleParam(FDC_readout_time, &readoutTime);
+    /* The timeout for waiting for a frame will be the exposure time plus readout time */
+    msTimeout = 1000 * (int)(acquireTime + readoutTime);
     asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
         "%s::%s [%s] Starting firewire transmission, timeout (ms)=%d\n",
         driverName, functionName, this->portName, msTimeout);
     /* Start the camera transmission... */
     err = this->pCamera->StartImageAcquisitionEx(MAX_1394_BUFFERS, 
-                                                msTimeout, ACQ_START_VIDEO_STREAM);
+                                                 msTimeout, ACQ_START_VIDEO_STREAM);
     status = PERR(err);
     if (status == asynError)
     {

@@ -41,10 +41,13 @@
 /** Messages to/from camserver */
 #define MAX_MESSAGE_SIZE 256 
 #define MAX_FILENAME_LEN 256
+#define MAX_HEADER_STRING_LEN 68
 #define MAX_BAD_PIXELS 100
 /** Time to poll when reading from camserver */
 #define ASYN_POLL_TIME .01 
-#define CAMSERVER_DEFAULT_TIMEOUT 1.0 
+#define CAMSERVER_DEFAULT_TIMEOUT 1.0
+/** Additional time to wait for a camserver response after the acquire should be complete */ 
+#define CAMSERVER_ACQUIRE_TIMEOUT 10.
 /** Time between checking to see if image file is complete */
 #define FILE_READ_DELAY .01
 
@@ -99,6 +102,16 @@ static const char *driverName = "pilatusDetector";
 #define PilatusChiString            "CHI"
 #define PilatusOscillAxisString     "OSCILL_AXIS"
 #define PilatusNumOscillString      "NUM_OSCILL"
+#define PilatusPixelCutOffString    "PIXEL_CUTOFF"
+#define PilatusThTemp0String        "TH_TEMP_0"
+#define PilatusThTemp1String        "TH_TEMP_1"
+#define PilatusThTemp2String        "TH_TEMP_2"
+#define PilatusThHumid0String       "TH_HUMID_0"
+#define PilatusThHumid1String       "TH_HUMID_1"
+#define PilatusThHumid2String       "TH_HUMID_2"
+#define PilatusTvxVersionString     "TVXVERSION"
+#define PilatusCbfTemplateFileString "CBFTEMPLATEFILE"
+#define PilatusHeaderStringString   "HEADERSTRING"
 
 
 /** Driver for Dectris Pilatus pixel array detectors using their camserver server over TCP/IP socket */
@@ -115,9 +128,11 @@ public:
     virtual asynStatus writeOctet(asynUser *pasynUser, const char *value, 
                                     size_t nChars, size_t *nActual);
     void report(FILE *fp, int details);
-    void pilatusTask(); /* This should be private but is called from C so must be public */
- 
- protected:
+    /* These should be private but are called from C so must be public */
+    void pilatusTask(); 
+    void pilatusStatus();
+    
+protected:
     int PilatusDelayTime;
     #define FIRST_PILATUS_PARAM PilatusDelayTime
     int PilatusThreshold;
@@ -150,7 +165,17 @@ public:
     int PilatusChi;
     int PilatusOscillAxis;
     int PilatusNumOscill;
-    #define LAST_PILATUS_PARAM PilatusNumOscill
+    int PilatusPixelCutOff;  
+    int PilatusThTemp0;
+    int PilatusThTemp1;
+    int PilatusThTemp2;
+    int PilatusThHumid0;
+    int PilatusThHumid1;
+    int PilatusThHumid2;
+    int PilatusTvxVersion;
+    int PilatusCbfTemplateFile;
+    int PilatusHeaderString;
+    #define LAST_PILATUS_PARAM PilatusHeaderString
 
  private:                                       
     /* These are the methods that are new to this class */
@@ -182,9 +207,10 @@ public:
     asynUser *pasynUserCamserver;
     badPixel badPixelMap[MAX_BAD_PIXELS];
     double averageFlatField;
+    double demandedThreshold;
 };
 
-#define NUM_PILATUS_PARAMS (&LAST_PILATUS_PARAM - &FIRST_PILATUS_PARAM + 1)
+#define NUM_PILATUS_PARAMS ((int)(&LAST_PILATUS_PARAM - &FIRST_PILATUS_PARAM + 1))
 
 void pilatusDetector::readBadPixelFile(const char *badPixelFile)
 {
@@ -227,7 +253,7 @@ void pilatusDetector::readBadPixelFile(const char *badPixelFile)
 
 void pilatusDetector::readFlatFieldFile(const char *flatFieldFile)
 {
-    int i;
+    size_t i;
     int status;
     int ngood;
     int minFlatField;
@@ -342,7 +368,7 @@ asynStatus pilatusDetector::waitForFileToExist(const char *fileName, epicsTimeSt
 
     if (pStartTime) epicsTimeToTime_t(&acqStartTime, pStartTime);
     epicsTimeGetCurrent(&tStart);
- 
+
     while (deltaTime <= timeout) {
         fd = open(fileName, O_RDONLY, 0);
         if ((fd >= 0) && (timeout != 0.)) {
@@ -364,9 +390,12 @@ asynStatus pilatusDetector::waitForFileToExist(const char *fileName, epicsTimeSt
             fd = -1;
         }
         /* Sleep, but check for stop event, which can be used to abort a long acquisition */
+        unlock();
         status = epicsEventWaitWithTimeout(this->stopEventId, FILE_READ_DELAY);
+        lock();
         if (status == epicsEventWaitOK) {
             setStringParam(ADStatusMessage, "Acquisition aborted");
+            setIntegerParam(ADStatus, ADStatusAborted);
             return(asynError);
         }
         epicsTimeGetCurrent(&tCheck);
@@ -524,17 +553,17 @@ asynStatus pilatusDetector::readCbf(const char *fileName, epicsTimeStamp *pStart
             &cbfDimFast, &cbfDimMid, &cbfDimSlow, &cbfPadding);
         if (status != 0) goto retry;
 
-        if (cbfDimFast != (size_t)pImage->dims[0].size) {
+        if (cbfDimFast != pImage->dims[0].size) {
             asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,
-                "%s::%s, image width incorrect =%zd, should be %d\n",
-                driverName, functionName, cbfDimFast, pImage->dims[0].size);
+                "%s::%s, image width incorrect =%lu, should be %lu\n",
+                driverName, functionName, (unsigned long)cbfDimFast, (unsigned long)pImage->dims[0].size);
             cbf_free_handle(cbf);
             return(asynError);
         }
-        if (cbfDimMid != (size_t)pImage->dims[1].size) {
+        if (cbfDimMid != pImage->dims[1].size) {
             asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,
-                "%s::%s, image height incorrect =%zd, should be %d\n",
-                driverName, functionName, cbfDimMid, pImage->dims[1].size);
+                "%s::%s, image height incorrect =%lu, should be %lu\n",
+                driverName, functionName, (unsigned long)cbfDimMid, (unsigned long)pImage->dims[1].size);
             cbf_free_handle(cbf);
             return(asynError);
         }
@@ -566,8 +595,11 @@ asynStatus pilatusDetector::readCbf(const char *fileName, epicsTimeStamp *pStart
         }
         /* Sleep, but check for stop event, which can be used to abort a long
          * acquisition */
+        unlock();
         status = epicsEventWaitWithTimeout(this->stopEventId, FILE_READ_DELAY);
+        lock();
         if (status == epicsEventWaitOK) {
+            setIntegerParam(ADStatus, ADStatusAborted);
             return(asynError);
         }
         epicsTimeGetCurrent(&tCheck);
@@ -590,7 +622,8 @@ asynStatus pilatusDetector::readTiff(const char *fileName, epicsTimeStamp *pStar
     double deltaTime;
     int status=-1;
     const char *functionName = "readTiff";
-    int size, totalSize;
+    size_t totalSize;
+    int size;
     int numStrips, strip;
     char *buffer;
     TIFF *tiff=NULL;
@@ -621,15 +654,15 @@ asynStatus pilatusDetector::readTiff(const char *fileName, epicsTimeStamp *pStar
         status = TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &uval);
         if (uval != (epicsUInt32)pImage->dims[0].size) {
             asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,
-                "%s::%s, image width incorrect =%u, should be %d\n",
-                driverName, functionName, uval, pImage->dims[0].size);
+                "%s::%s, image width incorrect =%u, should be %u\n",
+                driverName, functionName, uval, (epicsUInt32)pImage->dims[0].size);
             goto retry;
         }
         status = TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &uval);
         if (uval != (epicsUInt32)pImage->dims[1].size) {
             asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,
-                "%s::%s, image length incorrect =%u, should be %d\n",
-                driverName, functionName, uval, pImage->dims[1].size);
+                "%s::%s, image length incorrect =%u, should be %u\n",
+                driverName, functionName, uval, (epicsUInt32)pImage->dims[1].size);
             goto retry;
         }
         numStrips= TIFFNumberOfStrips(tiff);
@@ -651,8 +684,8 @@ asynStatus pilatusDetector::readTiff(const char *fileName, epicsTimeStamp *pStar
         if (totalSize != pImage->dataSize) {
             status = asynError;
             asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,
-                "%s::%s, file size incorrect =%d, should be %d\n",
-                driverName, functionName, totalSize, pImage->dataSize);
+                "%s::%s, file size incorrect =%lu, should be %lu\n",
+                driverName, functionName, (unsigned long)totalSize, (unsigned long)pImage->dataSize);
             goto retry;
         }
         /* Sucesss! */
@@ -662,8 +695,11 @@ asynStatus pilatusDetector::readTiff(const char *fileName, epicsTimeStamp *pStar
         if (tiff != NULL) TIFFClose(tiff);
         tiff = NULL;
         /* Sleep, but check for stop event, which can be used to abort a long acquisition */
+        unlock();
         status = epicsEventWaitWithTimeout(this->stopEventId, FILE_READ_DELAY);
+        lock();
         if (status == epicsEventWaitOK) {
+            setIntegerParam(ADStatus, ADStatusAborted);
             return(asynError);
         }
         epicsTimeGetCurrent(&tCheck);
@@ -682,18 +718,16 @@ asynStatus pilatusDetector::setAcquireParams()
     double dval;
     int triggerMode;
     asynStatus status;
+    char *substr = NULL;
+    int pixelCutOff = 0;
     
     status = getIntegerParam(ADTriggerMode, &triggerMode);
     if (status != asynSuccess) triggerMode = TMInternal;
     
      /* When we change modes download all exposure parameters, since some modes
-     * replace values with new parameters */
+      * replace values with new parameters */
     if (triggerMode == TMAlignment) {
         setIntegerParam(ADNumImages, 1);
-    }
-    /* nexpf > 1 is only supported in External Enable mode */  
-    if (triggerMode != TMExternalEnable) {
-        setIntegerParam(ADNumExposures, 1);
     }
     
     status = getIntegerParam(ADNumImages, &ival);
@@ -746,6 +780,18 @@ asynStatus pilatusDetector::setAcquireParams()
         epicsSnprintf(this->toCamserver, sizeof(this->toCamserver), "gapfill %d", ival);
         writeReadCamserver(CAMSERVER_DEFAULT_TIMEOUT); 
     }
+
+    /* Read back the pixel count rate cut off value. */
+    epicsSnprintf(this->toCamserver, sizeof(this->toCamserver), "Tau");
+    status=writeReadCamserver(5.0); 
+
+    /* Response contains the string "cutoff = 1221026 counts"*/
+    if (!status) {
+        if ((substr = strstr(this->fromCamserver, "cutoff")) != NULL) {
+            sscanf(substr, "cutoff = %d counts", &pixelCutOff);
+            setIntegerParam(PilatusPixelCutOff, pixelCutOff);
+        }
+    }
    
     return(asynSuccess);
 
@@ -755,12 +801,14 @@ asynStatus pilatusDetector::setThreshold()
 {
     int igain, status;
     double threshold, dgain;
+    char *substr = NULL;
+    int threshold_readback = 0;
     
     getDoubleParam(ADGain, &dgain);
     igain = (int)(dgain + 0.5);
     if (igain < 0) igain = 0;
     if (igain > 3) igain = 3;
-    getDoubleParam(PilatusThreshold, &threshold);
+    threshold = this->demandedThreshold;
     epicsSnprintf(this->toCamserver, sizeof(this->toCamserver), "SetThreshold %s %f", 
                     gainStrings[igain], threshold*1000.);
     /* Set the status to waiting so we can be notified when it has finished */
@@ -774,11 +822,25 @@ asynStatus pilatusDetector::setThreshold()
     else
         setIntegerParam(ADStatus, ADStatusIdle);
     setIntegerParam(PilatusThresholdApply, 0);
-    callParamCallbacks();
+
+    /* Read back the actual setting, in case we are out of bounds. */
+    epicsSnprintf(this->toCamserver, sizeof(this->toCamserver), "SetThreshold");
+    status=writeReadCamserver(5.0); 
+
+    /* Response should contain "threshold: 9000 eV; vcmp:"*/
+    if (!status) {
+        if ((substr = strstr(this->fromCamserver, "threshold: ")) != NULL) {
+            sscanf(strtok(substr, ";"), "threshold: %d eV", &threshold_readback);
+            setDoubleParam(PilatusThreshold, (double)threshold_readback/1000.0);
+        }
+    }
+    
 
     /* The SetThreshold command resets numimages to 1 and gapfill to 0, so re-send current
      * acquisition parameters */
     setAcquireParams();
+
+    callParamCallbacks();
 
     return(asynSuccess);
 }
@@ -823,24 +885,40 @@ asynStatus pilatusDetector::readCamserver(double timeout)
     deltaTime = 0;
     epicsTimeGetCurrent(&tStart);
     while (deltaTime <= timeout) {
+        unlock();
         status = pasynOctetSyncIO->read(pasynUser, this->fromCamserver,
                                         sizeof(this->fromCamserver), ASYN_POLL_TIME,
                                         &nread, &eomReason);
-        if (status != asynTimeout) break;
-        /* Sleep, but check for stop event, which can be used to abort a long acquisition */
-        eventStatus = epicsEventWaitWithTimeout(this->stopEventId, ASYN_POLL_TIME);
+        /* Check for an abort event sent during a read. Otherwise we can miss it and mess up the next acqusition.*/
+        eventStatus = epicsEventWaitWithTimeout(this->stopEventId, 0.001);
+        lock();
         if (eventStatus == epicsEventWaitOK) {
             setStringParam(ADStatusMessage, "Acquisition aborted");
+            setIntegerParam(ADStatus, ADStatusAborted);
+            return(asynError);
+        }
+        if (status != asynTimeout) break;
+
+        /* Sleep, but check for stop event, which can be used to abort a long acquisition */
+        unlock();
+        eventStatus = epicsEventWaitWithTimeout(this->stopEventId, ASYN_POLL_TIME);
+        lock();
+        if (eventStatus == epicsEventWaitOK) {
+            setStringParam(ADStatusMessage, "Acquisition aborted");
+            setIntegerParam(ADStatus, ADStatusAborted);
             return(asynError);
         }
         epicsTimeGetCurrent(&tCheck);
         deltaTime = epicsTimeDiffInSeconds(&tCheck, &tStart);
     }
 
-    if (status) asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                    "%s:%s, timeout=%f, status=%d received %d bytes\n%s\n",
-                    driverName, functionName, timeout, status, nread, this->fromCamserver);
-    else {
+    // If we got asynTimeout, and timeout=0 then this is not an error, it is a poll checking for possible reply and we are done
+   if ((status == asynTimeout) && (timeout == 0)) return(asynSuccess);
+   if (status != asynSuccess)
+        asynPrint(pasynUser, ASYN_TRACE_ERROR,
+                    "%s:%s, timeout=%f, status=%d received %lu bytes\n%s\n",
+                    driverName, functionName, timeout, status, (unsigned long)nread, this->fromCamserver);
+   else {
         /* Look for the string OK in the response */
         if (!strstr(this->fromCamserver, "OK")) {
             asynPrint(pasynUser, ASYN_TRACE_ERROR,
@@ -882,6 +960,7 @@ void pilatusDetector::pilatusTask()
     int status = asynSuccess;
     int imageCounter;
     int numImages;
+    int numExposures;
     int multipleFileNextImage=0;  /* This is the next image number, starting at 0 */
     int acquire;
     ADStatus_t acquiring;
@@ -892,12 +971,16 @@ void pilatusDetector::pilatusTask()
     int triggerMode;
     epicsTimeStamp startTime;
     const char *functionName = "pilatusTask";
+    char headerString[MAX_HEADER_STRING_LEN];
     char fullFileName[MAX_FILENAME_LEN];
     char filePath[MAX_FILENAME_LEN];
     char statusMessage[MAX_MESSAGE_SIZE];
-    int dims[2];
+    size_t dims[2];
+    int itemp;
     int arrayCallbacks;
     int flatFieldValid;
+    int aborted = 0;
+    int statusParam = 0;
 
     this->lock();
 
@@ -905,9 +988,9 @@ void pilatusDetector::pilatusTask()
     while (1) {
         /* Is acquisition active? */
         getIntegerParam(ADAcquire, &acquire);
-        
+
         /* If we are not acquiring then wait for a semaphore that is given when acquisition is started */
-        if (!acquire) {
+        if ((aborted) || (!acquire)) {
             /* Only set the status message if we didn't encounter any errors last time, so we don't overwrite the 
              error message */
             if (!status)
@@ -919,7 +1002,8 @@ void pilatusDetector::pilatusTask()
                 "%s:%s: waiting for acquire to start\n", driverName, functionName);
             status = epicsEventWait(this->startEventId);
             this->lock();
-            getIntegerParam(ADAcquire, &acquire);
+            aborted = 0;
+            acquire = 1;
         }
         
         /* We are acquiring. */
@@ -934,6 +1018,7 @@ void pilatusDetector::pilatusTask()
         /* Get the acquisition parameters */
         getIntegerParam(ADTriggerMode, &triggerMode);
         getIntegerParam(ADNumImages, &numImages);
+        getIntegerParam(ADNumExposures, &numExposures);
         
         acquiring = ADStatusAcquire;
         setIntegerParam(ADStatus, acquiring);
@@ -941,6 +1026,11 @@ void pilatusDetector::pilatusTask()
         /* Reset the MX settings start angle */
         getDoubleParam(PilatusStartAngle, &startAngle);
         epicsSnprintf(this->toCamserver, sizeof(this->toCamserver), "mxsettings Start_angle %f", startAngle);
+        writeReadCamserver(CAMSERVER_DEFAULT_TIMEOUT);
+
+        /* Send the header string.  This needs to be sent for each exposure command. */
+        getStringParam(PilatusHeaderString, MAX_HEADER_STRING_LEN, headerString);
+        epicsSnprintf(this->toCamserver, sizeof(this->toCamserver), "HeaderString \"%s\"", headerString);
         writeReadCamserver(CAMSERVER_DEFAULT_TIMEOUT);
 
         /* Create the full filename */
@@ -1003,19 +1093,22 @@ void pilatusDetector::pilatusTask()
                  * recent but stale file. */
                 setStringParam(ADStatusMessage, "Waiting for 7OK response");
                 callParamCallbacks();
-                /* We release the mutex when waiting for 7OK because this takes a long time and
-                 * we need to allow abort operations to get through */
-                this->unlock();
-                status = readCamserver(acquireTime + readImageFileTimeout);
-                this->lock();
+                timeout = ((numExposures-1) * acquirePeriod) + acquireTime;
+                status = readCamserver(timeout + CAMSERVER_ACQUIRE_TIMEOUT);
                 /* If there was an error jump to bottom of loop */
                 if (status) {
                     acquire = 0;
-                    if(status==asynTimeout)
-                      setStringParam(ADStatusMessage, "Timeout waiting for camserver response");
+                    aborted = 1;
+                    if(status==asynTimeout) {
+                        setStringParam(ADStatusMessage, "Timeout waiting for camserver response");
+                        epicsSnprintf(this->toCamserver, sizeof(this->toCamserver), "Stop");
+                        writeReadCamserver(CAMSERVER_DEFAULT_TIMEOUT);
+                        epicsSnprintf(this->toCamserver, sizeof(this->toCamserver), "K");
+                        writeCamserver(CAMSERVER_DEFAULT_TIMEOUT);
+                    }
                     continue;
                 }
-             } else {
+            } else {
                 /* If this is a multi-file acquisition the file name is built differently */
                 epicsSnprintf(fullFileName, sizeof(fullFileName), multipleFileFormat, 
                               multipleFileNumber);
@@ -1031,27 +1124,29 @@ void pilatusDetector::pilatusTask()
                 callParamCallbacks();
 
                 /* Get an image buffer from the pool */
-                getIntegerParam(ADMaxSizeX, &dims[0]);
-                getIntegerParam(ADMaxSizeY, &dims[1]);
+                getIntegerParam(ADMaxSizeX, &itemp); dims[0] = itemp;
+                getIntegerParam(ADMaxSizeY, &itemp); dims[1] = itemp;
                 pImage = this->pNDArrayPool->alloc(2, dims, NDInt32, 0, NULL);
                 epicsSnprintf(statusMessage, sizeof(statusMessage), "Reading image file %s", fullFileName);
                 setStringParam(ADStatusMessage, statusMessage);
                 callParamCallbacks();
                 /* We release the mutex when calling readImageFile, because this takes a long time and
                  * we need to allow abort operations to get through */
-                this->unlock();
-                status = readImageFile(fullFileName, &startTime, acquireTime + readImageFileTimeout, pImage); 
-                this->lock();
+                status = readImageFile(fullFileName, &startTime, 
+                                       (numExposures * acquireTime) + readImageFileTimeout, 
+                                       pImage); 
                 /* If there was an error jump to bottom of loop */
                 if (status) {
                     acquire = 0;
+                    aborted = 1;
                     pImage->release();
                     continue;
                 }
 
                 getIntegerParam(PilatusFlatFieldValid, &flatFieldValid);
                 if (flatFieldValid) {
-                    epicsInt32 *pData, *pFlat, i;
+                    epicsInt32 *pData, *pFlat;
+                    size_t i;
                     for (i=0, pData = (epicsInt32 *)pImage->pData, pFlat = (epicsInt32 *)this->pFlatField->pData;
                          i<dims[0]*dims[1]; 
                          i++, pData++, pFlat++) {
@@ -1078,7 +1173,7 @@ void pilatusDetector::pilatusTask()
             }
             if (numImages == 1) {
                 if (triggerMode == TMAlignment) {
-                   epicsSnprintf(this->toCamserver, sizeof(this->toCamserver), 
+                    epicsSnprintf(this->toCamserver, sizeof(this->toCamserver), 
                         "Exposure %s", fullFileName);
                     /* Send the acquire command to camserver and wait for the 15OK response */
                     writeReadCamserver(2.0);
@@ -1095,36 +1190,140 @@ void pilatusDetector::pilatusTask()
         /* We are done acquiring */
         /* Wait for the 7OK response from camserver in the case of multiple images */
         if ((numImages > 1) && (status == asynSuccess)) {
-            /* If arrayCallbacks is 0we will have gone through the above loop without waiting
+            /* If arrayCallbacks is 0 we will have gone through the above loop without waiting
              * for each image file to be written.  Thus, we may need to wait a long time for
              * the 7OK response.  
              * If arrayCallbacks is 1 then the response should arrive fairly soon. */
             if (arrayCallbacks) 
                 timeout = readImageFileTimeout;
             else 
-                timeout = numImages * acquireTime + readImageFileTimeout;
+                timeout = (numImages * numExposures * acquirePeriod) + CAMSERVER_ACQUIRE_TIMEOUT;
             setStringParam(ADStatusMessage, "Waiting for 7OK response");
             callParamCallbacks();
-            /* We release the mutex because we may wait a long time and need to allow abort
-             * operations to get through */
-            this->unlock();
-            readCamserver(timeout);
-            this->lock();
+            status = readCamserver(timeout);
+            /* In the case of a timeout, camserver could still be acquiring. So we need to send a stop.*/
+            if (status == asynTimeout) {
+                setStringParam(ADStatusMessage, "Timeout waiting for camserver response");
+                epicsSnprintf(this->toCamserver, sizeof(this->toCamserver), "Stop");
+                writeReadCamserver(CAMSERVER_DEFAULT_TIMEOUT);
+                epicsSnprintf(this->toCamserver, sizeof(this->toCamserver), "K");
+                writeCamserver(CAMSERVER_DEFAULT_TIMEOUT);
+                aborted = 1;
+            }
         }
+
+        /* If everything was ok, set the status back to idle */
+        getIntegerParam(ADStatus, &statusParam);
+        if (!status) {
+            setIntegerParam(ADStatus, ADStatusIdle);
+        } else {
+            if (statusParam != ADStatusAborted) {
+                setIntegerParam(ADStatus, ADStatusError);
+            }
+        }
+
+        /* Call the callbacks to update any changes */
+        callParamCallbacks();
+
         setShutter(0);
         setIntegerParam(ADAcquire, 0);
         setIntegerParam(PilatusArmed, 0);
 
-        /* If everything was ok, set the status back to idle */
-        if (!status) 
-            setIntegerParam(ADStatus, ADStatusIdle);
-        else
-            setIntegerParam(ADStatus, ADStatusError);
-    
         /* Call the callbacks to update any changes */
-        callParamCallbacks();
+        callParamCallbacks();        
     }
 }
+
+static void pilatusStatusC(void *drvPvt)
+{
+    pilatusDetector *pPvt = (pilatusDetector *)drvPvt;
+    
+    pPvt->pilatusStatus();
+}
+
+/** This thread periodically read the detector status (temperature, humidity, etc.)
+    It does not run if we are acquiring data, to avoid polling camserver when taking data.*/
+void pilatusDetector::pilatusStatus()
+{
+  int status = asynSuccess;
+  int acquire = 0;
+  float temp = 0.0;
+  float humid = 0.0;
+  char *substr = NULL;
+  char *substrtok = NULL;
+  int firstLoop = 1;
+
+  /* To avoid problems reading at startup (eg. when changing threshold), wait first time.*/
+  epicsThreadSleep(10);
+
+  while(1) {
+    lock();
+    /* Is acquisition active? */
+    getIntegerParam(ADAcquire, &acquire);
+    if (!acquire) {
+
+      /* Read the TVX Version once.*/
+      if (firstLoop) {
+        epicsSnprintf(this->toCamserver, sizeof(this->toCamserver), "version");
+        status=writeReadCamserver(1.0);
+        if (!status) {
+          if ((substr = strstr(this->fromCamserver, "tvx")) != NULL) {
+            setStringParam(PilatusTvxVersion, substr);
+          }
+          setIntegerParam(ADStatus, ADStatusIdle);
+        } else {
+          setIntegerParam(ADStatus, ADStatusError);
+        }
+        firstLoop = 0;
+      }
+
+      /* Read temp and humidity.*/
+      epicsSnprintf(this->toCamserver, sizeof(this->toCamserver), "Th");
+      status=writeReadCamserver(1.0); 
+      
+      /* Response should contain: 
+         Channel 0: Temperature = 31.4C, Rel. Humidity = 22.1%;\n
+         Channel 1: Temperature = 25.8C, Rel. Humidity = 33.5%;\n
+         Channel 2: Temperature = 28.6C, Rel. Humidity = 2.0%
+         However, not every detector has all 3 channels.*/
+      
+      if (!status) {
+
+        if ((substr = strstr(strtok(this->fromCamserver, "%"), "Channel 0")) != NULL) {
+          sscanf(substr, "Channel 0: Temperature = %fC, Rel. Humidity = %f", &temp, &humid);
+          setDoubleParam(PilatusThTemp0, temp);
+          setDoubleParam(PilatusThHumid0, humid);
+          setDoubleParam(ADTemperature, temp);
+        }
+        if ((substrtok = strtok(NULL, "%")) != NULL) {
+          if ((substr = strstr(substrtok, "Channel 1")) != NULL) {
+            sscanf(substr, "Channel 1: Temperature = %fC, Rel. Humidity = %f", &temp, &humid);
+            setDoubleParam(PilatusThTemp1, temp);
+            setDoubleParam(PilatusThHumid1, humid);
+          }
+        }
+        if ((substrtok = strtok(NULL, "%")) != NULL) {
+          if ((substr = strstr(substrtok, "Channel 2")) != NULL) {
+            sscanf(substr, "Channel 2: Temperature = %fC, Rel. Humidity = %f", &temp, &humid);
+            setDoubleParam(PilatusThTemp2, temp);
+            setDoubleParam(PilatusThHumid2, humid);
+          }
+        }
+
+      } else {
+        setIntegerParam(ADStatus, ADStatusError);
+      }      
+      callParamCallbacks();
+    }
+    
+    /* This thread does not need to run often.*/
+    unlock();
+    epicsThreadSleep(60);
+    
+  }
+  
+}
+
 
 
 /** Called when asyn clients call pasynInt32->write().
@@ -1139,21 +1338,37 @@ asynStatus pilatusDetector::writeInt32(asynUser *pasynUser, epicsInt32 value)
     asynStatus status = asynSuccess;
     const char *functionName = "writeInt32";
 
+    /* Ensure that ADStatus is set correctly before we set ADAcquire.*/
+    getIntegerParam(ADStatus, &adstatus);
+    if (function == ADAcquire) {
+      if (value && ((adstatus == ADStatusIdle) || adstatus == ADStatusError || adstatus == ADStatusAborted)) {
+        setStringParam(ADStatusMessage, "Acquiring data");
+        setIntegerParam(ADStatus, ADStatusAcquire);
+      }
+      if (!value && (adstatus == ADStatusAcquire)) {
+        setStringParam(ADStatusMessage, "Acquisition aborted");
+        setIntegerParam(ADStatus, ADStatusAborted);
+      }
+    }
+    callParamCallbacks();
+
     status = setIntegerParam(function, value);
 
     if (function == ADAcquire) {
-        getIntegerParam(ADStatus, &adstatus);
-        if (value && (adstatus == ADStatusIdle || adstatus == ADStatusError)) {
+        if (value && (adstatus == ADStatusIdle || adstatus == ADStatusError || adstatus == ADStatusAborted)) {
             /* Send an event to wake up the Pilatus task.  */
             epicsEventSignal(this->startEventId);
         } 
-        if (!value && (adstatus != ADStatusIdle)) {
-            /* This was a command to stop acquisition */
+        if (!value && (adstatus == ADStatusAcquire)) {
+          /* This was a command to stop acquisition */
+            epicsEventSignal(this->stopEventId);
             epicsSnprintf(this->toCamserver, sizeof(this->toCamserver), "Stop");
             writeReadCamserver(CAMSERVER_DEFAULT_TIMEOUT);
             epicsSnprintf(this->toCamserver, sizeof(this->toCamserver), "K");
             writeCamserver(CAMSERVER_DEFAULT_TIMEOUT);
-            epicsEventSignal(this->stopEventId);
+            /* Sleep for two seconds to allow acqusition to stop in camserver.*/
+            epicsThreadSleep(2);
+            setStringParam(ADStatusMessage, "Acquisition aborted");
         }
     } else if ((function == ADTriggerMode) ||
                (function == ADNumImages) ||
@@ -1198,9 +1413,11 @@ asynStatus pilatusDetector::writeFloat64(asynUser *pasynUser, epicsFloat64 value
     double beamX, beamY;
     int thresholdAutoApply;
     const char *functionName = "writeFloat64";
+    double oldValue;
 
     /* Set the parameter and readback in the parameter library.  This may be overwritten when we read back the
      * status at the end, but that's OK */
+    getDoubleParam(function, &oldValue);
     status = setDoubleParam(function, value);
     
 
@@ -1208,8 +1425,20 @@ asynStatus pilatusDetector::writeFloat64(asynUser *pasynUser, epicsFloat64 value
     if ((function == ADGain) ||
         (function == PilatusThreshold)) {
         getIntegerParam(PilatusThresholdAutoApply, &thresholdAutoApply);
-        if (thresholdAutoApply) 
-            setThreshold();
+        if (function == PilatusThreshold) {
+            this->demandedThreshold = value;
+        }
+        if (thresholdAutoApply) {
+          if (function == PilatusThreshold) {
+            status = setDoubleParam(function, this->demandedThreshold);
+          }
+          setThreshold();
+        } else {
+          /*Set the old value back if we are deferring setting the threshold.*/
+          if (function == PilatusThreshold) {
+            status = setDoubleParam(function, oldValue);
+          }
+        }
     } else if ((function == ADAcquireTime) ||
                (function == ADAcquirePeriod) ||
                (function == PilatusDelayTime)) {
@@ -1270,16 +1499,20 @@ asynStatus pilatusDetector::writeFloat64(asynUser *pasynUser, epicsFloat64 value
         if (function < FIRST_PILATUS_PARAM) status = ADDriver::writeFloat64(pasynUser, value);
     }
 
-    /* Do callbacks so higher layers see any changes */
-    callParamCallbacks();
-    if (status) 
+    if (status) {
+        /* Something went wrong so we set the old value back */
+        setDoubleParam(function, oldValue);
         asynPrint(pasynUser, ASYN_TRACE_ERROR, 
               "%s:%s error, status=%d function=%d, value=%f\n", 
               driverName, functionName, status, function, value);
+    }
     else        
         asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, 
               "%s:%s: function=%d, value=%f\n", 
               driverName, functionName, function, value);
+    
+    /* Do callbacks so higher layers see any changes */
+    callParamCallbacks();
     return status;
 }
 
@@ -1311,6 +1544,10 @@ asynStatus pilatusDetector::writeOctet(asynUser *pasynUser, const char *value,
     } else if (function == PilatusOscillAxis) {
         epicsSnprintf(this->toCamserver, sizeof(this->toCamserver), "mxsettings Oscillation_axis %s",
             strlen(value) == 0 ? "(nil)" : value);
+        writeReadCamserver(CAMSERVER_DEFAULT_TIMEOUT);
+    } else if (function == PilatusCbfTemplateFile) {
+        epicsSnprintf(this->toCamserver, sizeof(this->toCamserver), "mxsettings cbf_template_file %s",
+            strlen(value) == 0 ? "0" : value);
         writeReadCamserver(CAMSERVER_DEFAULT_TIMEOUT);
     } else {
         /* If this parameter belongs to a base class call its method */
@@ -1396,7 +1633,7 @@ pilatusDetector::pilatusDetector(const char *portName, const char *camserverPort
 {
     int status = asynSuccess;
     const char *functionName = "pilatusDetector";
-    int dims[2];
+    size_t dims[2];
 
     /* Create the epicsEvents for signaling to the pilatus task when acquisition starts and stops */
     this->startEventId = epicsEventCreate(epicsEventEmpty);
@@ -1452,6 +1689,16 @@ pilatusDetector::pilatusDetector(const char *portName, const char *camserverPort
     createParam(PilatusChiString,            asynParamFloat64, &PilatusChi);
     createParam(PilatusOscillAxisString,     asynParamOctet,   &PilatusOscillAxis);
     createParam(PilatusNumOscillString,      asynParamInt32,   &PilatusNumOscill);
+    createParam(PilatusPixelCutOffString,    asynParamInt32,   &PilatusPixelCutOff);
+    createParam(PilatusThTemp0String,        asynParamFloat64, &PilatusThTemp0);
+    createParam(PilatusThTemp1String,        asynParamFloat64, &PilatusThTemp1);
+    createParam(PilatusThTemp2String,        asynParamFloat64, &PilatusThTemp2);
+    createParam(PilatusThHumid0String,       asynParamFloat64, &PilatusThHumid0);
+    createParam(PilatusThHumid1String,       asynParamFloat64, &PilatusThHumid1);
+    createParam(PilatusThHumid2String,       asynParamFloat64, &PilatusThHumid2);
+    createParam(PilatusTvxVersionString,     asynParamOctet,   &PilatusTvxVersion);
+    createParam(PilatusCbfTemplateFileString,asynParamOctet,   &PilatusCbfTemplateFile);
+    createParam(PilatusHeaderStringString,   asynParamOctet,   &PilatusHeaderString);
 
     /* Set some default values for parameters */
     status =  setStringParam (ADManufacturer, "Dectris");
@@ -1473,7 +1720,16 @@ pilatusDetector::pilatusDetector(const char *portName, const char *camserverPort
     status |= setIntegerParam(PilatusNumBadPixels, 0);
     status |= setStringParam (PilatusFlatFieldFile, "");
     status |= setIntegerParam(PilatusFlatFieldValid, 0);
-       
+
+    setDoubleParam(PilatusThTemp0, 0);
+    setDoubleParam(PilatusThTemp1, 0);
+    setDoubleParam(PilatusThTemp2, 0);
+    setDoubleParam(PilatusThHumid0, 0);
+    setDoubleParam(PilatusThHumid1, 0);
+    setDoubleParam(PilatusThHumid2, 0);
+    setStringParam(PilatusTvxVersion, "Unknown");
+    setStringParam(PilatusHeaderString, "");
+
     if (status) {
         printf("%s: unable to set camera parameters\n", functionName);
         return;
@@ -1490,6 +1746,20 @@ pilatusDetector::pilatusDetector(const char *portName, const char *camserverPort
             driverName, functionName);
         return;
     }
+
+    /* Create the thread that monitors detector status (temperature, humidity, etc). */
+    status = (epicsThreadCreate("PilatusStatusTask",
+                                epicsThreadPriorityMedium,
+                                epicsThreadGetStackSize(epicsThreadStackMedium),
+                                (EPICSTHREADFUNC)pilatusStatusC,
+                                this) == NULL);
+    if (status) {
+        printf("%s:%s epicsThreadCreate failure for status task\n", 
+            driverName, functionName);
+        return;
+    }
+
+
 }
 
 /* Code for iocsh registration */

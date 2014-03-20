@@ -187,7 +187,7 @@ private:
 };
 
 
-#define NUM_MARCCD_PARAMS (&LAST_MARCCD_PARAM - &FIRST_MARCCD_PARAM + 1)
+#define NUM_MARCCD_PARAMS ((int)(&LAST_MARCCD_PARAM - &FIRST_MARCCD_PARAM + 1))
 
 void getImageDataTaskC(marCCD *pmarCCD)
 {
@@ -200,12 +200,17 @@ void marCCD::getImageDataTask()
 {
     int status;
   
+    this->lock();
     while (1) {
+        this->unlock();
         status = epicsEventWait(this->imageEventId);
+        this->lock();
         /* Wait for the correction to complete */
         status = getState();
         while (TEST_TASK_STATUS(status, TASK_CORRECT, TASK_STATUS_EXECUTING | TASK_STATUS_QUEUED)) {
+            this->unlock();
             epicsThreadSleep(MARCCD_POLL_DELAY);
+            this->lock();
             status = getState();
         }
 
@@ -213,37 +218,37 @@ void marCCD::getImageDataTask()
         status = getState();
         while (TEST_TASK_STATUS(status, TASK_WRITE, TASK_STATUS_EXECUTING | TASK_STATUS_QUEUED) || 
                TASK_STATE(status) >= 8) {
+            this->unlock();
             epicsThreadSleep(MARCCD_POLL_DELAY);
+            this->lock();
             status = getState();
         }
-        this->lock();
         getImageData();
-        this->unlock();
     }
 }
 
 void marCCD::getImageData()
 {
     char fullFileName[MAX_FILENAME_LEN];
-    int dims[2];
+    size_t dims[2];
+    int itemp;
     int imageCounter;
     NDArray *pImage;
-    asynStatus status;
     char statusMessage[MAX_MESSAGE_SIZE];
     const char *functionName = "getImageData";
 
     /* Inquire about the image dimensions */
     getConfig();
     getStringParam(NDFullFileName, MAX_FILENAME_LEN, fullFileName);
-    getIntegerParam(NDArraySizeX, &dims[0]);
-    getIntegerParam(NDArraySizeY, &dims[1]);
+    getIntegerParam(NDArraySizeX, &itemp); dims[0] = itemp;
+    getIntegerParam(NDArraySizeY, &itemp); dims[1] = itemp;
     getIntegerParam(NDArrayCounter, &imageCounter);
     pImage = this->pNDArrayPool->alloc(2, dims, NDUInt16, 0, NULL);
 
     epicsSnprintf(statusMessage, sizeof(statusMessage), "Reading TIFF file %s", fullFileName);
     setStringParam(ADStatusMessage, statusMessage);
     callParamCallbacks();
-    status = readTiff(fullFileName, pImage); 
+    readTiff(fullFileName, pImage); 
 
     /* Put the frame number and time stamp into the buffer */
     pImage->uniqueId = imageCounter;
@@ -280,7 +285,8 @@ asynStatus marCCD::readTiff(const char *fileName, NDArray *pImage)
     double deltaTime;
     int status=-1;
     const char *functionName = "readTiff";
-    int size, totalSize;
+    int size;
+    size_t totalSize;
     int numStrips, strip;
     char *buffer;
     TIFF *tiff=NULL;
@@ -317,7 +323,9 @@ asynStatus marCCD::readTiff(const char *fileName, NDArray *pImage)
             fd = -1;
         }
         /* Sleep, but check for stop event, which can be used to abort a long acquisition */
+        unlock();
         status = epicsEventWaitWithTimeout(this->stopEventId, FILE_READ_DELAY);
+        lock();
         if (status == epicsEventWaitOK) {
             return(asynError);
         }
@@ -350,15 +358,15 @@ asynStatus marCCD::readTiff(const char *fileName, NDArray *pImage)
         status = TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &uval);
         if (uval != (epicsUInt32)pImage->dims[0].size) {
             asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,
-                "%s::%s, image width incorrect =%u, should be %d\n",
-                driverName, functionName, uval, pImage->dims[0].size);
+                "%s::%s, image width incorrect =%u, should be %lu\n",
+                driverName, functionName, uval, (unsigned long)pImage->dims[0].size);
             goto retry;
         }
         status = TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &uval);
         if (uval != (epicsUInt32)pImage->dims[1].size) {
             asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,
-                "%s::%s, image length incorrect =%u, should be %d\n",
-                driverName, functionName, uval, pImage->dims[1].size);
+                "%s::%s, image length incorrect =%u, should be %lu\n",
+                driverName, functionName, uval, (unsigned long)pImage->dims[1].size);
             goto retry;
         }
         numStrips= TIFFNumberOfStrips(tiff);
@@ -380,8 +388,8 @@ asynStatus marCCD::readTiff(const char *fileName, NDArray *pImage)
         if (totalSize > pImage->dataSize) {
             status = asynError;
             asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,
-                "%s::%s, file size too large =%d, must be <= %d\n",
-                driverName, functionName, totalSize, pImage->dataSize);
+                "%s::%s, file size too large =%lu, must be <= %lu\n",
+                driverName, functionName, (unsigned long)totalSize, (unsigned long)pImage->dataSize);
             goto retry;
         }
         /* Sucesss! */
@@ -391,7 +399,9 @@ asynStatus marCCD::readTiff(const char *fileName, NDArray *pImage)
         if (tiff != NULL) TIFFClose(tiff);
         tiff = NULL;
         /* Sleep, but check for stop event, which can be used to abort a long acquisition */
+        unlock();
         status = epicsEventWaitWithTimeout(this->stopEventId, FILE_READ_DELAY);
+        lock();
         if (status == epicsEventWaitOK) {
             return(asynError);
         }
@@ -440,8 +450,8 @@ asynStatus marCCD::readServer(char *input, size_t maxChars, double timeout)
     status = pasynOctetSyncIO->read(pasynUser, input, maxChars, timeout,
                                     &nread, &eomReason);
     if (status) asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                    "%s:%s, timeout=%f, status=%d received %d bytes\n%s\n",
-                    driverName, functionName, timeout, status, nread, input);
+                    "%s:%s, timeout=%f, status=%d received %lu bytes\n%s\n",
+                    driverName, functionName, timeout, status, (unsigned long)nread, input);
     /* Set output string so it can get back to EPICS */
     setStringParam(ADStringFromServer, input);
     callParamCallbacks();
@@ -591,10 +601,11 @@ extern "C" {static void timerCallbackC(void *drvPvt)
 void marCCD::setShutter(int open)
 {
     ADShutterMode_t shutterMode;
+    int itemp;
     double delay;
     double shutterOpenDelay, shutterCloseDelay;
     
-    getIntegerParam(ADShutterMode, (int *)&shutterMode);
+    getIntegerParam(ADShutterMode, &itemp); shutterMode = (ADShutterMode_t)itemp;
     getDoubleParam(ADShutterOpenDelay, &shutterOpenDelay);
     getDoubleParam(ADShutterCloseDelay, &shutterCloseDelay);
     
@@ -810,10 +821,10 @@ void marCCD::marCCDTask()
         if (!acquire) {
             setStringParam(ADStatusMessage, "Waiting for acquire command");
             callParamCallbacks();
-            /* Release the lock while we wait for an event that says acquire has started, then lock again */
-            this->unlock();
             asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, 
                 "%s:%s: waiting for acquire to start\n", driverName, functionName);
+            /* Release the lock while we wait for an event that says acquire has started, then lock again */
+            this->unlock();
             status = epicsEventWait(this->startEventId);
             this->lock();
             getIntegerParam(ADAcquire, &acquire);
@@ -1083,7 +1094,8 @@ marCCD::marCCD(const char *portName, const char *serverPort,
     int status = asynSuccess;
     epicsTimerQueueId timerQ;
     const char *functionName = "marCCD";
-    int dims[2];
+    int itemp;
+    size_t dims[2];
 
     createParam(marCCDTiffTimeoutString,       asynParamFloat64, &marCCDTiffTimeout);
     createParam(marCCDOverlapString,           asynParamInt32,   &marCCDOverlap);
@@ -1142,8 +1154,8 @@ marCCD::marCCD(const char *portName, const char *serverPort,
     status = getConfig();
 
     /* Allocate the raw buffer we use to readTiff files.  Only do this once */
-    getIntegerParam(ADMaxSizeX, &dims[0]);
-    getIntegerParam(ADMaxSizeY, &dims[1]);
+    getIntegerParam(ADMaxSizeX, &itemp); dims[0] = itemp;
+    getIntegerParam(ADMaxSizeY, &itemp); dims[1] = itemp;
     this->pData = this->pNDArrayPool->alloc(2, dims, NDInt16, 0, NULL);
 
     /* Set some default values for parameters */

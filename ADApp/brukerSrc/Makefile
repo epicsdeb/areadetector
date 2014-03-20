@@ -7,12 +7,14 @@ include $(TOP)/configure/CONFIG
 LIBRARY_IOC += BISDetector
 LIB_SRCS    += BISDetector.cpp
 
-PROD_IOC    += BISDetectorApp
+PROD_NAME   = BISDetectorApp
+PROD_IOC    += $(PROD_NAME)
 
 #==================================
 
 # <name>.dbd will be created from <name>Include.dbd
-DBD += BISDetectorApp.dbd
+DBD += $(PROD_NAME).dbd
+$(PROD_NAME)_DBD += BISDetectorSupport.dbd
 DBD += BISDetectorSupport.dbd
 
 # <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
@@ -23,6 +25,7 @@ PROD_SRCS_vxWorks += BISDetectorApp_registerRecordDeviceDriver.cpp BISDetectorAp
 PROD_LIBS += BISDetector
 
 include $(TOP)/ADApp/commonDriverMakefile
+$(PROD_NAME)_DBD += drvAsynIPPort.dbd
 
 #=============================
 

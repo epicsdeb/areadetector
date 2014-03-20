@@ -110,8 +110,8 @@ asynStatus NDFileMagick::writeFile(NDArray *pArray)
     CompressionType compressType;
 
     asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW,
-              "%s:%s: size=[%d, %d]\n", 
-              driverName, functionName, this->sizeX, this->sizeY);
+              "%s:%s: size=[%lu, %lu]\n", 
+              driverName, functionName, (unsigned long)this->sizeX, (unsigned long)this->sizeY);
               
     getIntegerParam(NDFileMagickQuality, &quality);
     getIntegerParam(NDFileMagickBitDepth, &depth);
@@ -123,7 +123,7 @@ asynStatus NDFileMagick::writeFile(NDArray *pArray)
         case NDColorModeRGB1:
         case NDColorModeBayer:
             image.type(this->imageType);
-            image.read(this->sizeX, this->sizeY, this->colorMap, this->storageType, pArray->pData);
+            image.read((unsigned int)this->sizeX, (unsigned int)this->sizeY, this->colorMap, this->storageType, pArray->pData);
             if (this->colorMode == NDColorModeMono) image.channel(RedChannel);
             image.quality(quality);
             image.depth(depth);
@@ -195,7 +195,7 @@ NDFileMagick::NDFileMagick(const char *portName, int queueSize, int blockingCall
      * Set autoconnect to 1.  priority and stacksize can be 0, which will use defaults. */
     : NDPluginFile(portName, queueSize, blockingCallbacks,
                    NDArrayPort, NDArrayAddr, 1, NUM_NDFILE_MAGICK_PARAMS,
-                   2, -1, asynGenericPointerMask, asynGenericPointerMask, 
+                   2, 0, asynGenericPointerMask, asynGenericPointerMask, 
                    ASYN_CANBLOCK, 1, priority, stackSize)
 {
     //const char *functionName = "NDFileMagick";
@@ -217,10 +217,8 @@ extern "C" int NDFileMagickConfigure(const char *portName, int queueSize, int bl
                                    const char *NDArrayPort, int NDArrayAddr,
                                    int priority, int stackSize)
 {
-    NDFileMagick *pPlugin = 
-        new NDFileMagick(portName, queueSize, blockingCallbacks, NDArrayPort, NDArrayAddr,
-                       priority, stackSize);
-    pPlugin = NULL;  /* This is just to eliminate compiler warning about unused variables/objects */
+    new NDFileMagick(portName, queueSize, blockingCallbacks, NDArrayPort, NDArrayAddr,
+                     priority, stackSize);
     return(asynSuccess);
 }
 

@@ -54,10 +54,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>
 <p class="startli">Add the dependencies to configure/RELEASE. </p>
 <div class="fragment"><pre class="fragment">
-ASYN=/dls_sw/prod/R3.14.11/support/asyn/4-14
-BUSY=/dls_sw/prod/R3.14.11/support/busy/1-3dls3
-AREADETECTOR=/dls_sw/prod/R3.14.11/support/areaDetector/1-7beta1-dls2
-ARAVISGIGE=/dls_sw/prod/R3.14.11/support/aravisGigE/0-1-10
+ASYN=/dls_sw/prod/R3.14.11/support/asyn/4-21
+BUSY=/dls_sw/prod/R3.14.11/support/busy/1-4dls1
+AREADETECTOR=/dls_sw/prod/R3.14.11/support/areaDetector/1-9dls4
+ARAVISGIGE=/dls_sw/prod/R3.14.11/support/aravisGigE/0-1-15dls6
 </pre></div><p class="endli"></p>
 </li>
 <li>
@@ -78,6 +78,8 @@ example_LIBS += aravisCamera
 example_LIBS += NDPlugin
 example_LIBS += ADBase
 example_LIBS += netCDF
+example_LIBS += cbfad
+example_LIBS += NeXus
 example_LIBS += hdf5
 example_LIBS += sz
 example_LIBS += PvAPI
@@ -91,7 +93,6 @@ example_SYS_LIBS += jpeg
 example_SYS_LIBS += z
 example_SYS_LIBS += gomp
 example_SYS_LIBS += X11
-example_SYS_LIBS += lcms
 example_SYS_LIBS += xml2
 example_SYS_LIBS += png12
 example_SYS_LIBS += bz2
@@ -133,7 +134,7 @@ pattern { P, R, PORT, TIMEOUT, ADDR }
 #  PORT     Asyn Port name
 #  TIMEOUT  Timeout
 #  ADDR     Asyn Port address
-file $(ARAVISGIGE)/db/Prosilica_GC.template
+file $(ARAVISGIGE)/db/AVT_Manta_1_44_4.template
 {
 pattern { P, R, PORT, TIMEOUT, ADDR }
     { "ARAVISCAM1", ":CAM:", "CAM1", "1", "0" }
@@ -185,10 +186,10 @@ dbLoadDatabase "dbd/example.dbd"
 example_registerRecordDeviceDriver(pdbbase)
 
 # aravisCameraConfig(portName, cameraName, maxBuffers, maxMemory)
-aravisCameraConfig("CAM1", "Allied Vision Technologies-02-2165A-06632", 50, -1)
+aravisCameraConfig("CAM1", "Allied Vision Technologies-50-0503332222", 50, -1)
 
 # NDStdArraysConfigure(portName, queueSize, blockingCallbacks, NDArrayPort, NDArrayAddr, maxMemory)
-NDStdArraysConfigure("ARR1", 2, 0, "CAM1", 0, -1)
+NDStdArraysConfigure("ARR1", 2, 0, "CAM1", 0, 0)
 </pre></div> </li>
 </ol>
 </div>
@@ -206,7 +207,7 @@ NDStdArraysConfigure("ARR1", 2, 0, "CAM1", 0, -1)
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Tue Jul 19 2011 16:02:31 for aravisGigE by&nbsp;
+<hr class="footer"/><address class="footer"><small>Generated on Wed Jun 12 2013 15:30:18 for aravisGigE by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.1 </small></address>
 </body>

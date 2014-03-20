@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>aravisGigE: /dls_sw/prod/R3.14.11/support/aravisGigE/0-1-10/aravisGigEApp/Db/aravisCamera.template Source File</title>
+<title>aravisGigE: /dls_sw/prod/R3.14.11/support/aravisGigE/0-1-15dls6/aravisGigEApp/Db/aravisCamera.template Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javaScript" src="search/search.js"></script>
@@ -46,8 +46,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
   <div class="navpath">
     <ul>
-      <li><a class="el" href="dir_3e900695e6cb931c4c028701a5a1bc97.html">aravisGigEApp</a>      </li>
-      <li><a class="el" href="dir_358254b7e533386b07cde654362c3d58.html">Db</a>      </li>
+      <li><a class="el" href="dir_61c45ac43a1c7e30092094c7e813ff48.html">aravisGigEApp</a>      </li>
+      <li><a class="el" href="dir_301174cff2c3ea7e10968d97590ae346.html">Db</a>      </li>
     </ul>
   </div>
 </div>
@@ -181,54 +181,83 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00123"></a>00123 {
 <a name="l00124"></a>00124    field(DTYP, <span class="stringliteral">&quot;asynInt32&quot;</span>)
 <a name="l00125"></a>00125    field(OUT,  <span class="stringliteral">&quot;@asyn($(PORT),$(ADDR),$(TIMEOUT))ARAVIS_RESET&quot;</span>)
-<a name="l00126"></a>00126 }
-<a name="l00127"></a>00127 
-<a name="l00128"></a><a class="code" href="aravisCamera_8template.html#af12cfe06ff576710e7c1ee1ee9219f2c">00128</a> <a class="code" href="aravisCamera_8template.html#a19dc091ad2d4c08642069836cf04df75">record</a>(bi, <span class="stringliteral">&quot;$(P)$(R)GETFEATURES_RBV&quot;</span>) {
-<a name="l00129"></a>00129   field(DTYP, <span class="stringliteral">&quot;asynInt32&quot;</span>)
-<a name="l00130"></a>00130   field(INP,  <span class="stringliteral">&quot;@asyn($(PORT),$(ADDR),$(TIMEOUT))ARAVIS_GETFEATURES&quot;</span>)
-<a name="l00131"></a>00131   field(SCAN, <span class="stringliteral">&quot;I/O Intr&quot;</span>)
-<a name="l00132"></a>00132   field(ZNAM, <span class="stringliteral">&quot;No&quot;</span>)
-<a name="l00133"></a>00133   field(ONAM, <span class="stringliteral">&quot;Yes&quot;</span>)
-<a name="l00134"></a>00134 }
-<a name="l00135"></a>00135 
-<a name="l00136"></a><a class="code" href="aravisCamera_8template.html#aa8ed7474a4d470b872d33f87a7af33c7">00136</a> <a class="code" href="aravisCamera_8template.html#a19dc091ad2d4c08642069836cf04df75">record</a>(bo, <span class="stringliteral">&quot;$(P)$(R)GETFEATURES&quot;</span>) {
-<a name="l00137"></a>00137   field(DTYP, <span class="stringliteral">&quot;asynInt32&quot;</span>)
-<a name="l00138"></a>00138   field(OUT,  <span class="stringliteral">&quot;@asyn($(PORT),$(ADDR),$(TIMEOUT))ARAVIS_GETFEATURES&quot;</span>)
-<a name="l00139"></a>00139   field(ZNAM, <span class="stringliteral">&quot;No&quot;</span>)
-<a name="l00140"></a>00140   field(ONAM, <span class="stringliteral">&quot;Yes&quot;</span>)
-<a name="l00141"></a>00141   field(VAL, <span class="stringliteral">&quot;1&quot;</span>)
-<a name="l00142"></a>00142   field(PINI, <span class="stringliteral">&quot;YES&quot;</span>)
-<a name="l00143"></a>00143 }
-<a name="l00144"></a>00144 
-<a name="l00145"></a>00145 <span class="preprocessor"># % gui, $(PORT), sevr</span>
-<a name="l00146"></a><a class="code" href="aravisCamera_8template.html#a17e1735fde8bcf70ee9c8e5f704007a7">00146</a> <span class="preprocessor"></span><a class="code" href="aravisCamera_8template.html#a19dc091ad2d4c08642069836cf04df75">record</a>(longout, <span class="stringliteral">&quot;$(P)$(R)CONNECTION&quot;</span>)
+<a name="l00126"></a>00126    field(FLNK, <span class="stringliteral">&quot;$(P)$(R)CONNECTION&quot;</span>)
+<a name="l00127"></a>00127 }
+<a name="l00128"></a>00128 
+<a name="l00129"></a><a class="code" href="aravisCamera_8template.html#af12cfe06ff576710e7c1ee1ee9219f2c">00129</a> <a class="code" href="aravisCamera_8template.html#a19dc091ad2d4c08642069836cf04df75">record</a>(bi, <span class="stringliteral">&quot;$(P)$(R)GETFEATURES_RBV&quot;</span>) {
+<a name="l00130"></a>00130   field(DTYP, <span class="stringliteral">&quot;asynInt32&quot;</span>)
+<a name="l00131"></a>00131   field(INP,  <span class="stringliteral">&quot;@asyn($(PORT),$(ADDR),$(TIMEOUT))ARAVIS_GETFEATURES&quot;</span>)
+<a name="l00132"></a>00132   field(SCAN, <span class="stringliteral">&quot;I/O Intr&quot;</span>)
+<a name="l00133"></a>00133   field(ZNAM, <span class="stringliteral">&quot;No&quot;</span>)
+<a name="l00134"></a>00134   field(ONAM, <span class="stringliteral">&quot;Yes&quot;</span>)
+<a name="l00135"></a>00135 }
+<a name="l00136"></a>00136 
+<a name="l00137"></a><a class="code" href="aravisCamera_8template.html#aa8ed7474a4d470b872d33f87a7af33c7">00137</a> <a class="code" href="aravisCamera_8template.html#a19dc091ad2d4c08642069836cf04df75">record</a>(bo, <span class="stringliteral">&quot;$(P)$(R)GETFEATURES&quot;</span>) {
+<a name="l00138"></a>00138   field(DTYP, <span class="stringliteral">&quot;asynInt32&quot;</span>)
+<a name="l00139"></a>00139   field(OUT,  <span class="stringliteral">&quot;@asyn($(PORT),$(ADDR),$(TIMEOUT))ARAVIS_GETFEATURES&quot;</span>)
+<a name="l00140"></a>00140   field(ZNAM, <span class="stringliteral">&quot;No&quot;</span>)
+<a name="l00141"></a>00141   field(ONAM, <span class="stringliteral">&quot;Yes&quot;</span>)
+<a name="l00142"></a>00142   field(VAL, <span class="stringliteral">&quot;1&quot;</span>)
+<a name="l00143"></a>00143   field(PINI, <span class="stringliteral">&quot;YES&quot;</span>)
+<a name="l00144"></a>00144 }
+<a name="l00145"></a>00145 
+<a name="l00146"></a><a class="code" href="aravisCamera_8template.html#a17e1735fde8bcf70ee9c8e5f704007a7">00146</a> <a class="code" href="aravisCamera_8template.html#a19dc091ad2d4c08642069836cf04df75">record</a>(longout, <span class="stringliteral">&quot;$(P)$(R)CONNECTION&quot;</span>)
 <a name="l00147"></a>00147 {
 <a name="l00148"></a>00148    field(DTYP, <span class="stringliteral">&quot;asynInt32&quot;</span>)
 <a name="l00149"></a>00149    field(OUT,  <span class="stringliteral">&quot;@asyn($(PORT),$(ADDR),$(TIMEOUT))ARAVIS_CONNECTION&quot;</span>)
-<a name="l00150"></a>00150    field(SCAN, <span class="stringliteral">&quot;1 second&quot;</span>)
-<a name="l00151"></a>00151    field(VAL, <span class="stringliteral">&quot;1&quot;</span>)
+<a name="l00150"></a>00150    field(VAL, <span class="stringliteral">&quot;1&quot;</span>)
+<a name="l00151"></a>00151    field(PINI, <span class="stringliteral">&quot;1&quot;</span>)
 <a name="l00152"></a>00152 }
 <a name="l00153"></a>00153 
-<a name="l00154"></a><a class="code" href="aravisCamera_8template.html#a6a05dda21b0045be4cc1913ac980103e">00154</a> <a class="code" href="aravisCamera_8template.html#a19dc091ad2d4c08642069836cf04df75">record</a>(mbbi, <span class="stringliteral">&quot;$(P)$(R)LEFTSHIFT_RBV&quot;</span>) {
-<a name="l00155"></a>00155   field(DTYP, <span class="stringliteral">&quot;asynInt32&quot;</span>)
-<a name="l00156"></a>00156   field(INP,  <span class="stringliteral">&quot;@asyn($(PORT),$(ADDR),$(TIMEOUT))ARAVIS_LEFTSHIFT&quot;</span>)
-<a name="l00157"></a>00157   field(ZRST, <span class="stringliteral">&quot;No&quot;</span>)
-<a name="l00158"></a>00158   field(ZRVL, <span class="stringliteral">&quot;0&quot;</span>)
-<a name="l00159"></a>00159   field(ONST, <span class="stringliteral">&quot;Yes&quot;</span>)
-<a name="l00160"></a>00160   field(ONVL, <span class="stringliteral">&quot;1&quot;</span>)
-<a name="l00161"></a>00161   field(SCAN, <span class="stringliteral">&quot;I/O Intr&quot;</span>)
-<a name="l00162"></a>00162 }
-<a name="l00163"></a>00163 
-<a name="l00164"></a>00164 <span class="preprocessor">## If this is set to 1, then 10, 12 and 16 bit images will be left shifted </span>
-<a name="l00165"></a>00165 <span class="preprocessor"></span><span class="preprocessor">## so that a pixel with maximum exposure = 2^16 no matter what the pixel format </span>
-<a name="l00166"></a><a class="code" href="aravisCamera_8template.html#afcf945c98eb03dc86a33396a5b6228f6">00166</a> <span class="preprocessor"></span><a class="code" href="aravisCamera_8template.html#a19dc091ad2d4c08642069836cf04df75">record</a>(mbbo, <span class="stringliteral">&quot;$(P)$(R)LEFTSHIFT&quot;</span>) {
-<a name="l00167"></a>00167   field(DTYP, <span class="stringliteral">&quot;asynInt32&quot;</span>)
-<a name="l00168"></a>00168   field(OUT,  <span class="stringliteral">&quot;@asyn($(PORT),$(ADDR),$(TIMEOUT))ARAVIS_LEFTSHIFT&quot;</span>)
-<a name="l00169"></a>00169   field(ZRST, <span class="stringliteral">&quot;No&quot;</span>)
-<a name="l00170"></a>00170   field(ZRVL, <span class="stringliteral">&quot;0&quot;</span>)
-<a name="l00171"></a>00171   field(ONST, <span class="stringliteral">&quot;Yes&quot;</span>)
-<a name="l00172"></a>00172   field(ONVL, <span class="stringliteral">&quot;1&quot;</span>)
-<a name="l00173"></a>00173 }
+<a name="l00154"></a><a class="code" href="aravisCamera_8template.html#a38a02eb07a44a8ef80cd9af593def05c">00154</a> <a class="code" href="aravisCamera_8template.html#a19dc091ad2d4c08642069836cf04df75">record</a>(calcout, <span class="stringliteral">&quot;$(P)$(R)CHKCONN&quot;</span>)
+<a name="l00155"></a>00155 {
+<a name="l00156"></a>00156    field(SCAN, <span class="stringliteral">&quot;1 second&quot;</span>)
+<a name="l00157"></a>00157    field(INPA, <span class="stringliteral">&quot;$(P)$(R)CONNECTION.SEVR CP&quot;</span>)
+<a name="l00158"></a>00158    field(CALC, <span class="stringliteral">&quot;A==0&quot;</span>)
+<a name="l00159"></a>00159    field(OOPT, <span class="stringliteral">&quot;When Non-zero&quot;</span>)
+<a name="l00160"></a>00160    field(OUT,  <span class="stringliteral">&quot;$(P)$(R)CONNECTION.PROC PP&quot;</span>)
+<a name="l00161"></a>00161 }
+<a name="l00162"></a>00162 
+<a name="l00163"></a><a class="code" href="aravisCamera_8template.html#a6a05dda21b0045be4cc1913ac980103e">00163</a> <a class="code" href="aravisCamera_8template.html#a19dc091ad2d4c08642069836cf04df75">record</a>(mbbi, <span class="stringliteral">&quot;$(P)$(R)LEFTSHIFT_RBV&quot;</span>) {
+<a name="l00164"></a>00164   field(DTYP, <span class="stringliteral">&quot;asynInt32&quot;</span>)
+<a name="l00165"></a>00165   field(INP,  <span class="stringliteral">&quot;@asyn($(PORT),$(ADDR),$(TIMEOUT))ARAVIS_LEFTSHIFT&quot;</span>)
+<a name="l00166"></a>00166   field(ZRST, <span class="stringliteral">&quot;No&quot;</span>)
+<a name="l00167"></a>00167   field(ZRVL, <span class="stringliteral">&quot;0&quot;</span>)
+<a name="l00168"></a>00168   field(ONST, <span class="stringliteral">&quot;Yes&quot;</span>)
+<a name="l00169"></a>00169   field(ONVL, <span class="stringliteral">&quot;1&quot;</span>)
+<a name="l00170"></a>00170   field(SCAN, <span class="stringliteral">&quot;I/O Intr&quot;</span>)
+<a name="l00171"></a>00171 }
+<a name="l00172"></a>00172 
+<a name="l00173"></a>00173 <span class="preprocessor">## If this is set to 1, then 10, 12 and 16 bit images will be left shifted </span>
+<a name="l00174"></a>00174 <span class="preprocessor"></span><span class="preprocessor">## so that a pixel with maximum exposure = 2^16 no matter what the pixel format </span>
+<a name="l00175"></a><a class="code" href="aravisCamera_8template.html#afcf945c98eb03dc86a33396a5b6228f6">00175</a> <span class="preprocessor"></span><a class="code" href="aravisCamera_8template.html#a19dc091ad2d4c08642069836cf04df75">record</a>(mbbo, <span class="stringliteral">&quot;$(P)$(R)LEFTSHIFT&quot;</span>) {
+<a name="l00176"></a>00176   field(DTYP, <span class="stringliteral">&quot;asynInt32&quot;</span>)
+<a name="l00177"></a>00177   field(OUT,  <span class="stringliteral">&quot;@asyn($(PORT),$(ADDR),$(TIMEOUT))ARAVIS_LEFTSHIFT&quot;</span>)
+<a name="l00178"></a>00178   field(ZRST, <span class="stringliteral">&quot;No&quot;</span>)
+<a name="l00179"></a>00179   field(ZRVL, <span class="stringliteral">&quot;0&quot;</span>)
+<a name="l00180"></a>00180   field(ONST, <span class="stringliteral">&quot;Yes&quot;</span>)
+<a name="l00181"></a>00181   field(ONVL, <span class="stringliteral">&quot;1&quot;</span>)
+<a name="l00182"></a>00182 }
+<a name="l00183"></a>00183 
+<a name="l00184"></a>00184 <span class="preprocessor"># unsupported fields</span>
+<a name="l00185"></a><a class="code" href="aravisCamera_8template.html#ab084ecdde2a593138d199b2959629b13">00185</a> <span class="preprocessor"></span><a class="code" href="aravisCamera_8template.html#a19dc091ad2d4c08642069836cf04df75">record</a>(bo, <span class="stringliteral">&quot;$(P)$(R)ReverseX&quot;</span>) {
+<a name="l00186"></a>00186   field(DISA, <span class="stringliteral">&quot;1&quot;</span>)
+<a name="l00187"></a>00187 }
+<a name="l00188"></a><a class="code" href="aravisCamera_8template.html#a90187cd6ba786e325ffdb2ad82c3e437">00188</a> <a class="code" href="aravisCamera_8template.html#a19dc091ad2d4c08642069836cf04df75">record</a>(bo, <span class="stringliteral">&quot;$(P)$(R)ReverseY&quot;</span>) {
+<a name="l00189"></a>00189   field(DISA, <span class="stringliteral">&quot;1&quot;</span>)
+<a name="l00190"></a>00190 }
+<a name="l00191"></a><a class="code" href="aravisCamera_8template.html#ae0daa30aa5f773bad6e9a3504f41ab71">00191</a> <a class="code" href="aravisCamera_8template.html#a19dc091ad2d4c08642069836cf04df75">record</a>(longout, <span class="stringliteral">&quot;$(P)$(R)NumExposures&quot;</span>) {
+<a name="l00192"></a>00192   field(DISA, <span class="stringliteral">&quot;1&quot;</span>)
+<a name="l00193"></a>00193 }  
+<a name="l00194"></a><a class="code" href="aravisCamera_8template.html#ae3f4d0a8f6f9c07184129e67b0d05af0">00194</a> <a class="code" href="aravisCamera_8template.html#a19dc091ad2d4c08642069836cf04df75">record</a>(longin, <span class="stringliteral">&quot;$(P)$(R)NumExposures_RBV&quot;</span>) {
+<a name="l00195"></a>00195   field(DISA, <span class="stringliteral">&quot;1&quot;</span>)
+<a name="l00196"></a>00196 }  
+<a name="l00197"></a><a class="code" href="aravisCamera_8template.html#ad99e9279ddcfd524d11658fff523c4d7">00197</a> <a class="code" href="aravisCamera_8template.html#a19dc091ad2d4c08642069836cf04df75">record</a>(longin, <span class="stringliteral">&quot;$(P)$(R)NumExposuresCounter_RBV&quot;</span>) {
+<a name="l00198"></a>00198   field(DISA, <span class="stringliteral">&quot;1&quot;</span>)
+<a name="l00199"></a>00199 }
+<a name="l00200"></a><a class="code" href="aravisCamera_8template.html#a30c1e2fd35bc83692c9b284d38d7ccc8">00200</a> <a class="code" href="aravisCamera_8template.html#a19dc091ad2d4c08642069836cf04df75">record</a>(mbbo, <span class="stringliteral">&quot;$(P)$(R)TriggerMode&quot;</span>) {
+<a name="l00201"></a>00201   field(DISA, <span class="stringliteral">&quot;1&quot;</span>)
+<a name="l00202"></a>00202 }
 </pre></div></div>
 </div>
 <!--- window showing the filter options -->
@@ -245,7 +274,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Tue Jul 19 2011 16:02:28 for aravisGigE by&nbsp;
+<hr class="footer"/><address class="footer"><small>Generated on Wed Jun 12 2013 15:30:02 for aravisGigE by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.1 </small></address>
 </body>

@@ -1,3 +1,9 @@
+areadetector (1.9.1+dfsg1-1) UNRELEASED; urgency=low
+
+  * New upstream versions: areaDetector 1.9.1, aravisGigE 0.1.15dls6
+
+ -- Ralph Lange <Ralph.Lange@gmx.de>  Thu, 20 Mar 2014 15:04:28 +0100
+
 areadetector (1.7+dfsg1-6) unstable; urgency=low
 
   * Rebuild using fixed adl2edl 1.4-4 for converting panels

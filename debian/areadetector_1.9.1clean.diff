@@ -1,0 +1,27 @@
+Only in areaDetectorR1-9-1/ADApp: andor3Src
+Only in areaDetectorR1-9-1/ADApp: andor3Support
+Only in areaDetectorR1-9-1/ADApp: andorSrc
+Only in areaDetectorR1-9-1/ADApp: andorSupport
+Only in areaDetectorR1-9-1/ADApp/brukerSrc: BIS.HLP
+Only in areaDetectorR1-9-1/ADApp: cbfSrc
+Only in areaDetectorR1-9-1/ADApp/firewireWinSrc: 1394camera.lib
+Only in areaDetectorR1-9-1/ADApp: hdf5Support
+Only in areaDetectorR1-9-1/ADApp: magickSupport
+Only in areaDetectorR1-9-1/ADApp/marCCDSrc: The Baseline Stabilization Option for marccd.pdf
+Only in areaDetectorR1-9-1/ADApp: netCDFSrc
+Only in areaDetectorR1-9-1/ADApp/perkinElmerSrc: Manual_PKIaSi_XIS_2010-05-26_Rev4 0.pdf
+Only in areaDetectorR1-9-1/ADApp/perkinElmerSrc: Manual_PKIaSi_XRD1621 2008-07-30.pdf
+Only in areaDetectorR1-9-1/ADApp: perkinElmerSupport
+Only in areaDetectorR1-9-1/ADApp: prosilicaSupport
+Only in areaDetectorR1-9-1/ADApp/PSLSrc: PSLSoftwareManual.pdf
+Only in areaDetectorR1-9-1/ADApp: pvcamSupport
+Only in areaDetectorR1-9-1/ADApp/roperSrc: WinX32 Automation 3.X for Visual Basic.pdf
+Only in areaDetectorR1-9-1/ADApp: tiffSupport
+Only in areaDetectorR1-9-1/documentation: User_Manual-PILATUS-V1_1.pdf
+Only in areaDetectorR1-9-1/documentation: User_Manual-PILATUS-V1_2.pdf
+Only in areaDetectorR1-9-1/documentation: User_Manual-PILATUS-V1_3.pdf
+Only in areaDetectorR1-9-1/iocBoot/iocURLDriver: images
+Only in areaDetectorR1-9-1/Viewers: IDL
+Only in areaDetectorR1-9-1/Viewers/ImageJ/EPICS_areaDetector: caj-1.1.10.jar
+Only in areaDetectorR1-9-1/Viewers/ImageJ/EPICS_areaDetector: jca-2.3.6.jar
+Only in areaDetectorR1-9-1/Viewers/ImageJ/EPICS_areaDetector: NetCDF_.jar

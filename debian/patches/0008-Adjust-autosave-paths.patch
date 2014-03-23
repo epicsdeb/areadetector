@@ -9,20 +9,24 @@ as request files in
 
 as save files in ./autosave
 ---
- iocBoot/commonPlugins.cmd | 10 +++++-----
+ iocBoot/commonPlugins.cmd | 13 ++++++-------
  iocBoot/iocAdsc/st.cmd    |  3 ++-
- 2 files changed, 7 insertions(+), 6 deletions(-)
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
 diff --git a/iocBoot/commonPlugins.cmd b/iocBoot/commonPlugins.cmd
-index 24267e4..eb3d4a1 100644
+index 3ff6a9b..6bfa3be 100644
 --- a/iocBoot/commonPlugins.cmd
 +++ b/iocBoot/commonPlugins.cmd
-@@ -124,11 +124,11 @@ dbLoadRecords("$(EPICS_BASE)/db/NDColorConvert.template", "P=$(PREFIX),R=CC2:,
- # Load scan records
+@@ -100,14 +100,13 @@ dbLoadRecords("$(EPICS_BASE)/db/NDColorConvert.template", "P=$(PREFIX),R=CC2:,
  dbLoadRecords("$(EPICS_BASE)/db/scan.db", "P=$(PREFIX),MAXPTS1=2000,MAXPTS2=200,MAXPTS3=20,MAXPTS4=10,MAXPTSH=10")
+ 
+ # Load sseq record for acquisition sequence
+-dbLoadRecords("$(CALC)/calcApp/Db/yySseq.db", "P=$(PREFIX), S=AcquireSequence")
++dbLoadRecords("$(EPICS_BASE)/db/yySseq.db", "P=$(PREFIX), S=AcquireSequence")
  
 -set_requestfile_path("./")
 -set_requestfile_path("$(AREA_DETECTOR)/ADApp/Db")
+-set_requestfile_path("$(CALC)/calcApp/Db")
 -set_requestfile_path("$(SSCAN)/sscanApp/Db")
 -set_savefile_path("./autosave")
 +set_requestfile_path("${TOP}")

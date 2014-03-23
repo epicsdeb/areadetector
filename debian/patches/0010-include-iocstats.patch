@@ -5,25 +5,25 @@ Subject: include iocstats
 ---
  ADApp/ADSrc/commonDriverSupport.dbd | 1 +
  ADApp/commonDriverMakefile          | 2 +-
- iocBoot/commonPlugins.cmd           | 2 ++
- 3 files changed, 4 insertions(+), 1 deletion(-)
+ iocBoot/commonPlugins.cmd           | 3 +++
+ 3 files changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/ADApp/ADSrc/commonDriverSupport.dbd b/ADApp/ADSrc/commonDriverSupport.dbd
-index a836197..961fd69 100644
+index 16b5334..54610ed 100644
 --- a/ADApp/ADSrc/commonDriverSupport.dbd
 +++ b/ADApp/ADSrc/commonDriverSupport.dbd
-@@ -7,3 +7,4 @@ include "busySupport.dbd"
- include "mcaSupport.dbd"
+@@ -6,3 +6,4 @@ include "sscanSupport.dbd"
+ include "busySupport.dbd"
  include "asyn.dbd"
  include "asSupport.dbd"
 +include "devIocStats.dbd"
 diff --git a/ADApp/commonDriverMakefile b/ADApp/commonDriverMakefile
-index e9bfbc4..564f873 100644
+index 796806d..f3d04c2 100644
 --- a/ADApp/commonDriverMakefile
 +++ b/ADApp/commonDriverMakefile
-@@ -8,7 +8,7 @@ PROD_LIBS               += NDPlugin ADBase
- PROD_LIBS               += calc busy sscan autosave mca
+@@ -14,7 +14,7 @@ PROD_LIBS               += NDPlugin ADBase
  LIB_LIBS                += calc busy sscan autosave
+ PROD_LIBS               += calc busy sscan autosave mca
  LIB_LIBS                += asyn
 -PROD_LIBS               += asyn
 +PROD_LIBS               += asyn devIocStats
@@ -31,13 +31,14 @@ index e9bfbc4..564f873 100644
  PROD_LIBS               += $(EPICS_BASE_IOC_LIBS)
  
 diff --git a/iocBoot/commonPlugins.cmd b/iocBoot/commonPlugins.cmd
-index eb3d4a1..c8e3fbd 100644
+index 6bfa3be..7b81836 100644
 --- a/iocBoot/commonPlugins.cmd
 +++ b/iocBoot/commonPlugins.cmd
-@@ -124,6 +124,8 @@ dbLoadRecords("$(EPICS_BASE)/db/NDColorConvert.template", "P=$(PREFIX),R=CC2:,
- # Load scan records
- dbLoadRecords("$(EPICS_BASE)/db/scan.db", "P=$(PREFIX),MAXPTS1=2000,MAXPTS2=200,MAXPTS3=20,MAXPTS4=10,MAXPTSH=10")
+@@ -102,6 +102,9 @@ dbLoadRecords("$(EPICS_BASE)/db/scan.db", "P=$(PREFIX),MAXPTS1=2000,MAXPTS2=200,
+ # Load sseq record for acquisition sequence
+ dbLoadRecords("$(EPICS_BASE)/db/yySseq.db", "P=$(PREFIX), S=AcquireSequence")
  
++# Include iocStats
 +dbLoadRecords("db/iocAdminSoft.db", "IOC=$(IOC=$(PREFIX))")
 +
  set_requestfile_path("${TOP}")

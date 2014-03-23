@@ -8,7 +8,7 @@ Subject: Don't load Nexus plugin (not built)
  2 files changed, 7 insertions(+), 7 deletions(-)
 
 diff --git a/ADApp/Db/commonPlugin_settings.req b/ADApp/Db/commonPlugin_settings.req
-index cc6c758..76a0158 100644
+index c4e6b90..980e303 100644
 --- a/ADApp/Db/commonPlugin_settings.req
 +++ b/ADApp/Db/commonPlugin_settings.req
 @@ -5,9 +5,9 @@ file "NDFile_settings.req",         P=$(P),  R=TIFF1:
@@ -25,7 +25,7 @@ index cc6c758..76a0158 100644
  file "NDFile_settings.req",         P=$(P),  R=Magick1:
  file "NDFileMagick_settings.req",   P=$(P),  R=Magick1:
 diff --git a/iocBoot/commonPlugins.cmd b/iocBoot/commonPlugins.cmd
-index 51043bf..c39322d 100644
+index ed157ae..dd1f50d 100644
 --- a/iocBoot/commonPlugins.cmd
 +++ b/iocBoot/commonPlugins.cmd
 @@ -17,10 +17,10 @@ dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFile.template",      "P=$(PREFIX),R=J

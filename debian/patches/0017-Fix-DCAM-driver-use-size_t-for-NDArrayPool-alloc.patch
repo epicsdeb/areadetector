@@ -1,0 +1,30 @@
+From: Ralph Lange <Ralph.Lange@gmx.de>
+Date: Sun, 23 Mar 2014 17:25:19 +0100
+Subject: Fix DCAM driver (use size_t for NDArrayPool->alloc)
+
+---
+ dcam/firewireDCAMApp/src/firewireDCAM.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/dcam/firewireDCAMApp/src/firewireDCAM.cpp b/dcam/firewireDCAMApp/src/firewireDCAM.cpp
+index cf77bc0..10732fe 100644
+--- a/dcam/firewireDCAMApp/src/firewireDCAM.cpp
++++ b/dcam/firewireDCAMApp/src/firewireDCAM.cpp
+@@ -1114,7 +1114,7 @@ int FirewireDCAM::decodeFrame(dc1394video_frame_t * dc1394_frame)
+ 	int status = asynSuccess;
+ //	int minX, minY, sizeX, sizeY;
+ 	int ndims;
+-	int dims[3];
++	size_t dims[3];
+     int arrayCallbacks, imageCounter, numImages, numImagesCounter, imageMode;
+     int colorMode, dataType, bayerFormat;
+     int xDim=0, yDim=1, binX, binY;
+@@ -1174,7 +1174,7 @@ int FirewireDCAM::decodeFrame(dc1394video_frame_t * dc1394_frame)
+     }
+     dims[xDim] = dc1394_frame->size[0];
+     dims[yDim] = dc1394_frame->size[1];
+-    this->pRaw = this->pNDArrayPool->alloc(ndims, dims, (NDDataType_t)dataType, 0, NULL);
++    this->pRaw = this->pNDArrayPool->alloc(ndims, dims, (NDDataType_t)dataType, (size_t)0, NULL);
+ 
+     if (dc1394_frame->frames_behind > 0 && this->latch_frames_behind != dc1394_frame->frames_behind) 
+     {

@@ -15,7 +15,7 @@ Subject: aravis st.cmd
  create mode 100644 iocBoot/iocAravisGigE/unique.cmd
 
 diff --git a/iocBoot/commonPlugins.cmd b/iocBoot/commonPlugins.cmd
-index c8e3fbd..71d7e76 100644
+index 7b81836..4345103 100644
 --- a/iocBoot/commonPlugins.cmd
 +++ b/iocBoot/commonPlugins.cmd
 @@ -24,9 +24,9 @@ dbLoadRecords("$(EPICS_BASE)/db/NDFileJPEG.template",  "P=$(PREFIX),R=JPEG1:,POR

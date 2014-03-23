@@ -10,10 +10,10 @@ libcdf doesn't provide a useful version number macro :(
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/ADApp/pilatusSrc/pilatusDetector.cpp b/ADApp/pilatusSrc/pilatusDetector.cpp
-index d6e212c..b9aa431 100644
+index d11c77b..599d9f0 100644
 --- a/ADApp/pilatusSrc/pilatusDetector.cpp
 +++ b/ADApp/pilatusSrc/pilatusDetector.cpp
-@@ -478,8 +478,8 @@ asynStatus pilatusDetector::readCbf(const char *fileName, epicsTimeStamp *pStart
+@@ -507,8 +507,8 @@ asynStatus pilatusDetector::readCbf(const char *fileName, epicsTimeStamp *pStart
          return((asynStatus)status);
      }
  
@@ -24,7 +24,7 @@ index d6e212c..b9aa431 100644
  
      while (deltaTime <= timeout) {
          /* At this point we know the file exists, but it may not be completely
-@@ -492,7 +492,7 @@ asynStatus pilatusDetector::readCbf(const char *fileName, epicsTimeStamp *pStart
+@@ -521,7 +521,7 @@ asynStatus pilatusDetector::readCbf(const char *fileName, epicsTimeStamp *pStart
                  driverName, functionName, status);
              return(asynError);
          }
@@ -33,7 +33,7 @@ index d6e212c..b9aa431 100644
          status = cbf_set_cbf_logfile(cbf, NULL);
          if (status != 0) {
              asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,
-@@ -500,7 +500,7 @@ asynStatus pilatusDetector::readCbf(const char *fileName, epicsTimeStamp *pStart
+@@ -529,7 +529,7 @@ asynStatus pilatusDetector::readCbf(const char *fileName, epicsTimeStamp *pStart
                  driverName, functionName, status);
              return(asynError);
          }

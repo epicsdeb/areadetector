@@ -8,10 +8,10 @@ Subject: Use system cbf library
  2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/ADApp/pilatusSrc/Makefile b/ADApp/pilatusSrc/Makefile
-index b50b37a..55aad28 100755
+index 81a84af..2dd2500 100755
 --- a/ADApp/pilatusSrc/Makefile
 +++ b/ADApp/pilatusSrc/Makefile
-@@ -21,7 +21,7 @@ PROD_SRCS += pilatusDetectorApp_registerRecordDeviceDriver.cpp pilatusDetectorAp
+@@ -24,7 +24,7 @@ PROD_SRCS += pilatusDetectorApp_registerRecordDeviceDriver.cpp pilatusDetectorAp
  
  # Add locally compiled object code
  PROD_LIBS += pilatusDetector
@@ -19,9 +19,9 @@ index b50b37a..55aad28 100755
 +PROD_LIBS += cbf
  
  include $(TOP)/ADApp/commonDriverMakefile
- 
+ $(PROD_NAME)_DBD += drvAsynIPPort.dbd
 diff --git a/ADApp/pilatusSrc/pilatusDetector.cpp b/ADApp/pilatusSrc/pilatusDetector.cpp
-index 7adbaf1..d6e212c 100644
+index d0bab66..d11c77b 100644
 --- a/ADApp/pilatusSrc/pilatusDetector.cpp
 +++ b/ADApp/pilatusSrc/pilatusDetector.cpp
 @@ -20,7 +20,7 @@

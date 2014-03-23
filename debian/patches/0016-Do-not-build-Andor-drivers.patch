@@ -1,0 +1,25 @@
+From: Ralph Lange <Ralph.Lange@gmx.de>
+Date: Fri, 21 Mar 2014 16:51:33 +0100
+Subject: Do not build Andor drivers
+
+---
+ ADApp/Makefile | 6 ------
+ 1 file changed, 6 deletions(-)
+
+diff --git a/ADApp/Makefile b/ADApp/Makefile
+index d0b2ec4..012f79f 100644
+--- a/ADApp/Makefile
++++ b/ADApp/Makefile
+@@ -38,12 +38,6 @@ brukerSrc_DEPEND_DIRS = pluginSrc
+ DIRS += PSLSrc
+ PSLSrc_DEPEND_DIRS = pluginSrc
+ 
+-DIRS += andorSrc
+-andorSrc_DEPEND_DIRS = andorSupport pluginSrc
+-
+-DIRS += andor3Src
+-andor3Src_DEPEND_DIRS = andor3Support pluginSrc
+-
+ DIRS += roperSrc
+ roperSrc_DEPEND_DIRS = pluginSrc
+ 

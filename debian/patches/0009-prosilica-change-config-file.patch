@@ -3,13 +3,13 @@ Date: Mon, 19 Sep 2011 09:40:38 -0400
 Subject: prosilica change config file
 
 ---
- iocBoot/iocProsilica/st.cmd     | 11 +++++++++--
+ iocBoot/iocProsilica/st.cmd     | 12 ++++++++++--
  iocBoot/iocProsilica/unique.cmd |  2 ++
- 2 files changed, 11 insertions(+), 2 deletions(-)
+ 2 files changed, 12 insertions(+), 2 deletions(-)
  create mode 100644 iocBoot/iocProsilica/unique.cmd
 
 diff --git a/iocBoot/iocProsilica/st.cmd b/iocBoot/iocProsilica/st.cmd
-index 1a529d5..6928457 100755
+index 30f546c..02a0044 100755
 --- a/iocBoot/iocProsilica/st.cmd
 +++ b/iocBoot/iocProsilica/st.cmd
 @@ -1,10 +1,17 @@
@@ -31,12 +31,14 @@ index 1a529d5..6928457 100755
  epicsEnvSet("PORT",   "PS1")
  epicsEnvSet("QSIZE",  "20")
  epicsEnvSet("XSIZE",  "1360")
-@@ -22,7 +29,7 @@ epicsEnvSet("NCHANS", "2048")
- # select the camera, and press the "i" icon on the bottom of the main window to show the camera information for this camera. 
+@@ -23,8 +30,9 @@ epicsEnvSet("NCHANS", "2048")
  # The Unique ID will be displayed on the first line in the information window.
- #prosilicaConfig("$(PORT)", 51031, 50, -1, 0, 0, 10)
--prosilicaConfig("$(PORT)", 51031, 50, -1)
-+prosilicaConfig("$(PORT)", $(UID), 50, -1)
+ #prosilicaConfig("$(PORT)", 51031, 50, 0, 0, 0, 10)
+ #prosilicaConfig("$(PORT)", 50022, 50, 0)
+-prosilicaConfig("$(PORT)", 164.54.160.203, 50, 0)
++#prosilicaConfig("$(PORT)", 164.54.160.203, 50, 0)
+ #prosilicaConfig("$(PORT)", 51039, 50, 0)
++prosilicaConfig("$(PORT)", $(UID), 50, 0)
  
  asynSetTraceIOMask("$(PORT)",0,2)
  #asynSetTraceMask("$(PORT)",0,255)

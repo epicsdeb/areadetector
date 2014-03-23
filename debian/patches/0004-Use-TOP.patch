@@ -3,30 +3,99 @@ Date: Sun, 5 Jun 2011 15:15:58 -0400
 Subject: Use $(TOP)
 
 ---
- ADApp/PSLSrc/Makefile    | 2 +-
- ADApp/pluginSrc/Makefile | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ ADApp/PSLSrc/Makefile    | 77 ++++++++++++++++++++++++------------------------
+ ADApp/pluginSrc/Makefile |  2 +-
+ 2 files changed, 39 insertions(+), 40 deletions(-)
 
 diff --git a/ADApp/PSLSrc/Makefile b/ADApp/PSLSrc/Makefile
-index e4eaf4e..5f109b7 100755
+index e7a28b3..94a2bfe 100755
 --- a/ADApp/PSLSrc/Makefile
 +++ b/ADApp/PSLSrc/Makefile
-@@ -25,7 +25,7 @@ PROD_SRCS_vxWorks += PSLApp_registerRecordDeviceDriver.cpp
- # Add locally compiled object code
- PROD_LIBS += PSL
- 
+@@ -1,39 +1,38 @@
+-TOP=../..
+-include $(TOP)/configure/CONFIG
+-#----------------------------------------
+-#  ADD MACRO DEFINITIONS AFTER THIS LINE
+-#=============================
+-
+-#USR_CFLAGS += 
+-#USR_CXXFLAGS +=
+-
+-LIBRARY_IOC = PSL
+-
+-PROD_NAME = PSLApp
+-PROD_IOC += $(PROD_NAME)
+-
+-LIB_SRCS += PSL.cpp
+-
+-#==================================
+-
+-# <name>.dbd will be created from <name>Include.dbd
+-DBD += $(PROD_NAME).dbd
+-$(PROD_NAME)_DBD += PSLSupport.dbd
+-DBD += PSLSupport.dbd
+-
+-# <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
+-PROD_SRCS_DEFAULT += PSLApp_registerRecordDeviceDriver.cpp PSLAppMain.cpp
+-PROD_SRCS_vxWorks += PSLApp_registerRecordDeviceDriver.cpp
+-
+-# Add locally compiled object code
+-PROD_LIBS += PSL
+-
 -include $(AREA_DETECTOR)/ADApp/commonDriverMakefile
+-$(PROD_NAME)_DBD += drvAsynIPPort.dbd
+-
+-#=============================
+-
+-include $(TOP)/configure/RULES
+-#----------------------------------------
+-#  ADD RULES AFTER THIS LINE
+-
++TOP=../..
++include $(TOP)/configure/CONFIG
++#----------------------------------------
++#  ADD MACRO DEFINITIONS AFTER THIS LINE
++#=============================
++
++#USR_CFLAGS += 
++#USR_CXXFLAGS +=
++
++LIBRARY_IOC = PSL
++
++PROD_NAME = PSLApp
++PROD_IOC += $(PROD_NAME)
++
++LIB_SRCS += PSL.cpp
++
++#==================================
++
++# <name>.dbd will be created from <name>Include.dbd
++DBD += $(PROD_NAME).dbd
++$(PROD_NAME)_DBD += PSLSupport.dbd
++DBD += PSLSupport.dbd
++
++# <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
++PROD_SRCS_DEFAULT += PSLApp_registerRecordDeviceDriver.cpp PSLAppMain.cpp
++PROD_SRCS_vxWorks += PSLApp_registerRecordDeviceDriver.cpp
++
++# Add locally compiled object code
++PROD_LIBS += PSL
++
 +include $(TOP)/ADApp/commonDriverMakefile
- 
- #=============================
- 
++$(PROD_NAME)_DBD += drvAsynIPPort.dbd
++
++#=============================
++
++include $(TOP)/configure/RULES
++#----------------------------------------
++#  ADD RULES AFTER THIS LINE
 diff --git a/ADApp/pluginSrc/Makefile b/ADApp/pluginSrc/Makefile
-index f83b5a7..8017028 100644
+index 9c84049..32ab639 100644
 --- a/ADApp/pluginSrc/Makefile
 +++ b/ADApp/pluginSrc/Makefile
-@@ -54,7 +54,7 @@ LIB_SRCS += NDPluginColorConvert.cpp
- LIB_SRCS_DEFAULT += NDFileTIFF.cpp NDFileJPEG.cpp NDFileNexus.cpp NDFileHDF5.cpp NDFileMagick.cpp
- LIB_SRCS_vxWorks += NDFileDummy.cpp
+@@ -60,7 +60,7 @@ LIBRARY_IOC += NDFileMagick
+ NDFileMagick_SRCS_DEFAULT += NDFileMagick.cpp 
+ NDFileMagick_SRCS_vxWorks += NDFileDummyMagick.cpp
  
 -include $(AREA_DETECTOR)/ADApp/commonDriverMakefile
 +include $(TOP)/ADApp/commonDriverMakefile

@@ -6,8 +6,8 @@ Subject: Remove embedded copy of tinyxml library
  ADApp/ADSrc/Makefile              | 8 +++++---
  ADApp/ADSrc/asynNDArrayDriver.cpp | 2 +-
  ADApp/adscSrc/Makefile            | 1 +
- ADApp/commonDriverMakefile        | 4 ++--
- 4 files changed, 9 insertions(+), 6 deletions(-)
+ ADApp/commonDriverMakefile        | 2 +-
+ 4 files changed, 8 insertions(+), 5 deletions(-)
 
 diff --git a/ADApp/ADSrc/Makefile b/ADApp/ADSrc/Makefile
 index 1780d5b..def7e83 100644
@@ -36,7 +36,7 @@ index 1780d5b..def7e83 100644
  
  LIB_LIBS += asyn
 diff --git a/ADApp/ADSrc/asynNDArrayDriver.cpp b/ADApp/ADSrc/asynNDArrayDriver.cpp
-index 15c9636..8912381 100644
+index ed15555..021d3fe 100644
 --- a/ADApp/ADSrc/asynNDArrayDriver.cpp
 +++ b/ADApp/ADSrc/asynNDArrayDriver.cpp
 @@ -19,7 +19,7 @@
@@ -49,10 +49,10 @@ index 15c9636..8912381 100644
  #include "paramAttribute.h"
  #include <asynDriver.h>
 diff --git a/ADApp/adscSrc/Makefile b/ADApp/adscSrc/Makefile
-index c5a9e6e..9f20b90 100644
+index 839a10a..8cc73f5 100644
 --- a/ADApp/adscSrc/Makefile
 +++ b/ADApp/adscSrc/Makefile
-@@ -118,6 +118,7 @@ PROD_SYS_LIBS_cygwin32 += $(CYGWIN_RPC_LIB)
+@@ -120,6 +120,7 @@ PROD_SYS_LIBS_cygwin32 += $(CYGWIN_RPC_LIB)
  #PROD_LIBS_Linux        += tiff jpeg z
  # To use system versions of these libraries use this line
  #PROD_SYS_LIBS_Linux    += tiff jpeg z
@@ -61,17 +61,15 @@ index c5a9e6e..9f20b90 100644
  #PROD_SYS_LIBS_Darwin  += NeXus mfhdf df hdf5 mxml tiff jpeg z
  
 diff --git a/ADApp/commonDriverMakefile b/ADApp/commonDriverMakefile
-index 564f873..217313c 100644
+index f3d04c2..0a0ce74 100644
 --- a/ADApp/commonDriverMakefile
 +++ b/ADApp/commonDriverMakefile
-@@ -64,8 +64,8 @@ PROD_SYS_LIBS_Linux     += tiff jpeg z
- #LIB_SYS_LIBS_Linux     += tiff jpeg z
- #PROD_SYS_LIBS_Linux    += tiff jpeg z
- 
--LIB_SYS_LIBS_Linux      += gomp xml2 png12 bz2 
+@@ -50,7 +50,7 @@ PROD_SYS_LIBS_Linux     += GraphicsMagick++ GraphicsMagickWand GraphicsMagick
+ #LIB_SYS_LIBS_Linux      += gomp X11 xml2 png12 bz2 Xext freetype
+ #PROD_SYS_LIBS_Linux     += gomp X11 xml2 png12 bz2 Xext freetype
+ LIB_SYS_LIBS_Linux      += gomp xml2 png12 bz2
 -PROD_SYS_LIBS_Linux     += gomp xml2 png12 bz2
-+LIB_SYS_LIBS_Linux      += gomp xml2 png12 bz2
 +PROD_SYS_LIBS_Linux     += gomp xml2 png12 bz2 tinyxml
  
- LIB_LIBS_solaris         += NeXus hdf5 jpeg z
- PROD_LIBS_solaris        += NeXus hdf5 jpeg z
+ # To use versions of these libraries supplied with areaDetector use this line
+ LIB_LIBS_Darwin         += GraphicsMagick++ GraphicsMagickWand GraphicsMagick

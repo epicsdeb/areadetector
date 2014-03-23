@@ -21,7 +21,7 @@ Homepage: http://cars9.uchicago.edu/software/epics/areaDetector.html
 Vcs-Browser: https://github.com/epicsdeb/areadetector
 Vcs-Git: https://github.com/epicsdeb/areadetector.git
 
-Package: libareadetector1.7
+Package: libareadetector1.9
 Section: libs
 Architecture: any
 Multi-Arch: same
@@ -39,7 +39,7 @@ Architecture: any
 Multi-Arch: foreign
 Depends: ${shlibs:Depends}, ${misc:Depends},
 Recommends: edm-areadetector (= ${source:Version}),
-            libareadetector1.7 (= ${binary:Version}),
+            libareadetector1.9 (= ${binary:Version}),
 Breaks: epics-synapps (<< 5.6~)
 Description: EPICS video camera and detector driver (database files)
  .

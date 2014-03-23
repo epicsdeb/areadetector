@@ -1,0 +1,2 @@
+libareadetector1.9: package-name-doesnt-match-sonames libADBase1.9.1+dfsg1 libBISDetector1.9.1+dfsg1 libNDPlugin1.9.1+dfsg1 libPSL1.9.1+dfsg1 libURLDriver1.9.1+dfsg1 libadsc1.9.1+dfsg1 libaravisCamera1.9.1+dfsg1 libfirewireDCAM1.9.1+dfsg1 libmar345-1.9.1+dfsg1 libmarCCD-AD1.9.1+dfsg1 libpilatusDetector1.9.1+dfsg1 libsimDetector1.9.1+dfsg1
+libareadetector1.9: dev-pkg-without-shlib-symlink

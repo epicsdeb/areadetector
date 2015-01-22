@@ -1,3 +1,15 @@
+areadetector (1.9.1+dfsg1-3) unstable; urgency=low
+
+  * d/control: take care to build only with libaravis (>=0.1.15-1~)
+
+ -- Joachim Rahn <Joachim.Rahn@helmholtz-berlin.de>  Fri, 11 Jul 2014 13:19:44 +0200
+
+areadetector (1.9.1+dfsg1-2) unstable; urgency=low
+
+  * Get rid of converting adl panels - upstream now directly provides edl
+
+ -- Ralph Lange <Ralph.Lange@gmx.de>  Tue, 01 Apr 2014 12:16:40 +0200
+
 areadetector (1.9.1+dfsg1-1) unstable; urgency=low
 
   * New upstream versions: areaDetector 1.9.1, aravisGigE 0.1.15dls6

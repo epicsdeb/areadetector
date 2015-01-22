@@ -59,18 +59,12 @@ override_dh_auto_build: convert-adl
 convert-adl:
 	rm -rf edl
 	install -d edl
-	cp ADApp/op/adl/*.adl edl/
-	(cd edl && \
-	for ff in *.adl;do \
-		adl2edl -rename -rgb $$ff > $${ff%.adl}.edl || rm -f $${ff%.adl}.edl;\
-	done)
-	sed -i -e 's|"[^c]*composite file |"|g' edl/*.edl
 
+	cp ADApp/op/edl/*.edl edl/
 	cp aravis/aravisGigEApp/opi/edl/*.edl edl/
 	cp debian/opi/edl/*.edl edl/
 	sed -i -e 's|arial|helvetica|g' edl/*.edl
-	sed -i -e 's|charter|helvetica|g' edl/*.edl
-	sed -i -e 's|helvetica-bold-r-16\.0|helvetica-bold-r-12.0|g' edl/*.edl
+	sed -i -e 's|helvetica-bold-r-1[68]\.0|helvetica-bold-r-14.0|g' edl/*.edl
 
 override_dh_auto_install:
 	dh_auto_install -- SHARED_LIBRARIES=YES STATIC_BUILD=YES \
